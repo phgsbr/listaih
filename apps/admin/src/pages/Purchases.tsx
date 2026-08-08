@@ -7,6 +7,7 @@ import {
 } from '@mui/material'
 import {
   ArrowBack, Receipt, Payments, Inventory, PhotoCamera, Sync as SyncIcon,
+  AttachMoney, CreditCard, QrCode, Restaurant, ShoppingCart,
 } from '@mui/icons-material'
 import api from '@/services/api'
 import { useHousehold, type Purchase } from '@/hooks/useHousehold'
@@ -48,6 +49,19 @@ export default function Purchases() {
   const getPaymentLabel = (pm: string | null) => {
     if (!pm) return '—'
     return t(`pay.${pm.toLowerCase()}`)
+  }
+
+  const getPaymentIcon = (pm: string | null) => {
+    if (!pm) return null
+    switch (pm) {
+      case 'DINHEIRO': return <AttachMoney fontSize="small" />
+      case 'PIX': return <QrCode fontSize="small" />
+      case 'DEBITO': return <CreditCard fontSize="small" />
+      case 'CREDITO': return <CreditCard fontSize="small" color="secondary" />
+      case 'VR': return <Restaurant fontSize="small" />
+      case 'VA': return <ShoppingCart fontSize="small" />
+      default: return null
+    }
   }
 
   const getReceiptStatusColor = (status: string): 'default' | 'warning' | 'info' | 'success' | 'error' => {
@@ -161,7 +175,10 @@ export default function Purchases() {
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                 <Typography variant="body2">{t('purch.payment')}</Typography>
-                <Typography sx={{ fontWeight: 600 }}>{getPaymentLabel(selectedPurchase.paymentMethod)}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  {getPaymentIcon(selectedPurchase.paymentMethod)}
+                  <Typography sx={{ fontWeight: 600 }}>{getPaymentLabel(selectedPurchase.paymentMethod)}</Typography>
+                </Box>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                 <Typography variant="body2">{t('purch.itemCount')}</Typography>
@@ -385,7 +402,12 @@ export default function Purchases() {
                     <TableCell align="right" sx={{ fontWeight: 600, color: 'primary.main' }}>
                       {purch.totalAmount ? formatCurrency(purch.totalAmount, currency) : '—'}
                     </TableCell>
-                    <TableCell>{getPaymentLabel(purch.paymentMethod)}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        {getPaymentIcon(purch.paymentMethod)}
+                        {getPaymentLabel(purch.paymentMethod)}
+                      </Box>
+                    </TableCell>
                     <TableCell>
                       <Chip
                         size="small"

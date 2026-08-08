@@ -320,6 +320,9 @@ private fun formatQty(qty: Double): String {
     }
 }
 
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.ui.res.painterResource
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckoutDialog(
@@ -335,13 +338,13 @@ fun CheckoutDialog(
     var paymentDropdownExpanded by remember { mutableStateOf(false) }
 
     val paymentOptions = listOf(
-        "" to "Sem pagamento",
-        "DINHEIRO" to "Dinheiro",
-        "DEBITO" to "Débito",
-        "CREDITO" to "Crédito",
-        "PIX" to "PIX",
-        "VR" to "VR",
-        "VA" to "VA"
+        "" to "Sem pagamento" to 0,
+        "DINHEIRO" to "Dinheiro" to R.drawable.payment_dinheiro,
+        "DEBITO" to "Débito" to R.drawable.payment_debito,
+        "CREDITO" to "Crédito" to R.drawable.payment_credito,
+        "PIX" to "PIX" to R.drawable.payment_pix,
+        "VR" to "VR" to R.drawable.payment_vr,
+        "VA" to "VA" to R.drawable.payment_va
     )
 
     AlertDialog(
@@ -359,6 +362,17 @@ fun CheckoutDialog(
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Forma de pagamento") },
+                    leadingIcon = {
+                        val selected = paymentOptions.find { it.first == paymentMethod }
+                        if (selected != null && selected.third != 0) {
+                            Icon(
+                                painter = painterResource(selected.third),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    },
                     trailingIcon = {
                         androidx.compose.material3.Icon(
                             androidx.compose.material.icons.filled.ArrowDropDown,
@@ -371,8 +385,18 @@ fun CheckoutDialog(
                     expanded = paymentDropdownExpanded,
                     onDismissRequest = { paymentDropdownExpanded = false }
                 ) {
-                    paymentOptions.forEach { (value, label) ->
+                    paymentOptions.forEach { (value, label, drawableRes) ->
                         androidx.compose.material3.DropdownMenuItem(
+                            leadingIcon = {
+                                if (drawableRes != 0) {
+                                    Icon(
+                                        painter = painterResource(drawableRes),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            },
                             text = { Text(label) },
                             onClick = {
                                 paymentMethod = value

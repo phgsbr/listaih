@@ -23,12 +23,12 @@ const getPaymentIcon = (pm: string | null) => {
     PIX: './icons/payment-pix.jpg',
     DEBITO: './icons/payment-debito.jpg',
     CREDITO: './icons/payment-credito.jpg',
-    VR: './icons/payment-vr.png',
+    VR: './icons/payment-vr.svg',
     VA: './icons/payment-va.png',
   }
   const src = logoMap[pm]
   if (!src) return null
-  return <img src={src} alt={pm} style={{ width: 20, height: 20 }} />
+  return <img src={src} alt={pm} style={{ width: 20, height: 20, objectFit: 'contain' }} />
 }
 
 const getPaymentLabel = (pm: string | null, t: (key: string) => string) => {

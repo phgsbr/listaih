@@ -1,0 +1,2549 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listaih — Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+/* ========== DESIGN TOKENS — Material 3 ========== */
+:root[data-theme="light"] {
+  --md-primary: #006B3C;
+  --md-on-primary: #FFFFFF;
+  --md-primary-container: #A5F5C9;
+  --md-on-primary-container: #002111;
+  --md-secondary: #00696D;
+  --md-on-secondary: #FFFFFF;
+  --md-secondary-container: #99F0F2;
+  --md-on-secondary-container: #002020;
+  --md-tertiary: #0061A4;
+  --md-error: #BA1A1A;
+  --md-on-error: #FFFFFF;
+  --md-error-container: #FFDAD6;
+  --md-on-error-container: #410002;
+  --md-background: #FFFBFF;
+  --md-on-background: #1A1C19;
+  --md-surface: #FFFBFF;
+  --md-on-surface: #1A1C19;
+  --md-surface-variant: #E5E4E1;
+  --md-on-surface-variant: #3F4239;
+  --md-surface-container: #F0F0EC;
+  --md-surface-container-high: #FAFAF6;
+  --md-outline: #807D76;
+  --md-outline-variant: #D0D0C8;
+  --md-shadow: rgba(0,0,0,0.2);
+}
+:root[data-theme="dark"] {
+  --md-primary: #7DD9A4;
+  --md-on-primary: #003D22;
+  --md-primary-container: #00502A;
+  --md-on-primary-container: #A5F5C9;
+  --md-secondary: #4FD8DC;
+  --md-on-secondary: #003739;
+  --md-secondary-container: #004F52;
+  --md-on-secondary-container: #99F0F2;
+  --md-tertiary: #6C9FFF;
+  --md-error: #FFB4AB;
+  --md-on-error: #690005;
+  --md-error-container: #93000A;
+  --md-on-error-container: #FFDAD6;
+  --md-background: #1A1C19;
+  --md-on-background: #E3E3E0;
+  --md-surface: #1A1C19;
+  --md-on-surface: #E3E3E0;
+  --md-surface-variant: #3F4239;
+  --md-on-surface-variant: #C4C6BC;
+  --md-surface-container: #111410;
+  --md-surface-container-high: #1E201D;
+  --md-outline: #8B8F84;
+  --md-outline-variant: #3F4239;
+  --md-shadow: rgba(0,0,0,0.5);
+}
+
+/* ========== RESET ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Roboto Flex', system-ui, sans-serif;
+  background: var(--md-background);
+  color: var(--md-on-background);
+  transition: background 0.3s, color 0.3s;
+}
+.material-icons-round {
+  font-family: 'Material Icons Round';
+  font-feature-settings: 'liga';
+  vertical-align: middle;
+}
+
+/* ========== PAGE LAYOUT ========== */
+.page-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--md-surface-container-high);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  box-shadow: 0 1px 4px var(--md-shadow);
+}
+.page-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo-svg { width: 32px; height: 32px; }
+.theme-toggle {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
+}
+.theme-toggle:hover { transform: scale(1.1); }
+.theme-toggle .material-icons-round { font-size: 24px; }
+
+.mockups-container {
+  padding: 32px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.section-label {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 32px 0 20px 0;
+  padding-left: 8px;
+  border-bottom: 2px solid var(--md-primary);
+  padding-bottom: 8px;
+}
+
+.scroll-grid {
+  display: flex;
+  gap: 32px;
+  padding: 16px 8px 32px 8px;
+  overflow-x: auto;
+  flex-wrap: wrap;
+}
+
+/* ========== PHONE FRAME ========== */
+.phone-frame {
+  width: 390px;
+  height: 844px;
+  border-radius: 44px;
+  border: 8px solid #1A1A1A;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: 0 8px 32px var(--md-shadow);
+  background: var(--md-surface);
+}
+.phone-frame::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 28px;
+  background: #1A1A1A;
+  border-radius: 0 0 16px 16px;
+  z-index: 999;
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  pointer-events: auto;
+  background: var(--md-surface);
+  position: relative;
+}
+.phone-screen::-webkit-scrollbar { width: 0; }
+
+.frame-label {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--md-on-surface-variant);
+  margin-top: 12px;
+}
+.frame-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ========== WEAR FRAME ========== */
+.wear-frame {
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  border: 10px solid #1A1A1A;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: 0 8px 32px var(--md-shadow);
+  background: #000;
+}
+.wear-frame::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  right: 16px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #333;
+  z-index: 999;
+}
+.wear-screen {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  pointer-events: auto;
+  background: var(--md-surface);
+  position: relative;
+}
+.wear-screen::-webkit-scrollbar { display: none; }
+
+/* ========== STATUS BAR ========== */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 24px 4px 24px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--md-on-surface);
+  height: 36px;
+}
+.status-bar-icons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.status-bar-icons .material-icons-round {
+  font-size: 14px;
+}
+
+/* ========== TOP APP BAR ========== */
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  height: 56px;
+}
+.app-bar-title {
+  font-size: 20px;
+  font-weight: 500;
+}
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--md-on-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.icon-btn:hover { background: var(--md-surface-variant); }
+.icon-btn .material-icons-round { font-size: 22px; }
+
+/* ========== AVATAR ========== */
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.avatar-stack {
+  display: flex;
+  gap: 0;
+}
+.avatar-stack .avatar {
+  border: 2px solid var(--md-surface);
+  margin-left: -8px;
+}
+.avatar-stack .avatar:first-child { margin-left: 0; }
+.avatar-online {
+  position: relative;
+}
+.avatar-online::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4CAF50;
+  border: 2px solid var(--md-surface);
+}
+
+/* ========== CHIPS ========== */
+.chips-row {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  overflow-x: auto;
+}
+.chip {
+  padding: 8px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--md-outline);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--md-on-surface-variant);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.chip.active {
+  background: var(--md-primary-container);
+  border-color: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+}
+
+/* ========== LIST CARDS ========== */
+.list-list { padding: 0 16px; }
+.list-card {
+  background: var(--md-surface-container);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.1s;
+}
+.list-card:hover { box-shadow: 0 2px 12px var(--md-shadow); }
+.list-card:active { transform: scale(0.98); }
+.list-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.list-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.list-card-badge {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+.list-card-subtitle {
+  font-size: 13px;
+  color: var(--md-on-surface-variant);
+  margin-bottom: 8px;
+}
+.list-card-status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.dot-green { background: #4CAF50; }
+.dot-yellow { background: #FFC107; }
+.dot-gray { background: #9E9E9E; }
+
+/* ========== FAB ========== */
+.fab {
+  position: absolute;
+  bottom: 80px;
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--md-shadow);
+  z-index: 50;
+  transition: transform 0.2s;
+}
+.fab:hover { transform: scale(1.05); }
+.fab .material-icons-round { font-size: 24px; }
+
+/* ========== BOTTOM NAV ========== */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  background: var(--md-surface-container);
+  padding: 8px 0 16px 0;
+  border-top: 1px solid var(--md-outline-variant);
+  z-index: 50;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  color: var(--md-on-surface-variant);
+  font-size: 12px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  transition: color 0.2s;
+}
+.nav-item.active { color: var(--md-primary); }
+.nav-item .material-icons-round { font-size: 24px; }
+
+/* ========== LIST DETAIL ========== */
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+}
+.detail-members {
+  padding: 0 16px 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.detail-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--md-on-surface-variant);
+}
+.detail-progress-bar {
+  margin: 0 16px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--md-surface-variant);
+  overflow: hidden;
+}
+.detail-progress-fill {
+  height: 100%;
+  background: var(--md-primary);
+  border-radius: 2px;
+}
+.category-header {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--md-on-surface-variant);
+  padding: 12px 16px 6px 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.category-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.list-item:hover { background: var(--md-surface-container); }
+.item-checkbox {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--md-outline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.item-checkbox.checked {
+  background: var(--md-primary);
+  border-color: var(--md-primary);
+}
+.item-checkbox.checked::after {
+  content: 'check';
+  font-family: 'Material Icons Round';
+  color: var(--md-on-primary);
+  font-size: 16px;
+}
+.item-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.item-name { font-size: 15px; font-weight: 500; }
+.item-name.checked { text-decoration: line-through; color: var(--md-on-surface-variant); }
+.item-qty { font-size: 13px; color: var(--md-on-surface-variant); }
+.item-price { font-size: 14px; font-weight: 600; color: var(--md-secondary); }
+.item-checked-by {
+  font-size: 11px;
+  color: var(--md-on-surface-variant);
+}
+
+.items-comprados-header {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--md-on-surface-variant);
+  padding: 12px 16px 6px 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.detail-total {
+  position: absolute;
+  bottom: 72px;
+  left: 0;
+  right: 0;
+  background: var(--md-surface-container);
+  padding: 12px 16px;
+  border-top: 1px solid var(--md-outline-variant);
+  display: flex;
+  justify-content: space-between;
+  z-index: 40;
+}
+.detail-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  width: 100%;
+  margin-bottom: 4px;
+}
+.detail-total-row.bold {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* ========== BOTTOM SHEET ========== */
+.bottom-sheet-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+}
+.bottom-sheet-overlay.active {
+  display: flex;
+  animation: fadeIn 0.2s;
+}
+.bottom-sheet {
+  background: var(--md-surface);
+  border-radius: 28px 28px 0 0;
+  width: 100%;
+  max-height: 80%;
+  overflow-y: auto;
+  padding: 24px 24px 32px 24px;
+  animation: slideUp 0.3s ease-out;
+}
+.bottom-sheet.drag-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--md-outline);
+  margin: 0 auto 20px auto;
+}
+.sheet-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.input-field label {
+  font-size: 13px;
+  color: var(--md-on-surface-variant);
+  font-weight: 500;
+}
+.field-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--md-outline);
+  font-size: 16px;
+  font-family: 'Roboto Flex';
+  color: var(--md-on-surface);
+  background: var(--md-surface);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.field-input:focus { border-color: var(--md-primary); }
+.qty-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+.qty-input-group { flex: 1; }
+_unidade-chips {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.unit-chip {
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--md-outline);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--md-on-surface-variant);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.unit-chip.active {
+  background: var(--md-primary-container);
+  border-color: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+}
+.btn-filled {
+  width: 100%;
+  padding: 14px;
+  border-radius: 24px;
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Roboto Flex';
+  cursor: pointer;
+  margin-top: 8px;
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+.btn-filled:hover { box-shadow: 0 2px 12px var(--md-shadow); }
+.btn-filled:active { transform: scale(0.98); }
+.suggestions-box {
+  background: var(--md-surface-container);
+  border-radius: 8px;
+  padding: 4px 0;
+  margin-bottom: 12px;
+}
+.suggestion-item {
+  padding: 10px 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.suggestion-item:hover { background: var(--md-surface-variant); }
+
+/* ========== LOGIN SCREEN ========== */
+.auth-screen {
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.app-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+  margin-top: 20px;
+}
+.app-logo .logo-svg { width: 64px; height: 64px; margin-bottom: 12px; }
+.app-logo h2 { font-size: 28px; font-weight: 700; }
+.app-logo p { font-size: 14px; color: var(--md-on-surface-variant); }
+.auth-title { font-size: 24px; font-weight: 600; margin-bottom: 24px; }
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: var(--md-on-surface-variant);
+  font-size: 14px;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--md-outline);
+}
+.btn-google {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 24px;
+  border: 1.5px solid var(--md-outline);
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'Roboto Flex';
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  transition: background 0.2s;
+}
+.btn-google:hover { background: var(--md-surface-container); }
+.btn-apple {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 24px;
+  background: #000;
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'Roboto Flex';
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s;
+}
+.btn-apple:hover { opacity: 0.9; }
+.link-text {
+  text-align: center;
+  font-size: 14px;
+  color: var(--md-primary);
+  margin-top: 16px;
+  cursor: pointer;
+}
+.link-text:hover { text-decoration: underline; }
+.forgot-link {
+  text-align: right;
+  font-size: 14px;
+  color: var(--md-primary);
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+.forgot-link:hover { text-decoration: underline; }
+
+/* ========== ONBOARDING ========== */
+.onboarding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 60px 24px;
+}
+.onboarding-logo { width: 72px; height: 72px; margin-bottom: 20px; }
+.onboarding h2 {
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.onboarding p {
+  font-size: 16px;
+  color: var(--md-on-surface-variant);
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.onboarding-illustration {
+  width: 200px;
+  height: 200px;
+  border-radius: 100px;
+  background: var(--md-primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 24px 0;
+}
+.onboarding-illustration .material-icons-round {
+  font-size: 80px;
+  color: var(--md-primary);
+}
+.onboarding-dots {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.onboarding-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--md-outline);
+}
+.onboarding-dot.active {
+  background: var(--md-primary);
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* ========== SHARE DIALOG ========== */
+.share-code-box {
+  background: var(--md-surface-container);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--md-primary);
+}
+.qr-placeholder {
+  width: 140px;
+  height: 140px;
+  margin: 16px auto;
+  background: var(--md-surface-variant);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.qr-placeholder svg { width: 120px; height: 120px; }
+.share-members {
+  margin: 16px 0;
+}
+.share-member {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+.share-member-name { font-size: 15px; font-weight: 500; }
+.share-member-role { font-size: 12px; color: var(--md-on-surface-variant); }
+.permission-chips {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* ========== HISTORICO ========== */
+.historico-summary {
+  background: var(--md-secondary-container);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 16px;
+  color: var(--md-on-secondary-container);
+}
+.historico-big-number { font-size: 28px; font-weight: 700; }
+.historico-sub { font-size: 14px; opacity: 0.8; }
+.month-header {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--md-on-surface-variant);
+  padding: 8px 16px;
+  margin-top: 8px;
+}
+
+/* ========== CONFIG ========== */
+.config-section-header {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--md-on-surface-variant);
+  padding: 16px 16px 4px 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.config-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.config-item:hover { background: var(--md-surface-container); }
+.config-item-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.config-item-left .material-icons-round {
+  font-size: 22px;
+  color: var(--md-on-surface-variant);
+}
+.config-item-label { font-size: 15px; }
+.config-item-value {
+  font-size: 14px;
+  color: var(--md-on-surface-variant);
+}
+.config-item .material-icons-round.chevron {
+  font-size: 20px;
+  color: var(--md-outline);
+}
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  cursor: pointer;
+}
+.profile-info { display: flex; flex-direction: column; }
+.profile-name { font-size: 17px; font-weight: 600; }
+.profile-email { font-size: 13px; color: var(--md-on-surface-variant); }
+.integration-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+.integration-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.integration-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.integration-icon svg { width: 22px; height: 22px; }
+.integration-icon.ha { background: #fff; }
+.integration-icon.alexa { background: #fff; }
+.integration-icon.grocy { background: #fff; }
+.integration-name { font-size: 15px; font-weight: 500; }
+.integration-status { font-size: 13px; color: var(--md-on-surface-variant); }
+.btn-connect {
+  padding: 6px 16px;
+  border-radius: 16px;
+  border: 1.5px solid var(--md-primary);
+  background: transparent;
+  color: var(--md-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-connect:hover { background: var(--md-primary-container); }
+.integration-connected { font-size: 13px; color: #4CAF50; font-weight: 600; }
+
+/* ========== SNACKBAR ========== */
+.snackbar {
+  position: absolute;
+  bottom: 90px;
+  left: 16px;
+  right: 16px;
+  background: #322F35;
+  color: #F0F0EC;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 300;
+  animation: snackbarIn 0.3s;
+  display: none;
+}
+.snackbar.active { display: flex; }
+.snackbar button {
+  background: none;
+  border: none;
+  color: var(--md-primary);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: 'Roboto Flex';
+}
+
+/* ========== WEAR SCREENS ========== */
+.wear-screen {
+  font-family: 'Roboto Flex';
+  text-align: center;
+}
+.wear-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+}
+.wear-app-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--md-primary);
+  margin-bottom: 4px;
+}
+.wear-progress-ring {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 12px 0;
+}
+.wear-progress-ring svg {
+  transform: rotate(-90deg);
+}
+.wear-progress-bg {
+  fill: none;
+  stroke: var(--md-surface-variant);
+  stroke-width: 8;
+}
+.wear-progress-fg {
+  fill: none;
+  stroke: var(--md-primary);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+.wear-progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: 700;
+}
+.wear-list-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.wear-remaining {
+  font-size: 13px;
+  color: var(--md-on-surface-variant);
+}
+.wear-view-btn {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--md-primary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.wear-shopping {
+  padding: 16px 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.wear-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--md-on-surface-variant);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+.wear-category {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--md-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--md-outline-variant);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.wear-category .category-icon { width: 14px; height: 14px; }
+.wear-item {
+  padding: 8px 4px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+.wear-item:hover { background: var(--md-surface-container); }
+.wear-item-name {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.wear-item-qty {
+  font-size: 13px;
+  color: var(--md-secondary);
+  font-weight: 600;
+}
+.wear-item.dismissing {
+  animation: wearDismiss 0.3s ease forwards;
+}
+@keyframes wearDismiss {
+  0% { opacity: 1; transform: translateX(0); }
+  50% { opacity: 0.5; transform: translateX(40px); }
+  100% { opacity: 0; transform: translateX(80px); height: 0; padding: 0; margin: 0; }
+}
+
+.wear-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+}
+.wear-complete-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--md-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.wear-complete-icon .material-icons-round {
+  font-size: 32px;
+  color: var(--md-on-primary);
+}
+.wear-complete-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.wear-complete-sub { font-size: 14px; color: var(--md-on-surface-variant); margin-bottom: 4px; }
+.wear-complete-total {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--md-secondary);
+  margin-top: 12px;
+}
+
+.wear-select {
+  padding: 24px 20px;
+  height: 100%;
+}
+.wear-select-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.wear-select-item {
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--md-outline-variant);
+  cursor: pointer;
+  text-align: left;
+}
+.wear-select-name { font-size: 15px; font-weight: 500; }
+.wear-select-badge {
+  display: inline-block;
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+.wear-voice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+}
+.wear-mic {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--md-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.wear-mic .material-icons-round { font-size: 36px; color: var(--md-on-primary); }
+.wear-voice-text { font-size: 14px; color: var(--md-on-surface-variant); margin-bottom: 8px; }
+.wear-voice-result {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  margin-top: 12px;
+}
+
+/* ========== HAPTIC INDICATOR ========== */
+.haptic-indicator {
+  font-size: 10px;
+  color: var(--md-on-surface-variant);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 4px;
+}
+.haptic-indicator .material-icons-round { font-size: 12px; }
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes snackbarIn { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes itemChecked {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+@keyframes confettiDrop {
+  0% { opacity: 1; transform: translateY(-10px) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(100px) rotate(180deg); }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 600px) {
+  .scroll-grid { flex-wrap: nowrap; overflow-x: auto; }
+  .page-header { padding: 12px 16px; }
+  .mockups-container { padding: 16px 8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== PAGE HEADER ========== -->
+<div class="page-header">
+  <h1>
+    <svg class="logo-svg" viewBox="0 0 48 48" fill="none">
+      <path d="M8 18h32l4 4v6H4v-6l4-4z" fill="var(--md-primary)"/>
+      <path d="M6 22h36l-2 16a4 4 0 01-4 4H12a4 4 0 01-4-4l-2-16z" fill="var(--md-primary)"/>
+      <path d="M16 18c0-4 4-8 8-8s8 4 8 8" stroke="var(--md-primary)" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <rect x="14" y="12" width="4" height="6" rx="1" fill="var(--md-primary)"/>
+      <rect x="22" y="10" width="4" height="8" rx="1" fill="var(--md-primary)"/>
+      <rect x="30" y="12" width="4" height="6" rx="1" fill="var(--md-primary)"/>
+      <circle cx="16" cy="30" r="2" fill="var(--md-on-primary)"/>
+      <circle cx="24" cy="30" r="2" fill="var(--md-on-primary)"/>
+      <circle cx="32" cy="30" r="2" fill="var(--md-on-primary)"/>
+    </svg>
+    Listaih — Mockups
+  </h1>
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <span class="material-icons-round">dark_mode</span>
+  </button>
+</div>
+
+<!-- ========== MOCKUPS ========== -->
+<div class="mockups-container">
+
+  <!-- ===== PHONE SCREENS ===== -->
+  <div class="section-label">Phone — 8 telas</div>
+  <div class="scroll-grid">
+
+    <!-- 1. ONBOARDING -->
+    <div class="frame-wrapper">
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-bar-icons">
+              <span class="material-icons-round">wifi</span>
+              <span class="material-icons-round">signal_cellular_4_bar</span>
+              <span class="material-icons-round">battery_full</span>
+            </div>
+          </div>
+          <div class="onboarding">
+            <svg class="onboarding-logo" viewBox="0 0 48 48" fill="none">
+              <path d="M8 18h32l4 4v6H4v-6l4-4z" fill="var(--md-primary)"/>
+              <path d="M6 22h36l-2 16a4 4 0 01-4 4H12a4 4 0 01-4-4l-2-16z" fill="var(--md-primary)"/>
+              <path d="M16 18c0-4 4-8 8-8s8 4 8 8" stroke="var(--md-primary)" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <rect x="14" y="12" width="4" height="6" rx="1" fill="var(--md-primary)"/>
+              <rect x="22" y="10" width="4" height="8" rx="1" fill="var(--md-primary)"/>
+              <rect x="30" y="12" width="4" height="6" rx="1" fill="var(--md-primary)"/>
+            </svg>
+            <h2>Listaih</h2>
+            <p>Sua Lista de compras colaborativa e inteligente</p>
+            <div class="onboarding-illustration">
+              <span class="material-icons-round">groups</span>
+            </div>
+            <h2>Listas colaborativas</h2>
+            <p>Crie Listas e compartilhe com sua família em tempo real</p>
+            <div class="onboarding-dots">
+              <div class="onboarding-dot active"></div>
+              <div class="onboarding-dot"></div>
+              <div class="onboarding-dot"></div>
+              <div class="onboarding-dot"></div>
+            </div>
+            <button class="btn-filled">Começar</button>
+            <p style="margin-top:8px;color:var(--md-primary);font-size:14px;cursor:pointer">Já tem conta? Entrar</p>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">1. Onboarding</div>
+    </div>
+
+    <!-- 2. LOGIN -->
+    <div class="frame-wrapper">
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-bar-icons">
+              <span class="material-icons-round">wifi</span>
+              <span class="material-icons-round">signal_cellular_4_bar</span>
+              <span class="material-icons-round">battery_full</span>
+            </div>
+          </div>
+          <div class="auth-screen">
+            <div class="app-logo">
+              <svg class="logo-svg" viewBox="0 0 48 48" fill="none">
+                <path d="M8 18h32l4 4v6H4v-6l4-4z" fill="var(--md-primary)"/>
+                <path d="M6 22h36l-2 16a4 4 0 01-4 4H12a4 4 0 01-4-4l-2-16z" fill="var(--md-primary)"/>
+                <path d="M16 18c0-4 4-8 8-8s8 4 8 8" stroke="var(--md-primary)" stroke-width="3" fill="none" stroke-linecap="round"/>
+              </svg>
+              <h2>Listaih</h2>
+              <p>Sua Lista de compras inteligente</p>
+            </div>
+            <div class="auth-title">Entrar</div>
+            <div class="input-field">
+              <label>Email</label>
+              <input class="field-input" type="email" placeholder="seu@email.com">
+            </div>
+            <div class="input-field">
+              <label>Senha</label>
+              <input class="field-input" type="password" placeholder="••••••••">
+            </div>
+            <div class="forgot-link">Esqueci minha senha</div>
+            <button class="btn-filled">Entrar</button>
+            <div class="divider">ou</div>
+            <button class="btn-google">
+              <span class="material-icons-round" style="color:#4285F4">G</span>
+              Continuar com Google
+            </button>
+            <button class="btn-apple">
+              <span class="material-icons-round" style="font-size:18px">apps</span>
+              Continuar com Apple
+            </button>
+            <div class="link-text">Não tem conta? Cadastre-se</div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">2. Login</div>
+    </div>
+
+    <!-- 3. HOME -->
+    <div class="frame-wrapper">
+      <div class="phone-frame">
+        <div class="phone-screen" style="padding-bottom:72px">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-bar-icons">
+              <span class="material-icons-round">wifi</span>
+              <span class="material-icons-round">signal_cellular_4_bar</span>
+              <span class="material-icons-round">battery_full</span>
+            </div>
+          </div>
+          <div class="app-bar">
+            <div class="app-bar-title">Listaih</div>
+            <div class="avatar">JS</div>
+          </div>
+          <div class="chips-row">
+            <div class="chip active">Todas</div>
+            <div class="chip">Ativas</div>
+            <div class="chip">Arquivadas</div>
+            <div class="chip">Modelos</div>
+          </div>
+          <div class="list-list">
+            <div class="list-card" onclick="alert('Abrindo: Compra Mensal,3 itens restantes')">
+              <div class="list-card-top">
+                <div class="list-card-title">
+                  <span class="material-icons-round" style="font-size:20px;color:var(--md-primary)">shopping_cart</span>
+                  Compra Mensal
+                </div>
+                <div class="list-card-badge">3/8</div>
+              </div>
+              <div class="list-card-subtitle">
+                <span class="list-card-status-dot dot-green"></span>
+                Restam 5 itens · R$ 47,50
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div class="avatar-stack">
+                  <div class="avatar avatar-online">JS</div>
+                  <div class="avatar avatar-online">MS</div>
+                  <div class="avatar">P</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="list-card" onclick="alert('Abrindo: Churrasco Domingo,12 itens restantes')">
+              <div class="list-card-top">
+                <div class="list-card-title">
+                  <span class="material-icons-round" style="font-size:20px;color:var(--md-primary)">celebration</span>
+                  Churrasco Domingo
+                </div>
+                <div class="list-card-badge">0/8</div>
+              </div>
+              <div class="list-card-subtitle">
+                <span class="list-card-status-dot dot-yellow"></span>
+                Restam 8 itens · R$ 89,00
+              </div>
+              <div class="avatar-stack">
+                <div class="avatar">JS</div>
+                <div class="avatar avatar-online">MS</div>
+              </div>
+            </div>
+
+            <div class="list-card" onclick="alert('Abrindo: Farmácia,3 itens restantes')">
+              <div class="list-card-top">
+                <div class="list-card-title">
+                  <span class="material-icons-round" style="font-size:20px;color:var(--md-primary)">medication</span>
+                  Farmácia
+                </div>
+                <div class="list-card-badge">0/3</div>
+              </div>
+              <div class="list-card-subtitle">
+                <span class="list-card-status-dot dot-gray"></span>
+                Restam 3 itens · R$ 12,00
+              </div>
+              <div class="avatar-stack">
+                <div class="avatar">JS</div>
+              </div>
+            </div>
+          </div>
+          <button class="fab" onclick="alert('Nova Lista')">
+            <span class="material-icons-round">add</span>
+          </button>
+          <div class="bottom-nav">
+            <button class="nav-item active">
+              <span class="material-icons-round">home</span>
+              Home
+            </button>
+            <button class="nav-item" onclick="scrollToScreen(this)">
+              <span class="material-icons-round">history</span>
+              Histórico
+            </button>
+            <button class="nav-item" onclick="alert('Configurações')">
+              <span class="material-icons-round">settings</span>
+              Config
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">3. Home — Minhas Listas</div>
+    </div>
+
+    <!-- 4. DETALHE DA LISTA -->
+    <div class="frame-wrapper">
+      <div class="phone-frame">
+        <div class="phone-screen" style="padding-bottom:130px">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-bar-icons">
+              <span class="material-icons-round">wifi</span>
+              <span class="material-icons-round">signal_cellular_4_bar</span>
+              <span class="material-icons-round">battery_full</span>
+            </div>
+          </div>
+          <div class="detail-header" style="margin-top:4px">
+            <button class="icon-btn"><span class="material-icons-round">arrow_back</span></button>
+            <div class="app-bar-title">Compra Mensal</div>
+            <button class="icon-btn"><span class="material-icons-round">more_vert</span></button>
+          </div>
+          <div class="detail-members">
+            <div class="avatar-stack">
+              <div class="avatar avatar-online">JS</div>
+              <div class="avatar avatar-online">MS</div>
+              <div class="avatar">P</div>
+            </div>
+            <span style="font-size:11px;color:var(--md-on-surface-variant);margin-left:4px">2 online</span>
+          </div>
+          <div class="detail-progress">
+            <span>Itens (8)</span>
+            <span>Comprados: 3 ✓</span>
+          </div>
+          <div class="detail-progress-bar">
+            <div class="detail-progress-fill" style="width:37.5%"></div>
+          </div>
+
+          <div class="category-header">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C8 2 6 5 6 8c0 1 .3 2 .8 2.8L4 14h16l-2.8-3.2c.5-.8.8-1.8.8-2.8 0-3-2-6-6-6z"/>
+              <path d="M9 14c0 2 1 4 3 4s3-2 3-4"/>
+              <circle cx="10" cy="7" r="1" fill="currentColor"/>
+              <circle cx="14" cy="7" r="1" fill="currentColor"/>
+            </svg>
+            Hortifruti
+          </div>
+          <div class="list-item" data-wear="tomate" onclick="toggleCheck(this)">
+            <div class="item-checkbox"></div>
+            <div class="item-info">
+              <div>
+                <div class="item-name">Tomate</div>
+                <div class="item-qty">2 kg</div>
+              </div>
+              <div class="item-price">R$ 8,00</div>
+            </div>
+          </div>
+          <div class="list-item" onclick="toggleCheck(this)">
+            <div class="item-checkbox checked"></div>
+            <div class="item-info">
+              <div>
+                <div class="item-name checked">Alface</div>
+                <div class="item-qty">1 un · ✓ por Maria 14:35</div>
+              </div>
+              <div class="item-price">R$ 3,00</div>
+            </div>
+          </div>
+          <div class="list-item" onclick="toggleCheck(this)">
+            <div class="item-checkbox"></div>
+            <div class="item-info">
+              <div>
+                <div class="item-name">Cenoura</div>
+                <div class="item-qty">500 g</div>
+              </div>
+              <div class="item-price">R$ 4,00</div>
+            </div>
+          </div>
+
+          <div class="category-header">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 8h12v10a3 3 0 01-3 3H9a3 3 0 01-3-3V8z"/>
+              <path d="M6 8C6 8 6 5 9 5h6c3 0 3 3 3 3"/>
+              <path d="M10 5V3M14 5V3"/>
+              <path d="M9 12v6M15 12v6"/>
+            </svg>
+            Laticínios
+          </div>
+          <div class="list-item" onclick="toggleCheck(this)">
+            <div class="item-checkbox checked"></div>
+            <div class="item-info">
+              <div>
+                <div class="item-name checked">Leite</div>
+                <div class="item-qty">2 un · ✓ por João 14:30</div>
+              </div>
+              <div class="item-price">R$ 10,00</div>
+            </div>
+          </div>
+          <div class="list-item" onclick="toggleCheck(this)">
+            <div class="item-checkbox"></div>
+            <div class="item-info">
+              <div>
+                <div class="item-name">Queijo</div>
+                <div class="item-qty">200 g</div>
+              </div>
+              <div class="item-price">R$ 12,00</div>
+            </div>
+          </div>
+
+          <div class="category-header">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 8C4 8 4 6 6 6L8 6L8 4L10 4L10 6L14 6L14 4L16 4L16 6L18 6C20 6 20 8 20 8L20 12L4 12Z"/>
+              <path d="M4 12L4 20L20 20L20 12"/>
+              <path d="M8 15L16 15"/>
+            </svg>
+            Padaria
+          </div>
+          <div class="list-item" onclick="toggleCheck(this)">
+            <div class="item-checkbox"></div>
+            <div class="item-info">
+              <div>
+                <div class="item-name">Pão</div>
+                <div class="item-qty">1 un</div>
+              </div>
+              <div class="item-price">R$ 5,00</div>
+            </div>
+          </div>
+
+          <div class="category-header">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Sem Categoria
+          </div>
+          <div class="list-item" onclick="toggleCheck(this)">
+            <div class="item-checkbox"></div>
+            <div class="item-info">
+              <div>
+                <div class="item-name">Arroz</div>
+                <div class="item-qty">5 kg</div>
+              </div>
+              <div class="item-price">R$ 25,00</div>
+            </div>
+          </div>
+
+          <div class="items-comprados-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+            ▼ Comprados (3)
+          </div>
+          <div>
+            <div class="list-item" style="opacity:0.5">
+              <div class="item-checkbox checked"></div>
+              <div class="item-info">
+                <div>
+                  <div class="item-name checked">Tomate</div>
+                  <div class="item-qty">2 kg · ✓ por Maria 14:35</div>
+                </div>
+                <div class="item-price">R$ 8,00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-total">
+            <div style="width:100%">
+              <div class="detail-total-row">
+                <span>Total estimado</span>
+                <span style="font-weight:600">R$ 42,00</span>
+              </div>
+              <div class="detail-total-row bold">
+                <span>Total gasto</span>
+                <span style="color:var(--md-primary)">R$ 21,00</span>
+              </div>
+            </div>
+          </div>
+
+          <button class="fab" onclick="openBottomSheet('sheet-add-item')">
+            <span class="material-icons-round">add</span>
+          </button>
+
+          <!-- BOTTOM SHEET OVERLAY -->
+          <div class="bottom-sheet-overlay" id="sheet-add-item">
+            <div class="bottom-sheet">
+              <div class="bottom-sheet drag-handle"></div>
+              <div class="sheet-title">Adicionar Item</div>
+              <div class="input-field">
+                <label>Nome do produto</label>
+                <input class="field-input" type="text" placeholder="🔍  Nome do produto" onfocus="document.getElementById('suggestions').style.display='block'" onblur="setTimeout(function(){document.getElementById('suggestions').style.display='none'},200)">
+              </div>
+              <div class="suggestions-box" id="suggestions" style="display:none">
+                <div class="suggestion-item"><svg class="category-icon" style="width:16px;height:16px;color:var(--md-primary)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C8 2 6 5 6 8c0 1 .3 2 .8 2.8L4 14h16l-2.8-3.2c.5-.8.8-1.8.8-2.8 0-3-2-6-6-6z"/><path d="M9 14c0 2 1 4 3 4s3-2 3-4"/></svg>Tomate</div>
+                <div class="suggestion-item"><svg class="category-icon" style="width:16px;height:16px;color:var(--md-primary)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8h12v10a3 3 0 01-3 3H9a3 3 0 01-3-3V8z"/><path d="M6 8C6 8 6 5 9 5h6c3 0 3 3 3 3"/></svg>Leite Integral</div>
+                <div class="suggestion-item"><svg class="category-icon" style="width:16px;height:16px;color:var(--md-primary)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8C4 8 4 6 6 6L8 6L8 4L10 4L10 6L14 6L14 4L16 4L16 6L18 6C20 6 20 8 20 8L20 12L4 12Z"/><path d="M4 12L4 20L20 20L20 12"/></svg>Pão Francês</div>
+                <div class="suggestion-item"><svg class="category-icon" style="width:16px;height:16px;color:var(--md-primary)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C8 2 6 5 6 8c0 1 .3 2 .8 2.8L4 14h16l-2.8-3.2c.5-.8.8-1.8.8-2.8 0-3-2-6-6-6z"/><path d="M9 14c0 2 1 4 3 4s3-2 3-4"/></svg>Cebola</div>
+              </div>
+              <div class="qty-row">
+                <div class="qty-input-group">
+                  <div class="input-field">
+                    <label>Quantidade</label>
+                    <input class="field-input" type="number" value="2">
+                  </div>
+                </div>
+                <div class="qty-input-group">
+                  <div class="input-field">
+                    <label>Preço estimado</label>
+                    <input class="field-input" type="text" value="R$ 8,00">
+                  </div>
+                </div>
+              </div>
+              <label style="font-size:13px;color:var(--md-on-surface-variant);font-weight:500;margin-bottom:4px;display:block">Unidade</label>
+              <div class="unit-chips" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+                <div class="unit-chip">un</div>
+                <div class="unit-chip active">kg</div>
+                <div class="unit-chip">g</div>
+                <div class="unit-chip">L</div>
+                <div class="unit-chip">ml</div>
+              </div>
+              <label style="font-size:13px;color:var(--md-on-surface-variant);font-weight:500;margin-bottom:4px;display:block">Categoria</label>
+              <div class="unit-chips" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+                <div class="unit-chip active">🥕 Hortifruti</div>
+                <div class="unit-chip">🥛 Laticínios</div>
+                <div class="unit-chip">🍞 Padaria</div>
+                <div class="unit-chip">🥩 Carnes</div>
+                <div class="unit-chip">🐟 Peixaria</div>
+                <div class="unit-chip">🍺 Bebidas</div>
+                <div class="unit-chip">🧹 Limpeza</div>
+                <div class="unit-chip">🍬 Doces</div>
+                <div class="unit-chip">🥫 Enlatados</div>
+                <div class="unit-chip">🌾 Mercearia</div>
+                <div class="unit-chip">❄️ Congelados</div>
+                <div class="unit-chip">+</div>
+              </div>
+              <div class="input-field">
+                <label>Notas (opcional)</label>
+                <input class="field-input" type="text" placeholder="Ex: pegar maduro">
+              </div>
+              <button class="btn-filled" onclick="closeBottomSheet('sheet-add-item')">Adicionar</button>
+            </div>
+          </div>
+
+          <div class="snackbar" id="snackbar-detail">
+            <span id="snackbar-text">Item marcado</span>
+            <button onclick="undoSnackbar()">Desfazer</button>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">4. DETALHE DA LISTA</div>
+    </div>
+
+    <!-- 5. ADICIONAR ITEM (Bottom Sheet Visível) -->
+    <div class="frame-wrapper">
+      <div class="phone-frame">
+        <div class="phone-screen" style="filter:blur(0)">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-bar-icons">
+              <span class="material-icons-round">wifi</span>
+              <span class="material-icons-round">signal_cellular_4_bar</span>
+              <span class="material-icons-round">battery_full</span>
+            </div>
+          </div>
+          <div class="detail-header" style="margin-top:4px">
+            <button class="icon-btn"><span class="material-icons-round">arrow_back</span></button>
+            <div class="app-bar-title">Compra Mensal</div>
+            <button class="icon-btn"><span class="material-icons-round">more_vert</span></button>
+          </div>
+          <div style="padding:8px 16px;opacity:0.3">
+            <div class="category-header" style="padding-left:0">
+              <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2C8 2 6 5 6 8c0 1 .3 2 .8 2.8L4 14h16l-2.8-3.2c.5-.8.8-1.8.8-2.8 0-3-2-6-6-6z"/>
+                <path d="M9 14c0 2 1 4 3 4s3-2 3-4"/>
+                <circle cx="10" cy="7" r="1" fill="currentColor"/>
+                <circle cx="14" cy="7" r="1" fill="currentColor"/>
+              </svg>
+              Hortifruti
+            </div>
+            <div class="list-item" style="padding-left:0">
+              <div class="item-checkbox"></div>
+              <div class="item-info">
+                <div><div class="item-name">Tomate</div><div class="item-qty">2 kg</div></div>
+                <div class="item-price">R$ 8,00</div>
+              </div>
+            </div>
+            <div class="list-item" style="padding-left:0">
+              <div class="item-checkbox"></div>
+              <div class="item-info">
+                <div><div class="item-name">Cenoura</div><div class="item-qty">500 g</div></div>
+                <div class="item-price">R$ 4,00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-sheet-overlay active" style="position:absolute">
+            <div class="bottom-sheet">
+              <div class="bottom-sheet drag-handle"></div>
+              <div class="sheet-title">Adicionar Item</div>
+              <div class="input-field">
+                <label>Nome do produto</label>
+                <input class="field-input" type="text" value="Arroz" style="border-color:var(--md-primary)">
+              </div>
+              <div class="suggestions-box" style="display:block">
+                <div class="suggestion-item" style="background:var(--md-primary-container);color:var(--md-on-primary-container)">
+                  <svg class="category-icon" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 4c0 0-4 2-4 6s3 4 3 4l1 8h8l1-8s3 0 3-4-4-6-4-6"/><path d="M10 8c0 0 0 2 2 2s2-2 2-2"/></svg>Arroz Branco 5kg
+                </div>
+                <div class="suggestion-item"><svg class="category-icon" style="width:16px;height:16px;color:var(--md-on-surface-variant)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 4c0 0-4 2-4 6s3 4 3 4l1 8h8l1-8s3 0 3-4-4-6-4-6"/><path d="M10 8c0 0 0 2 2 2s2-2 2-2"/></svg>Arroz Integral</div>
+                <div class="suggestion-item"><svg class="category-icon" style="width:16px;height:16px;color:var(--md-on-surface-variant)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 4c0 0-4 2-4 6s3 4 3 4l1 8h8l1-8s3 0 3-4-4-6-4-6"/><path d="M10 8c0 0 0 2 2 2s2-2 2-2"/></svg>Arroz Parboilizado</div>
+              </div>
+              <div class="qty-row">
+                <div class="qty-input-group">
+                  <div class="input-field">
+                    <label>Quantidade</label>
+                    <input class="field-input" type="number" value="5">
+                  </div>
+                </div>
+                <div class="qty-input-group">
+                  <div class="input-field">
+                    <label>Preço estimado</label>
+                    <input class="field-input" type="text" value="R$ 25,00">
+                  </div>
+                </div>
+              </div>
+              <label style="font-size:13px;color:var(--md-on-surface-variant);font-weight:500;margin-bottom:4px;display:block">Unidade</label>
+              <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+                <div class="unit-chip">un</div>
+                <div class="unit-chip active">kg</div>
+                <div class="unit-chip">g</div>
+                <div class="unit-chip">L</div>
+                <div class="unit-chip">ml</div>
+              </div>
+              <label style="font-size:13px;color:var(--md-on-surface-variant);font-weight:500;margin-bottom:4px;display:block">Categoria</label>
+              <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+                <div class="unit-chip">🥕 Hortifruti</div>
+                <div class="unit-chip">🥛 Laticínios</div>
+                <div class="unit-chip">🍞 Padaria</div>
+                <div class="unit-chip">🥩 Carnes</div>
+                <div class="unit-chip">🐟 Peixaria</div>
+                <div class="unit-chip">🍺 Bebidas</div>
+                <div class="unit-chip">🧹 Limpeza</div>
+                <div class="unit-chip">🍬 Doces</div>
+                <div class="unit-chip">🥫 Enlatados</div>
+                <div class="unit-chip active">🌾 Mercearia</div>
+                <div class="unit-chip">❄️ Congelados</div>
+                <div class="unit-chip">+</div>
+              </div>
+              <div class="input-field">
+                <label>Notas (opcional)</label>
+                <input class="field-input" type="text" placeholder="Ex: tipo 1">
+              </div>
+              <button class="btn-filled">Adicionar à Lista</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">5. Adicionar Item (Bottom Sheet)</div>
+    </div>
+
+    <!-- 6. COMPARTILHAR -->
+    <div class="frame-wrapper">
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-bar-icons">
+              <span class="material-icons-round">wifi</span>
+              <span class="material-icons-round">signal_cellular_4_bar</span>
+              <span class="material-icons-round">battery_full</span>
+            </div>
+          </div>
+          <div class="detail-header" style="margin-top:4px">
+            <button class="icon-btn"><span class="material-icons-round">close</span></button>
+            <div class="app-bar-title">Compartilhar</div>
+            <div style="width:44px"></div>
+          </div>
+          <div style="padding:16px">
+            <p style="font-size:14px;color:var(--md-on-surface-variant);margin-bottom:8px">Lista: <strong>Compra Mensal</strong></p>
+
+            <label style="font-size:13px;color:var(--md-on-surface-variant);font-weight:500">Código de convite</label>
+            <div class="share-code-box">7K4M-X2</div>
+            <div style="display:flex;gap:8px;margin-bottom:16px">
+              <button class="btn-filled" style="flex:1;margin:0">Copiar código</button>
+              <button class="btn-filled" style="flex:1;margin:0;background:var(--md-secondary)">Compartilhar link</button>
+            </div>
+
+            <label style="font-size:13px;color:var(--md-on-surface-variant);font-weight:500;display:block;text-align:center;margin-bottom:8px">Ou escaneie o QR Code</label>
+            <div class="qr-placeholder">
+              <svg viewBox="0 0 100 100" fill="none">
+                <rect width="100" height="100" fill="#fff"/>
+                <rect x="10" y="10" width="24" height="24" fill="#000"/>
+                <rect x="66" y="10" width="24" height="24" fill="#000"/>
+                <rect x="10" y="66" width="24" height="24" fill="#000"/>
+                <rect x="14" y="14" width="16" height="16" fill="#fff"/>
+                <rect x="70" y="14" width="16" height="16" fill="#fff"/>
+                <rect x="14" y="70" width="16" height="16" fill="#fff"/>
+                <rect x="18" y="18" width="8" height="8" fill="#000"/>
+                <rect x="74" y="18" width="8" height="8" fill="#000"/>
+                <rect x="18" y="74" width="8" height="8" fill="#000"/>
+                <rect x="40" y="10" width="6" height="6" fill="#000"/>
+                <rect x="50" y="14" width="6" height="6" fill="#000"/>
+                <rect x="40" y="24" width="6" height="6" fill="#000"/>
+                <rect x="44" y="40" width="6" height="6" fill="#000"/>
+                <rect x="54" y="44" width="6" height="6" fill="#000"/>
+                <rect x="64" y="40" width="6" height="6" fill="#000"/>
+                <rect x="74" y="44" width="6" height="6" fill="#000"/>
+                <rect x="84" y="40" width="6" height="6" fill="#000"/>
+                <rect x="40" y="54" width="6" height="6" fill="#000"/>
+                <rect x="50" y="60" width="6" height="6" fill="#000"/>
+                <rect x="60" y="54" width="6" height="6" fill="#000"/>
+                <rect x="70" y="60" width="6" height="6" fill="#000"/>
+                <rect x="80" y="54" width="6" height="6" fill="#000"/>
+                <rect x="44" y="70" width="6" height="6" fill="#000"/>
+                <rect x="54" y="74" width="6" height="6" fill="#000"/>
+                <rect x="64" y="70" width="6" height="6" fill="#000"/>
+                <rect x="74" y="74" width="6" height="6" fill="#000"/>
+                <rect x="84" y="70" width="6" height="6" fill="#000"/>
+              </svg>
+            </div>
+
+            <div style="font-size:14px;font-weight:600;margin:16px 0 8px 0">Membros atuais</div>
+            <div class="share-members">
+              <div class="share-member">
+                <div class="avatar">JS</div>
+                <div>
+                  <div class="share-member-name">João Silva</div>
+                  <div class="share-member-role">Owner</div>
+                </div>
+              </div>
+              <div class="share-member">
+                <div class="avatar">MS</div>
+                <div>
+                  <div class="share-member-name">Maria Silva</div>
+                  <div class="share-member-role">Editora</div>
+                </div>
+              </div>
+              <div class="share-member">
+                <div class="avatar">P</div>
+                <div>
+                  <div class="share-member-name">Pedro</div>
+                  <div class="share-member-role">Editor</div>
+                </div>
+              </div>
+            </div>
+
+            <label style="font-size:13px;color:var(--md-on-surface-variant);font-weight:500;margin-bottom:4px;display:block">Convidar por email</label>
+            <div style="display:flex;gap:8px;margin-bottom:12px">
+              <input class="field-input" type="email" placeholder="email@exemplo.com" style="flex:1;margin:0">
+              <button class="btn-filled" style="width:auto;margin:0;padding:12px 20px">Convidar</button>
+            </div>
+
+            <label style="font-size:13px;color:var(--md-on-surface-variant);font-weight:500;margin-bottom:4px;display:block">Permissões do household</label>
+            <div class="permission-chips">
+              <div class="unit-chip active">Admin</div>
+              <div class="unit-chip">Editor</div>
+              <div class="unit-chip">Visualizador</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">6. Compartilhar Lista</div>
+    </div>
+
+    <!-- 7. HISTORICO -->
+    <div class="frame-wrapper">
+      <div class="phone-frame">
+        <div class="phone-screen" style="padding-bottom:72px">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-bar-icons">
+              <span class="material-icons-round">wifi</span>
+              <span class="material-icons-round">signal_cellular_4_bar</span>
+              <span class="material-icons-round">battery_full</span>
+            </div>
+          </div>
+          <div class="app-bar">
+            <div class="app-bar-title">Histórico</div>
+            <button class="icon-btn"><span class="material-icons-round">calendar_month</span></button>
+          </div>
+
+          <div class="historico-summary">
+            <div class="historico-big-number">R$ 257,00</div>
+            <div class="historico-sub">Gasto total · 3 Listas concluídas</div>
+            <div style="font-size:14px;margin-top:4px;opacity:0.7">Média por Lista: R$ 85,66</div>
+          </div>
+
+          <div class="month-header">Julho 2026</div>
+          <div class="list-list">
+            <div class="list-card">
+              <div class="list-card-top">
+                <div class="list-card-title">
+                  <span class="material-icons-round" style="font-size:20px;color:var(--md-primary)">shopping_cart</span>
+                  Compra Mensal
+                </div>
+                <span style="color:#4CAF50;font-size:13px;font-weight:600">✓ Concluída</span>
+              </div>
+              <div class="list-card-subtitle">15 Jul 2026 · 18 itens · R$ 156,00</div>
+            </div>
+            <div class="list-card">
+              <div class="list-card-top">
+                <div class="list-card-title">
+                  <span class="material-icons-round" style="font-size:20px;color:var(--md-primary)">celebration</span>
+                  Churrasco Domingo
+                </div>
+                <span style="color:#4CAF50;font-size:13px;font-weight:600">✓ Concluída</span>
+              </div>
+              <div class="list-card-subtitle">10 Jul 2026 · 8 itens · R$ 89,00</div>
+            </div>
+          </div>
+
+          <div class="month-header">Agosto 2026</div>
+          <div class="list-list">
+            <div class="list-card">
+              <div class="list-card-top">
+                <div class="list-card-title">
+                  <span class="material-icons-round" style="font-size:20px;color:var(--md-primary)">medication</span>
+                  Farmácia
+                </div>
+                <span style="color:#4CAF50;font-size:13px;font-weight:600">✓ Concluída</span>
+              </div>
+              <div class="list-card-subtitle">03 Ago 2026 · 3 itens · R$ 12,00</div>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <button class="nav-item" onclick="alert('Ir para Home')">
+              <span class="material-icons-round">home</span>
+              Home
+            </button>
+            <button class="nav-item active">
+              <span class="material-icons-round">history</span>
+              Histórico
+            </button>
+            <button class="nav-item" onclick="alert('Configurações')">
+              <span class="material-icons-round">settings</span>
+              Config
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">7. Histórico</div>
+    </div>
+
+    <!-- 8. CONFIGURACOES -->
+    <div class="frame-wrapper">
+      <div class="phone-frame">
+        <div class="phone-screen" style="padding-bottom:72px">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-bar-icons">
+              <span class="material-icons-round">wifi</span>
+              <span class="material-icons-round">signal_cellular_4_bar</span>
+              <span class="material-icons-round">battery_full</span>
+            </div>
+          </div>
+          <div class="app-bar">
+            <div class="app-bar-title">Configurações</div>
+            <div style="width:44px"></div>
+          </div>
+
+          <div class="profile-card">
+            <div class="avatar" style="width:56px;height:56px;font-size:20px">JS</div>
+            <div class="profile-info">
+              <div class="profile-name">João Silva</div>
+              <div class="profile-email">joao@email.com</div>
+              <div style="font-size:13px;color:var(--md-primary);margin-top:2px;cursor:pointer">Editar perfil →</div>
+            </div>
+          </div>
+
+          <div class="config-section-header">Conta</div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">email</span>
+              <span class="config-item-label">Email e senha</span>
+            </div>
+            <span class="material-icons-round chevron">chevron_right</span>
+          </div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">link</span>
+              <span class="config-item-label">Contas vinculadas</span>
+            </div>
+            <span style="font-size:13px;color:var(--md-on-surface-variant)">Google ✓</span>
+          </div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">devices</span>
+              <span class="config-item-label">Dispositivos</span>
+            </div>
+            <span class="config-item-value">3</span>
+          </div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">logout</span>
+              <span class="config-item-label">Sair</span>
+            </div>
+          </div>
+
+          <div class="config-section-header">Households</div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">home</span>
+              <span class="config-item-label">Lar Principal</span>
+            </div>
+            <span class="config-item-value">Owner · 2 membros</span>
+          </div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">add_home</span>
+              <span class="config-item-label">Criar novo household</span>
+            </div>
+          </div>
+
+          <div class="config-section-header">Preferências</div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">currency_exchange</span>
+              <span class="config-item-label">Moeda</span>
+            </div>
+            <span class="config-item-value">BRL (R$)</span>
+          </div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">straighten</span>
+              <span class="config-item-label">Unidade padrão</span>
+            </div>
+            <span class="config-item-value">un</span>
+          </div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">dark_mode</span>
+              <span class="config-item-label">Tema</span>
+            </div>
+            <span class="config-item-value">Sistema</span>
+          </div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">stay_current_landscape</span>
+              <span class="config-item-label">Manter tela acesa</span>
+            </div>
+            <span class="material-icons-round" style="color:var(--md-primary)">toggle_on</span>
+          </div>
+
+          <div class="config-section-header">Integrações</div>
+          <div class="integration-item">
+            <div class="integration-left">
+              <div class="integration-icon ha"><svg viewBox="0 0 512 512"><path d="M512 473.3c0 17.6-14.4 32-32 32H32c-17.6 0-32-14.4-32-32v-192c0-17.6 10.2-42.2 22.6-54.6L233.4 16c12.4-12.4 32.8-12.4 45.2 0l210.8 210.8c12.4 12.4 22.6 37 22.6 54.6z" fill="#f2f4f9"/><path d="M489.4 226.7 278.6 16c-12.4-12.4-32.8-12.4-45.2 0L22.6 226.7C10.2 239.1 0 263.7 0 281.3v192c0 17.6 14.4 32 32 32h196.8l-86.7-86.7c-4.5 1.5-9.2 2.4-14.2 2.4-24.1 0-43.7-19.6-43.7-43.7s19.6-43.7 43.7-43.7 43.7 19.6 43.7 43.7c0 5-.9 9.7-2.4 14.2l67.5 67.5V211.8c-14.5-7.1-24.5-22-24.5-39.2 0-24.1 19.6-43.7 43.7-43.7s43.7 19.6 43.7 43.7c0 17.2-10 32.1-24.5 39.2v173.4l67.1-67.1c-1.3-4.2-2-8.6-2-13.2 0-24.1 19.6-43.7 43.7-43.7s43.7 19.6 43.7 43.7-19.6 43.7-43.7 43.7c-5.3 0-10.4-1-15.1-2.8l-93.7 93.7v65.9H480c17.6 0 32-14.4 32-32v-192c0-17.6-10.2-42.2-22.6-54.7" fill="#18bcf2"/></svg></div>
+              <div>
+                <div class="integration-name">Home Assistant</div>
+                <div class="integration-status">Desconectado</div>
+              </div>
+            </div>
+            <button class="btn-connect">Conectar</button>
+          </div>
+          <div class="integration-item">
+            <div class="integration-left">
+              <div class="integration-icon alexa"><svg viewBox="0 0 512 512"><path d="M43.5 311.4c-2 1.6-2.5 4.3-1.3 8.1 1.1 3.3 3.6 7.5 7.6 12.4 16 19.8 35.1 36.2 57.2 49.3s45.8 22.8 71.1 29c25.4 6.3 51.2 9.5 77.7 9.5 33.8 0 66.1-4.9 96.7-14.8 30.6-9.8 56.2-23.5 76.7-41.2 7.2-6.3 10.8-11.4 10.8-15.1q0-2.1-1.8-4.2c-1.6-1.6-3.5-2.1-5.8-1.6s-5.4 1.9-9.5 4c-19.7 10.3-43.6 18.5-71.9 24.7-28.1 6.2-57.5 9.3-88.1 9.3-37.9 0-74.5-5.2-109.9-15.5s-66.7-26.5-94-48.4c-4-3.1-7.2-5.1-9.7-6-2.3-.8-4.2-.6-5.8.5m358.1 8.1c-2.3 2.1-2.8 4.4-1.8 6.8.8 1.7 2.2 2.7 4.4 2.9 2.1.3 5.2.1 9.2-.6 6.4-1.4 13.2-2.4 20.1-2.9 7-.4 13.1-.3 18.2.3 5.2.8 8.4 2 9.7 3.9 1.9 2.9 1.2 9-2.1 18.4-3.2 9.3-7.6 18.4-13.2 27.2q-3.15 5.25-3.9 8.4c-.4 2 .1 3.8 1.6 5.2 1 1 2 1.5 3.2 1.5 3.1 0 7.6-2.7 13.5-8.2 10.6-9.2 18.1-20.2 22.4-32.9 2.4-6.6 3.8-13.4 4.4-20.6.5-7.2-.3-12.4-2.4-15.5-2-3-6.6-5.5-13.5-7.4s-13.8-2.9-20.8-2.9c-13.6 0-26.6 3.2-38.8 9.7-4.6 2.3-8 4.6-10.2 6.7M38.3 272.7C15.5 272.7 0 256.5 0 232.4c0-29.2 22.8-47.5 58.9-47.5 6.3 0 10.2.3 13.2 1v-3c0-16.8-5.8-24.6-18-24.6-9.6 0-16.5 5.6-19 15.5-.8 3-2.5 4.6-5.1 4.1l-22.3-4.1c-3-.5-4.3-2.5-3.6-5.6 5.6-22.6 24.6-35.3 52.3-35.3 32.7 0 50 18 50 51.8v81c0 2.5-1.8 4.3-4.1 4.3H81.2c-2.5 0-4.1-1.5-4.6-4.3l-3.3-15h-1.5c-6.1 14.2-18 22-33.5 22m13.2-25.6c13.5 0 20.6-12.2 20.6-34.8v-8.1c-2.5-.5-5.3-.8-8.4-.8-17.5 0-28.4 9.4-28.4 24.9 0 11.5 6.3 18.8 16.2 18.8m79.2-154.8h26.4c2.3 0 4.1 2 4.1 4.6v168.8c0 2.5-1.8 4.3-4.1 4.3h-26.4c-2.3 0-3.8-1.8-3.8-4.3V96.8c0-2.5 1.5-4.5 3.8-4.5M236 132.9c32.7 0 55.3 28.7 55.3 69v6.6c0 2.8-1.8 4.3-4.1 4.3h-73.9c1.5 21.8 8.9 33 22.6 33 9.9 0 17.8-4.6 20.6-17 .5-2.8 2-3.8 4.6-3.3l24.1 5.3c2.5.5 3.8 2.3 2.8 5.1-8.1 23.9-26.9 36.8-52 36.8-34.8 0-58.4-27.9-58.4-69s24.2-70.8 58.4-70.8m20.6 57.4c-1.8-20.1-8.6-30.5-20.6-30.5-11.7 0-19.8 10.9-22.3 30.5zm68.1 79.7c1.5 0 3.6-1.3 4.1-2.5L348 225h1l19 41.6c.8 1.8 3 3.3 5.1 3.3h26.4c3 0 4.6-2.3 3-5.1l-32.2-63 30.7-60.7c1.5-3 0-5.3-3.3-5.3h-25.1c-1.8 0-3.6 1.3-4.3 2.8l-18 39.1h-1l-18-39.3c-.5-1.3-2.5-2.5-4.1-2.5h-27.4c-3.3 0-4.8 2.3-3.3 5.3l30.5 60.4-32 63c-1.5 2.8 0 5.3 3.3 5.3h26.4zm119.3 2.7c-22.8 0-38.3-16.2-38.3-40.4 0-29.2 22.8-47.5 58.9-47.5 6.3 0 10.2.3 13.2 1v-3c0-16.8-5.8-24.6-18-24.6-9.6 0-16.5 5.6-19 15.5-.8 3-2.5 4.6-5.1 4.1l-22.3-4.1c-3-.5-4.3-2.5-3.6-5.6 5.6-22.6 24.6-35.3 52.3-35.3 32.7 0 50 18 50 51.8v81c0 2.5-1.8 4.3-4.1 4.3h-21.1c-2.5 0-4.1-1.5-4.6-4.3l-3.3-15h-1.5c-6.1 14.3-18 22.1-33.5 22.1m13.2-25.6c13.5 0 20.6-12.2 20.6-34.8v-8.1c-2.5-.5-5.3-.8-8.4-.8-17.5 0-28.4 9.4-28.4 24.9-.1 11.5 6.3 18.8 16.2 18.8" fill="#008bd6"/></svg></div>
+              <div>
+                <div class="integration-name">Alexa Skill</div>
+                <div class="integration-status">Desconectado</div>
+              </div>
+            </div>
+            <button class="btn-connect">Conectar</button>
+          </div>
+          <div class="integration-item">
+            <div class="integration-left">
+              <div class="integration-icon grocy"><svg viewBox="0 0 512 512"><path d="M269.2 1.4C160.6 16.8 77 98.5 50 215.1c-6.7 28.8-8.4 83.1-3.5 111 13.2 76.2 63.2 140.3 131.2 168.8 29 12.3 44.8 15.6 82 16.7 26 .9 39.7.2 58-2.8 57.4-9.5 115.2-36.2 141.9-66l8.6-9.5-1.2-39.9c-.7-22.1-1.9-73.4-2.5-114l-1.4-74.1-62 1.9c-33.9.7-79.4 2.1-101.2 3l-39.5 1.4-1.9 49.5c-1.2 27.4-1.6 49.9-1.2 50.4.5.5 18.8 1.6 40.9 2.6l39.9 1.6v6.3c0 15.1-2.8 20.9-11.8 25.8-13.9 7-39.9 10.2-56 7-57.8-12.1-80.6-97.1-41.8-157.2 24.4-37.9 67.3-56.2 124.7-53.6 15.8.9 35.5 3.5 45.3 5.8 9.5 2.6 17.9 3.7 18.6 2.6 2.1-3 10-122.2 8.6-125.9-1.8-5.3-28.7-15.1-54.7-20.4-26.7-5.4-79.4-7.9-101.8-4.7" fill="#337ab7"/></svg></div>
+              <div>
+                <div class="integration-name">Grocy</div>
+                <div class="integration-status">Desconectado</div>
+              </div>
+            </div>
+            <button class="btn-connect">Conectar</button>
+          </div>
+
+          <div class="config-section-header">Sobre</div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">info</span>
+              <span class="config-item-label">Sobre o Listaih</span>
+            </div>
+            <span class="config-item-value">v1.0.0</span>
+          </div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">star</span>
+              <span class="config-item-label">Avaliar na Play Store</span>
+            </div>
+          </div>
+          <div class="config-item">
+            <div class="config-item-left">
+              <span class="material-icons-round">privacy_tip</span>
+              <span class="config-item-label">Política de privacidade</span>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <button class="nav-item" onclick="alert('Ir para Home')">
+              <span class="material-icons-round">home</span>
+              Home
+            </button>
+            <button class="nav-item" onclick="alert('Ir para Histórico')">
+              <span class="material-icons-round">history</span>
+              Histórico
+            </button>
+            <button class="nav-item active">
+              <span class="material-icons-round">settings</span>
+              Config
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">8. Configurações</div>
+    </div>
+
+  </div>
+
+  <!-- ===== WEAR OS SCREENS ===== -->
+  <div class="section-label">Wear OS — 6 telas</div>
+  <div class="scroll-grid">
+
+    <!-- W1. HOME WEAR -->
+    <div class="frame-wrapper">
+      <div class="wear-frame">
+        <div class="wear-screen wear-home">
+          <div class="wear-app-name">Listaih 🧺</div>
+          <div class="wear-list-name">Compra Mensal</div>
+          <div class="wear-progress-ring">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle class="wear-progress-bg" cx="60" cy="60" r="52" />
+              <circle class="wear-progress-fg" cx="60" cy="60" r="52"
+                stroke-dasharray="326.7" stroke-dashoffset="203.6" />
+            </svg>
+            <div class="wear-progress-text">3/8</div>
+          </div>
+          <div class="wear-remaining">restantes</div>
+          <div class="wear-view-btn">
+            <span class="material-icons-round" style="font-size:16px">expand_more</span>
+            Ver lista
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">W1. Home Wear</div>
+    </div>
+
+    <!-- W2. MODO COMPRAS -->
+    <div class="frame-wrapper">
+      <div class="wear-frame">
+        <div class="wear-screen wear-shopping">
+          <div class="wear-count">3 RESTANTES</div>
+          <div class="wear-category">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C8 2 6 5 6 8c0 1 .3 2 .8 2.8L4 14h16l-2.8-3.2c.5-.8.8-1.8.8-2.8 0-3-2-6-6-6z"/>
+              <path d="M9 14c0 2 1 4 3 4s3-2 3-4"/>
+              <circle cx="10" cy="7" r="1" fill="currentColor"/>
+              <circle cx="14" cy="7" r="1" fill="currentColor"/>
+            </svg>
+            Hortifruti
+          </div>
+          <div class="wear-item" onclick="wearDismiss(this)">
+            <div class="wear-item-name">Tomate</div>
+            <div class="wear-item-qty">2 kg</div>
+          </div>
+          <div class="wear-item" onclick="wearDismiss(this)">
+            <div class="wear-item-name">Cenoura</div>
+            <div class="wear-item-qty">500 g</div>
+          </div>
+          <div class="wear-category" style="margin-top:4px">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 8h12v10a3 3 0 01-3 3H9a3 3 0 01-3-3V8z"/>
+              <path d="M6 8C6 8 6 5 9 5h6c3 0 3 3 3 3"/>
+              <path d="M10 5V3M14 5V3"/>
+              <path d="M9 12v6M15 12v6"/>
+            </svg>
+            Laticínios
+          </div>
+          <div class="wear-item" onclick="wearDismiss(this)">
+            <div class="wear-item-name">Leite</div>
+            <div class="wear-item-qty">2 un</div>
+          </div>
+          <div class="haptic-indicator">
+            <span class="material-icons-round">vibration</span>
+            Toque para marcar
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">W2. Modo Compras</div>
+    </div>
+
+    <!-- W3. ITEM MARCADO (animacao) -->
+    <div class="frame-wrapper">
+      <div class="wear-frame">
+        <div class="wear-screen wear-shopping">
+          <div class="wear-count" style="color:var(--md-primary)">2 RESTANTES</div>
+          <div class="wear-category">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C8 2 6 5 6 8c0 1 .3 2 .8 2.8L4 14h16l-2.8-3.2c.5-.8.8-1.8.8-2.8 0-3-2-6-6-6z"/>
+              <path d="M9 14c0 2 1 4 3 4s3-2 3-4"/>
+              <circle cx="10" cy="7" r="1" fill="currentColor"/>
+              <circle cx="14" cy="7" r="1" fill="currentColor"/>
+            </svg>
+            Hortifruti
+          </div>
+          <div class="wear-item dismissing" style="opacity:0.4;transform:translateX(40px)">
+            <div class="wear-item-name" style="text-decoration:line-through">Tomate</div>
+            <div class="wear-item-qty" style="color:var(--md-primary)">✓ R$ 8,00</div>
+          </div>
+          <div class="wear-item" onclick="wearDismiss(this)">
+            <div class="wear-item-name">Cenoura</div>
+            <div class="wear-item-qty">500 g</div>
+          </div>
+          <div class="wear-category" style="margin-top:4px">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 8h12v10a3 3 0 01-3 3H9a3 3 0 01-3-3V8z"/>
+              <path d="M6 8C6 8 6 5 9 5h6c3 0 3 3 3 3"/>
+              <path d="M10 5V3M14 5V3"/>
+              <path d="M9 12v6M15 12v6"/>
+            </svg>
+            Laticínios
+          </div>
+          <div class="wear-item" onclick="wearDismiss(this)">
+            <div class="wear-item-name">Leite</div>
+            <div class="wear-item-qty">2 un</div>
+          </div>
+          <div class="wear-voice-result" style="font-size:12px;padding:6px 12px;margin-top:8px">
+            ✓ Tomate pego
+          </div>
+          <div class="haptic-indicator">
+            <span class="material-icons-round">vibration</span>
+            Haptic ✓
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">W3. Item Marcado</div>
+    </div>
+
+    <!-- W4. Lista Completa -->
+    <div class="frame-wrapper">
+      <div class="wear-frame">
+        <div class="wear-screen wear-complete">
+          <div class="wear-complete-icon">
+            <span class="material-icons-round">check</span>
+          </div>
+          <div class="wear-complete-title">Lista Completa!</div>
+          <div class="wear-complete-sub">8 itens comprados</div>
+          <div class="wear-complete-total">R$ 42,00</div>
+        </div>
+      </div>
+      <div class="frame-label">W4. Lista Completa</div>
+    </div>
+
+    <!-- W5. TROCAR Lista -->
+    <div class="frame-wrapper">
+      <div class="wear-frame">
+        <div class="wear-screen wear-select">
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:12px">
+            <span class="material-icons-round" style="font-size:18px;color:var(--md-primary)">arrow_back</span>
+            <span style="font-size:13px;color:var(--md-on-surface-variant)">Voltar</span>
+          </div>
+          <div class="wear-select-title">Minhas Listas</div>
+          <div class="wear-select-item">
+            <div class="wear-select-name">Compra Mensal</div>
+            <div class="wear-select-badge">3/8 restantes</div>
+          </div>
+          <div class="wear-select-item">
+            <div class="wear-select-name">Churrasco Domingo</div>
+            <div class="wear-select-badge">0/8 restantes</div>
+          </div>
+          <div class="wear-select-item">
+            <div class="wear-select-name">Farmácia</div>
+            <div class="wear-select-badge">0/3 restantes</div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">W5. Trocar Lista</div>
+    </div>
+
+    <!-- W6. ADICIONAR POR VOZ -->
+    <div class="frame-wrapper">
+      <div class="wear-frame">
+        <div class="wear-screen wear-voice">
+          <div class="wear-mic">
+            <span class="material-icons-round">mic</span>
+          </div>
+          <div class="wear-voice-text">Fale o item...</div>
+          <div style="font-size:16px;font-weight:600;padding:0 16px">"Arroz 2kg"</div>
+          <div class="wear-voice-result">
+            ✓ Arroz · 2kg<br>adicionado
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">W6. Adicionar por Voz</div>
+    </div>
+
+  </div>
+
+  <!-- ===== GALERIA DE ICONES ===== -->
+  <div class="section-label">Galeria de Ícones — Categorias de Alimentos</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:16px;padding:16px 8px 32px 8px;max-width:900px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 2 6 5 6 8c0 1 .3 2 .8 2.8L4 14h16l-2.8-3.2c.5-.8.8-1.8.8-2.8 0-3-2-6-6-6z"/><path d="M9 14c0 2 1 4 3 4s3-2 3-4"/><circle cx="10" cy="7" r="1" fill="var(--md-primary)"/><circle cx="14" cy="7" r="1" fill="var(--md-primary)"/></svg>
+      <span style="font-size:13px;font-weight:500">Hortifruti</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12v10a3 3 0 01-3 3H9a3 3 0 01-3-3V8z"/><path d="M6 8C6 8 6 5 9 5h6c3 0 3 3 3 3"/><path d="M10 5V3M14 5V3"/><path d="M9 12v6M15 12v6"/></svg>
+      <span style="font-size:13px;font-weight:500">Laticínios</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8C4 8 4 6 6 6L8 6L8 4L10 4L10 6L14 6L14 4L16 4L16 6L18 6C20 6 20 8 20 8L20 12L4 12Z"/><path d="M4 12L4 20L20 20L20 12"/><path d="M8 15L16 15"/></svg>
+      <span style="font-size:13px;font-weight:500">Padaria</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4c-3 0-5 2-5 5l-4 8 3 3 8-4c3 0 5-2 5-5s-3-7-7-7z"/><path d="M9 9c0 0 1 2 3 2s3-2 3-2"/></svg>
+      <span style="font-size:13px;font-weight:500">Carnes</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4C8 4 6 8 6 12s2 8 6 8 6-4 6-8-2-8-6-8z"/><path d="M9 10c0 0 1 2 3 2s3-2 3-2"/><path d="M10 16c1 1 3 1 4 0"/></svg>
+      <span style="font-size:13px;font-weight:500">Peixaria</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v3l2 1v12H6V8l2-1V4z"/><path d="M10 12h4M10 16h4"/></svg>
+      <span style="font-size:13px;font-weight:500">Bebidas</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6h6v2"/><path d="M10 12v4M14 12v4"/></svg>
+      <span style="font-size:13px;font-weight:500">Limpeza</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><path d="M9 10h6M9 14h6M10 8l-2 8M14 8l2 8"/></svg>
+      <span style="font-size:13px;font-weight:500">Doces</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="14" rx="2"/><path d="M9 10h6M9 14h6"/></svg>
+      <span style="font-size:13px;font-weight:500">Enlatados</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l8-6 8 6v8H4z"/><path d="M8 18v-6h8v6"/></svg>
+      <span style="font-size:13px;font-weight:500">Mercearia</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 8l4-4 4 4M2 12l4-4 4 4M2 16l4-4 4 4M14 8l4-4 4 4M14 12l4-4 4 4M14 16l4-4 4 4"/></svg>
+      <span style="font-size:13px;font-weight:500">Congelados</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--md-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>
+      <span style="font-size:13px;font-weight:500">Sem Categoria</span>
+    </div>
+  </div>
+
+  <!-- Ícones das Integrações -->
+  <div class="section-label">Ícones das Integrações</div>
+  <div style="display:flex;gap:32px;padding:16px 8px 32px 8px;flex-wrap:wrap;align-items:center">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="40" height="40" viewBox="0 0 512 512"><path d="M512 473.3c0 17.6-14.4 32-32 32H32c-17.6 0-32-14.4-32-32v-192c0-17.6 10.2-42.2 22.6-54.6L233.4 16c12.4-12.4 32.8-12.4 45.2 0l210.8 210.8c12.4 12.4 22.6 37 22.6 54.6z" fill="#f2f4f9"/><path d="M489.4 226.7 278.6 16c-12.4-12.4-32.8-12.4-45.2 0L22.6 226.7C10.2 239.1 0 263.7 0 281.3v192c0 17.6 14.4 32 32 32h196.8l-86.7-86.7c-4.5 1.5-9.2 2.4-14.2 2.4-24.1 0-43.7-19.6-43.7-43.7s19.6-43.7 43.7-43.7 43.7 19.6 43.7 43.7c0 5-.9 9.7-2.4 14.2l67.5 67.5V211.8c-14.5-7.1-24.5-22-24.5-39.2 0-24.1 19.6-43.7 43.7-43.7s43.7 19.6 43.7 43.7c0 17.2-10 32.1-24.5 39.2v173.4l67.1-67.1c-1.3-4.2-2-8.6-2-13.2 0-24.1 19.6-43.7 43.7-43.7s43.7 19.6 43.7 43.7-19.6 43.7-43.7 43.7c-5.3 0-10.4-1-15.1-2.8l-93.7 93.7v65.9H480c17.6 0 32-14.4 32-32v-192c0-17.6-10.2-42.2-22.6-54.7" fill="#18bcf2"/></svg>
+      <span style="font-size:13px;font-weight:500">Home Assistant</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="40" height="40" viewBox="0 0 512 512"><path d="M43.5 311.4c-2 1.6-2.5 4.3-1.3 8.1 1.1 3.3 3.6 7.5 7.6 12.4 16 19.8 35.1 36.2 57.2 49.3s45.8 22.8 71.1 29c25.4 6.3 51.2 9.5 77.7 9.5 33.8 0 66.1-4.9 96.7-14.8 30.6-9.8 56.2-23.5 76.7-41.2 7.2-6.3 10.8-11.4 10.8-15.1q0-2.1-1.8-4.2c-1.6-1.6-3.5-2.1-5.8-1.6s-5.4 1.9-9.5 4c-19.7 10.3-43.6 18.5-71.9 24.7-28.1 6.2-57.5 9.3-88.1 9.3-37.9 0-74.5-5.2-109.9-15.5s-66.7-26.5-94-48.4c-4-3.1-7.2-5.1-9.7-6-2.3-.8-4.2-.6-5.8.5m358.1 8.1c-2.3 2.1-2.8 4.4-1.8 6.8.8 1.7 2.2 2.7 4.4 2.9 2.1.3 5.2.1 9.2-.6 6.4-1.4 13.2-2.4 20.1-2.9 7-.4 13.1-.3 18.2.3 5.2.8 8.4 2 9.7 3.9 1.9 2.9 1.2 9-2.1 18.4-3.2 9.3-7.6 18.4-13.2 27.2q-3.15 5.25-3.9 8.4c-.4 2 .1 3.8 1.6 5.2 1 1 2 1.5 3.2 1.5 3.1 0 7.6-2.7 13.5-8.2 10.6-9.2 18.1-20.2 22.4-32.9 2.4-6.6 3.8-13.4 4.4-20.6.5-7.2-.3-12.4-2.4-15.5-2-3-6.6-5.5-13.5-7.4s-13.8-2.9-20.8-2.9c-13.6 0-26.6 3.2-38.8 9.7-4.6 2.3-8 4.6-10.2 6.7M38.3 272.7C15.5 272.7 0 256.5 0 232.4c0-29.2 22.8-47.5 58.9-47.5 6.3 0 10.2.3 13.2 1v-3c0-16.8-5.8-24.6-18-24.6-9.6 0-16.5 5.6-19 15.5-.8 3-2.5 4.6-5.1 4.1l-22.3-4.1c-3-.5-4.3-2.5-3.6-5.6 5.6-22.6 24.6-35.3 52.3-35.3 32.7 0 50 18 50 51.8v81c0 2.5-1.8 4.3-4.1 4.3H81.2c-2.5 0-4.1-1.5-4.6-4.3l-3.3-15h-1.5c-6.1 14.2-18 22-33.5 22m13.2-25.6c13.5 0 20.6-12.2 20.6-34.8v-8.1c-2.5-.5-5.3-.8-8.4-.8-17.5 0-28.4 9.4-28.4 24.9 0 11.5 6.3 18.8 16.2 18.8m79.2-154.8h26.4c2.3 0 4.1 2 4.1 4.6v168.8c0 2.5-1.8 4.3-4.1 4.3h-26.4c-2.3 0-3.8-1.8-3.8-4.3V96.8c0-2.5 1.5-4.5 3.8-4.5M236 132.9c32.7 0 55.3 28.7 55.3 69v6.6c0 2.8-1.8 4.3-4.1 4.3h-73.9c1.5 21.8 8.9 33 22.6 33 9.9 0 17.8-4.6 20.6-17 .5-2.8 2-3.8 4.6-3.3l24.1 5.3c2.5.5 3.8 2.3 2.8 5.1-8.1 23.9-26.9 36.8-52 36.8-34.8 0-58.4-27.9-58.4-69s24.2-70.8 58.4-70.8m20.6 57.4c-1.8-20.1-8.6-30.5-20.6-30.5-11.7 0-19.8 10.9-22.3 30.5zm68.1 79.7c1.5 0 3.6-1.3 4.1-2.5L348 225h1l19 41.6c.8 1.8 3 3.3 5.1 3.3h26.4c3 0 4.6-2.3 3-5.1l-32.2-63 30.7-60.7c1.5-3 0-5.3-3.3-5.3h-25.1c-1.8 0-3.6 1.3-4.3 2.8l-18 39.1h-1l-18-39.3c-.5-1.3-2.5-2.5-4.1-2.5h-27.4c-3.3 0-4.8 2.3-3.3 5.3l30.5 60.4-32 63c-1.5 2.8 0 5.3 3.3 5.3h26.4zm119.3 2.7c-22.8 0-38.3-16.2-38.3-40.4 0-29.2 22.8-47.5 58.9-47.5 6.3 0 10.2.3 13.2 1v-3c0-16.8-5.8-24.6-18-24.6-9.6 0-16.5 5.6-19 15.5-.8 3-2.5 4.6-5.1 4.1l-22.3-4.1c-3-.5-4.3-2.5-3.6-5.6 5.6-22.6 24.6-35.3 52.3-35.3 32.7 0 50 18 50 51.8v81c0 2.5-1.8 4.3-4.1 4.3h-21.1c-2.5 0-4.1-1.5-4.6-4.3l-3.3-15h-1.5c-6.1 14.3-18 22.1-33.5 22.1m13.2-25.6c13.5 0 20.6-12.2 20.6-34.8v-8.1c-2.5-.5-5.3-.8-8.4-.8-17.5 0-28.4 9.4-28.4 24.9-.1 11.5 6.3 18.8 16.2 18.8" fill="#008bd6"/></svg>
+      <span style="font-size:13px;font-weight:500">Amazon Alexa</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 12px;background:var(--md-surface-container);border-radius:16px">
+      <svg width="40" height="40" viewBox="0 0 512 512"><path d="M269.2 1.4C160.6 16.8 77 98.5 50 215.1c-6.7 28.8-8.4 83.1-3.5 111 13.2 76.2 63.2 140.3 131.2 168.8 29 12.3 44.8 15.6 82 16.7 26 .9 39.7.2 58-2.8 57.4-9.5 115.2-36.2 141.9-66l8.6-9.5-1.2-39.9c-.7-22.1-1.9-73.4-2.5-114l-1.4-74.1-62 1.9c-33.9.7-79.4 2.1-101.2 3l-39.5 1.4-1.9 49.5c-1.2 27.4-1.6 49.9-1.2 50.4.5.5 18.8 1.6 40.9 2.6l39.9 1.6v6.3c0 15.1-2.8 20.9-11.8 25.8-13.9 7-39.9 10.2-56 7-57.8-12.1-80.6-97.1-41.8-157.2 24.4-37.9 67.3-56.2 124.7-53.6 15.8.9 35.5 3.5 45.3 5.8 9.5 2.6 17.9 3.7 18.6 2.6 2.1-3 10-122.2 8.6-125.9-1.8-5.3-28.7-15.1-54.7-20.4-26.7-5.4-79.4-7.9-101.8-4.7" fill="#337ab7"/></svg>
+      <span style="font-size:13px;font-weight:500">Grocy</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ========== THEME TOGGLE ==========
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  const icon = document.querySelector('.theme-toggle .material-icons-round');
+  icon.textContent = next === 'dark' ? 'light_mode' : 'dark_mode';
+  try { localStorage.setItem('listaih-theme', next); } catch(e) {}
+}
+
+// Load saved theme
+try {
+  const saved = localStorage.getItem('listaih-theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    const icon = document.querySelector('.theme-toggle .material-icons-round');
+    icon.textContent = saved === 'dark' ? 'light_mode' : 'dark_mode';
+  }
+} catch(e) {}
+
+// ========== CHECKBOX TOGGLE (Phone) ==========
+let lastCheckedItem = null;
+function toggleCheck(item) {
+  const checkbox = item.querySelector('.item-checkbox');
+  const name = item.querySelector('.item-name');
+  const wasChecked = checkbox.classList.contains('checked');
+
+  if (wasChecked) {
+    checkbox.classList.remove('checked');
+    name.classList.remove('checked');
+    showSnackbar('Item desmarcado');
+  } else {
+    checkbox.classList.add('checked');
+    name.classList.add('checked');
+    checkbox.style.animation = 'itemChecked 0.3s ease';
+    setTimeout(() => checkbox.style.animation = '', 300);
+    showSnackbar('✓ ' + name.textContent + ' marcado');
+    lastCheckedItem = item;
+  }
+}
+
+// ========== SNACKBAR ==========
+let snackbarTimeout;
+function showSnackbar(text) {
+  const snackbar = document.getElementById('snackbar-detail');
+  if (!snackbar) return;
+  document.getElementById('snackbar-text').textContent = text;
+  snackbar.classList.add('active');
+  clearTimeout(snackbarTimeout);
+  snackbarTimeout = setTimeout(() => {
+    snackbar.classList.remove('active');
+  }, 3000);
+}
+
+function undoSnackbar() {
+  if (lastCheckedItem) {
+    const checkbox = lastCheckedItem.querySelector('.item-checkbox');
+    const name = lastCheckedItem.querySelector('.item-name');
+    checkbox.classList.remove('checked');
+    name.classList.remove('checked');
+    lastCheckedItem = null;
+  }
+  document.getElementById('snackbar-detail').classList.remove('active');
+}
+
+// ========== BOTTOM SHEET ==========
+function openBottomSheet(id) {
+  document.getElementById(id).classList.add('active');
+}
+function closeBottomSheet(id) {
+  document.getElementById(id).classList.remove('active');
+}
+
+// ========== WEAR DISMISS ==========
+function wearDismiss(item) {
+  item.classList.add('dismissing');
+  item.style.pointerEvents = 'none';
+  setTimeout(() => {
+    if (item.parentElement) {
+      item.style.display = 'none';
+      const countEl = item.closest('.wear-screen').querySelector('.wear-count');
+      if (countEl) {
+        const match = countEl.textContent.match(/(\d+)/);
+        if (match) {
+          const n = parseInt(match[1]) - 1;
+          if (n > 0) {
+            countEl.textContent = n + ' RESTANTES';
+          } else {
+            countEl.textContent = '✓ COMPLETA!';
+            countEl.style.color = 'var(--md-primary)';
+          }
+        }
+      }
+    }
+  }, 300);
+}
+
+// ========== UNIT CHIPS ==========
+document.querySelectorAll('.unit-chips').forEach(group => {
+  group.addEventListener('click', (e) => {
+    if (e.target.classList.contains('unit-chip')) {
+      group.querySelectorAll('.unit-chip').forEach(c => c.classList.remove('active'));
+      e.target.classList.add('active');
+    }
+  });
+});
+
+// ========== CHIPS ==========
+document.querySelectorAll('.chips-row').forEach(group => {
+  group.addEventListener('click', (e) => {
+    if (e.target.classList.contains('chip')) {
+      group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      e.target.classList.add('active');
+    }
+  });
+});
+
+// ========== NAV ITEMS ==========
+document.querySelectorAll('.bottom-nav').forEach(nav => {
+  nav.addEventListener('click', (e) => {
+    const item = e.target.closest('.nav-item');
+    if (item) {
+      nav.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      item.classList.add('active');
+    }
+  });
+});
+</script>
+
+</body>
+</html>

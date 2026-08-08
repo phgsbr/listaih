@@ -1,0 +1,250 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String            @id @default(uuid())
+  email         String            @unique
+  name          String
+  passwordHash  String?
+  avatar        String?
+  provider      String            @default("email")
+  providerId    String?
+  googleId      String?           @unique
+  appleId       String?           @unique
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  apiTokens     ApiToken[]
+  households    HouseholdMember[]
+  addedItems    ListItem[]
+  checkedItems  ListItem[]        @relation("CheckedBy")
+  prices        PriceEntry[]
+  purchases     Purchase[]
+  refreshTokens RefreshToken[]
+  systemConfig  SystemConfig?
+
+  @@index([email])
+}
+
+model ApiToken {
+  id         String    @id @default(uuid())
+  name       String
+  token      String    @unique
+  tokenHash  String    @unique
+  prefix     String
+  type       String    @default("generic")
+  userId     String
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  revokedAt  DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Household {
+  id         String            @id @default(uuid())
+  name       String
+  inviteCode String            @unique
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  members    HouseholdMember[]
+  purchases  Purchase[]
+  lists      ShoppingList[]
+
+  @@index([inviteCode])
+}
+
+model HouseholdMember {
+  id          String        @id @default(uuid())
+  householdId String
+  userId      String
+  role        HouseholdRole @default(EDITOR)
+  joinedAt    DateTime      @default(now())
+  household   Household     @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([householdId, userId])
+  @@index([userId])
+}
+
+model ShoppingList {
+  id              String     @id @default(uuid())
+  name            String
+  householdId     String
+  template        Boolean    @default(false)
+  archivedAt      DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  category        String?
+  completedAt     DateTime?
+  grocyAssociated Boolean    @default(false)
+  listType        ListType   @default(PONTUAL)
+  items           ListItem[]
+  purchases       Purchase[]
+  household       Household  @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  @@index([householdId])
+}
+
+model ListItem {
+  id             String       @id @default(uuid())
+  listId         String
+  productId      String?
+  name           String
+  quantity       Float        @default(1)
+  unit           Unit         @default(unit)
+  estimatedPrice Float?
+  actualPrice    Float?
+  category       String?
+  notes          String?
+  position       Int          @default(0)
+  checked        Boolean      @default(false)
+  checkedById    String?
+  checkedAt      DateTime?
+  addedById      String
+  addedAt        DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  barcode        String?
+  barcodeData    Json?
+  offData        Json?
+  addedBy        User         @relation(fields: [addedById], references: [id])
+  checkedBy      User?        @relation("CheckedBy", fields: [checkedById], references: [id])
+  list           ShoppingList @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@index([listId])
+  @@index([checkedById])
+}
+
+model Product {
+  id           String       @id @default(uuid())
+  name         String
+  barcode      String?      @unique
+  category     String?
+  defaultUnit  Unit         @default(unit)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  priceHistory PriceEntry[]
+
+  @@index([name])
+  @@index([barcode])
+}
+
+model PriceEntry {
+  id        String   @id @default(uuid())
+  productId String
+  storeName String?
+  price     Float
+  date      DateTime @default(now())
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([userId])
+}
+
+model Purchase {
+  id            String         @id @default(uuid())
+  listId        String
+  householdId   String
+  userId        String
+  date          DateTime       @default(now())
+  totalAmount   Float?
+  paymentMethod PaymentMethod?
+  notes         String?
+  receiptPhoto  String?
+  receiptParsed Json?
+  receiptStatus ReceiptStatus  @default(NOT_PROVIDED)
+  itemCount     Int
+  items         Json
+  grocySynced   Boolean        @default(false)
+  grocySyncedAt DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  household     Household      @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  list          ShoppingList   @relation(fields: [listId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([householdId])
+  @@index([listId])
+  @@index([userId])
+}
+
+model SystemConfig {
+  id             String    @id @default(uuid())
+  isSetup        Boolean   @default(false)
+  adminUserId    String?   @unique
+  installedAt    DateTime?
+  grocyUrl       String?
+  grocyApiKey    String?
+  grocyEnabled   Boolean   @default(false)
+  haUrl          String?
+  haWebhookToken String?   @unique
+  haEnabled      Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  currency       String    @default("BRL")
+  apiBaseUrl     String?
+  apiEnabled     Boolean   @default(false)
+  apiKey         String?
+  aiApiKey       String?
+  aiEnabled      Boolean   @default(false)
+  aiEndpoint     String?
+  aiModel        String?
+  aiProvider     String?
+  adminUser      User?     @relation(fields: [adminUserId], references: [id])
+}
+
+enum Unit {
+  unit
+  kg
+  g
+  L
+  ml
+}
+
+enum HouseholdRole {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum PaymentMethod {
+  DEBITO
+  CREDITO
+  VR
+  VA
+  DINHEIRO
+  PIX
+}
+
+enum ListType {
+  RECORRENTE
+  PONTUAL
+  MODELO
+}
+
+enum ReceiptStatus {
+  PENDING
+  PROCESSING
+  PARSED
+  FAILED
+  NOT_PROVIDED
+}

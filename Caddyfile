@@ -1,0 +1,12 @@
+# Listaih — Caddy Reverse Proxy
+#
+# Por padrao serve HTTP na porta 80 (LAN-only, sem TLS).
+# Para habilitar HTTPS com TLS automatico, substitua :80 pelo seu dominio:
+#
+#   listaih.seu-dominio.com {
+#       reverse_proxy backend:3000
+#   }
+
+:80 {
+	reverse_proxy backend:3000
+}

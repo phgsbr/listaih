@@ -53,16 +53,16 @@ export default function Purchases() {
   const getPaymentIcon = (pm: string | null) => {
     if (!pm) return null
     const logoMap: Record<string, string> = {
-      DINHEIRO: './icons/payment-dinheiro.svg',
-      PIX: './icons/payment-pix.svg',
-      DEBITO: './icons/payment-debito.svg',
-      CREDITO: './icons/payment-credito.svg',
-      VR: './icons/payment-vr.svg',
-      VA: './icons/payment-va.svg',
+      DINHEIRO: './icons/payment-dinheiro.png',
+      PIX: './icons/payment-pix.png',
+      DEBITO: './icons/payment-debito.png',
+      CREDITO: './icons/payment-credito.png',
+      VR: './icons/payment-vr.png',
+      VA: './icons/payment-va.png',
     }
     const src = logoMap[pm]
     if (!src) return null
-    return <img src={src} alt={pm} style={{ width: 18, height: 18 }} />
+    return <img src={src} alt={pm} style={{ width: 20, height: 20 }} />
   }
 
   const getReceiptStatusColor = (status: string): 'default' | 'warning' | 'info' | 'success' | 'error' => {

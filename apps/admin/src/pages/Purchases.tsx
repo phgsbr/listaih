@@ -53,10 +53,10 @@ export default function Purchases() {
   const getPaymentIcon = (pm: string | null) => {
     if (!pm) return null
     const logoMap: Record<string, string> = {
-      DINHEIRO: './icons/payment-dinheiro.png',
-      PIX: './icons/payment-pix.png',
-      DEBITO: './icons/payment-debito.png',
-      CREDITO: './icons/payment-credito.png',
+      DINHEIRO: './icons/payment-dinheiro.jpg',
+      PIX: './icons/payment-pix.jpg',
+      DEBITO: './icons/payment-debito.jpg',
+      CREDITO: './icons/payment-credito.jpg',
       VR: './icons/payment-vr.png',
       VA: './icons/payment-va.png',
     }

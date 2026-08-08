@@ -15,6 +15,27 @@ import { useSystemConfig, formatCurrency, getCurrencySymbol } from '@/hooks/useS
 import { useI18n } from '@/hooks/useI18n'
 import { CATEGORIES, getCategoryLabel, LIST_CATEGORIES, getProductCategoriesForList, getListCategoryLabel, getListCategoryIcon } from '@/utils/categories'
 
+// Payment method icons
+const getPaymentIcon = (pm: string | null) => {
+  if (!pm) return null
+  const logoMap: Record<string, string> = {
+    DINHEIRO: './icons/payment-dinheiro.jpg',
+    PIX: './icons/payment-pix.jpg',
+    DEBITO: './icons/payment-debito.jpg',
+    CREDITO: './icons/payment-credito.jpg',
+    VR: './icons/payment-vr.png',
+    VA: './icons/payment-va.png',
+  }
+  const src = logoMap[pm]
+  if (!src) return null
+  return <img src={src} alt={pm} style={{ width: 20, height: 20 }} />
+}
+
+const getPaymentLabel = (pm: string | null, t: (key: string) => string) => {
+  if (!pm) return '—'
+  return t(`pay.${pm.toLowerCase()}`)
+}
+
 export default function Lists() {
   const { activeHousehold } = useHousehold()
   const { config } = useSystemConfig()
@@ -613,10 +634,20 @@ export default function Lists() {
               value={checkoutPayment}
               onChange={(e) => setCheckoutPayment(e.target.value)}
               fullWidth
+              slotProps={{
+                select: {
+                  renderValue: (selected: unknown) => selected ? getPaymentLabel(selected as string, t) : t('purch.payment'),
+                },
+              }}
             >
               <MenuItem value="">{t('purch.noPayment')}</MenuItem>
               {['DEBITO', 'CREDITO', 'DINHEIRO', 'PIX', 'VR', 'VA'].map((pm) => (
-                <MenuItem key={pm} value={pm}>{t(`pay.${pm.toLowerCase()}`)}</MenuItem>
+                <MenuItem key={pm} value={pm}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {getPaymentIcon(pm)}
+                    {t(`pay.${pm.toLowerCase()}`)}
+                  </Box>
+                </MenuItem>
               ))}
             </TextField>
             <TextField

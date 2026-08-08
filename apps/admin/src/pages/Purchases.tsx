@@ -7,7 +7,6 @@ import {
 } from '@mui/material'
 import {
   ArrowBack, Receipt, Payments, Inventory, PhotoCamera, Sync as SyncIcon,
-  AttachMoney, CreditCard, QrCode, Restaurant, ShoppingCart,
 } from '@mui/icons-material'
 import api from '@/services/api'
 import { useHousehold, type Purchase } from '@/hooks/useHousehold'
@@ -53,15 +52,17 @@ export default function Purchases() {
 
   const getPaymentIcon = (pm: string | null) => {
     if (!pm) return null
-    switch (pm) {
-      case 'DINHEIRO': return <AttachMoney fontSize="small" />
-      case 'PIX': return <QrCode fontSize="small" />
-      case 'DEBITO': return <CreditCard fontSize="small" />
-      case 'CREDITO': return <CreditCard fontSize="small" color="secondary" />
-      case 'VR': return <Restaurant fontSize="small" />
-      case 'VA': return <ShoppingCart fontSize="small" />
-      default: return null
+    const logoMap: Record<string, string> = {
+      DINHEIRO: './icons/payment-dinheiro.svg',
+      PIX: './icons/payment-pix.svg',
+      DEBITO: './icons/payment-debito.svg',
+      CREDITO: './icons/payment-credito.svg',
+      VR: './icons/payment-vr.svg',
+      VA: './icons/payment-va.svg',
     }
+    const src = logoMap[pm]
+    if (!src) return null
+    return <img src={src} alt={pm} style={{ width: 18, height: 18 }} />
   }
 
   const getReceiptStatusColor = (status: string): 'default' | 'warning' | 'info' | 'success' | 'error' => {

@@ -1,6 +1,7 @@
 package com.listaih.app.data.network.model
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class LoginRequest(
@@ -112,13 +113,54 @@ data class SystemConfigResponse(
     val apiKey: String?
 )
 
-@Serializable
+ @Serializable
 data class HealthResponse(
     val status: String,
     val timestamp: String,
     val database: String,
     val redis: String?,
     val integrations: Map<String, String>
+)
+
+@Serializable
+data class PurchaseResponse(
+    val id: String,
+    val listId: String,
+    val householdId: String,
+    val userId: String,
+    val date: String,
+    val totalAmount: Double?,
+    val paymentMethod: String?,
+    val notes: String?,
+    val receiptPhoto: String?,
+    val receiptParsed: Map<String, @Contextual kotlin.Any>?,
+    val receiptStatus: String,
+    val itemCount: Int,
+    val items: List<JsonElement>,
+    val grocySynced: Boolean,
+    val grocySyncedAt: String?,
+    val createdAt: String,
+    val updatedAt: String,
+    val list: ListItemResponse? = null
+)
+
+@Serializable
+data class CheckoutRequest(
+    val paymentMethod: String? = null,
+    val totalAmount: Double? = null,
+    val notes: String? = null,
+    val receiptPhoto: String? = null,
+    val grocySync: Boolean? = null
+)
+
+@Serializable
+data class UpdatePurchaseRequest(
+    val paymentMethod: String? = null,
+    val totalAmount: Double? = null,
+    val notes: String? = null,
+    val receiptPhoto: String? = null,
+    val receiptParsed: Map<String, @Contextual kotlin.Any>? = null,
+    val receiptStatus: String? = null
 )
 
 @Serializable

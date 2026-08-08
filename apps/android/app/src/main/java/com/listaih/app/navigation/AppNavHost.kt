@@ -17,6 +17,7 @@ import com.listaih.app.ui.screens.home.HomeScreen
 import com.listaih.app.ui.screens.login.LoginScreen
 import com.listaih.app.ui.screens.onboarding.OnboardingScreen
 import com.listaih.app.ui.screens.settings.SettingsScreen
+import com.listaih.app.ui.screens.shopping.ShoppingModeScreen
 
 @Composable
 fun AppNavHost(
@@ -60,12 +61,27 @@ fun AppNavHost(
                     listId = listId,
                     listName = listName,
                     onAddItemClick = { AddItemBottomSheet.show(listId) },
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { navController.popBackStack() },
+                    onShoppingModeClick = { navController.navigate("shopping/$listId/$listName") }
                 )
             }
 
             composable("settings") {
                 SettingsScreen(onLogout = { viewModel.onLogout(); navController.navigate("login") { popUpTo("main") { inclusive = true } } })
+            }
+
+            composable(
+                route = "shopping/{listId}/{listName}",
+                arguments = listOf(navArgument("listId") { type = NavType.StringType }, navArgument("listName") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val listId = backStackEntry.getString()!!
+                val listName = backStackEntry.getString()!!
+                ShoppingModeScreen(
+                    listId = listId,
+                    listName = listName,
+                    onBackClick = { navController.popBackStack() },
+                    onCheckoutComplete = { navController.popBackStack() }
+                )
             }
         }
     }

@@ -94,6 +94,26 @@ interface ApiService {
         @Path("id") householdId: String
     ): Response<List<ShoppingListResponse>>
 
+    @GET("api/households/{id}/purchases")
+    suspend fun getPurchases(
+        @Header("Authorization") accessToken: String,
+        @Path("id") householdId: String
+    ): Response<List<PurchaseResponse>>
+
+    @POST("api/lists/{id}/checkout")
+    suspend fun checkout(
+        @Header("Authorization") accessToken: String,
+        @Path("id") listId: String,
+        @Body request: CheckoutRequest
+    ): Response<PurchaseResponse>
+
+    @PATCH("api/purchases/{id}")
+    suspend fun updatePurchase(
+        @Header("Authorization") accessToken: String,
+        @Path("id") purchaseId: String,
+        @Body request: UpdatePurchaseRequest
+    ): Response<PurchaseResponse>
+
     @GET("api/system/config")
     suspend fun getSystemConfig(@Header("Authorization") accessToken: String): Response<SystemConfigResponse>
 

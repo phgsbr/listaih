@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
@@ -305,6 +306,60 @@ class ShoppingRepository @Inject constructor(
                     Result.success(response.body()!!)
                 } else {
                     Result.failure(Exception(response.errorBody()?.string() ?: "Config fetch failed"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getPurchases(householdId: String): Result<List<PurchaseResponse>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.getPurchases("Bearer $accessToken", householdId).await()
+                if (response.isSuccessful) {
+                    Result.success(response.body() ?: emptyList())
+                } else {
+                    Result.failure(Exception(response.errorBody()?.string() ?: "Failed to fetch purchases"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun checkout(listId: String, request: CheckoutRequest): Result<PurchaseResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.checkout("Bearer $accessToken", listId, request).await()
+                if (response.isSuccessful) {
+                    Result.success(response.body()!!)
+                } else {
+                    val errBody = response.errorBody()?.string()
+                    if (errBody != null) {
+                        val err = json.decodeFromString<ApiError>(errBody)
+                        Result.failure(Exception(err.message ?: "Checkout failed"))
+                    } else {
+                        Result.failure(Exception("Checkout failed"))
+                    }
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun updatePurchase(purchaseId: String, request: UpdatePurchaseRequest): Result<PurchaseResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.updatePurchase("Bearer $accessToken", purchaseId, request).await()
+                if (response.isSuccessful) {
+                    Result.success(response.body()!!)
+                } else {
+                    Result.failure(Exception(response.errorBody()?.string() ?: "Update failed"))
                 }
             } catch (e: Exception) {
                 Result.failure(e)

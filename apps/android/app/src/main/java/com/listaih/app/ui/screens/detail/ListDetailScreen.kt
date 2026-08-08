@@ -40,14 +40,17 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.IconButton
 
 @Composable
 fun ListDetailScreen(
     listId: String,
     listName: String,
     onAddItemClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onShoppingModeClick: () -> Unit = {}
 ) {
     val items = remember { mutableStateListOf<ListItemUi>(
         ListItemUi("1", "Tomate", "2 kg", 8.00, null, "Hortifruti", false, null),
@@ -69,6 +72,9 @@ fun ListDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onShoppingModeClick) {
+                        Icon(Icons.Filled.ShoppingCart, contentDescription = "Shopping Mode")
+                    }
                     IconButton(onClick = { /* TODO: Menu */ }) {
                         Icon(Icons.Filled.MoreVert, contentDescription = "More")
                     }

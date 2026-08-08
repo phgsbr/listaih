@@ -32,6 +32,7 @@ import {
 import {
   Dashboard as DashboardIcon,
   ShoppingCart,
+  ReceiptLong,
   Groups,
   Smartphone,
   Extension,
@@ -76,6 +77,7 @@ export default function Layout({ mode, onToggleTheme }: LayoutProps) {
   const NAV_ITEMS = [
     { label: t('nav.dashboard'), icon: <DashboardIcon />, path: '/admin' },
     { label: t('nav.lists'), icon: <ShoppingCart />, path: '/admin/lists' },
+    { label: t('nav.purchases'), icon: <ReceiptLong />, path: '/admin/purchases' },
     { label: t('nav.members'), icon: <Groups />, path: '/admin/members' },
     { label: t('nav.clients'), icon: <Smartphone />, path: '/admin/clients' },
     { label: t('nav.integrations'), icon: <Extension />, path: '/admin/integrations' },

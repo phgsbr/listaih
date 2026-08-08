@@ -7,7 +7,7 @@ import {
 } from '@mui/material'
 import {
   Add, Archive, Unarchive, Delete, ArrowBack, Check, Close,
-  ShoppingCart, Edit,
+  ShoppingCart, Edit, PointOfSale,
 } from '@mui/icons-material'
 import api from '@/services/api'
 import { useHousehold, type ShoppingList, type ShoppingListItem } from '@/hooks/useHousehold'
@@ -30,9 +30,13 @@ export default function Lists() {
   const [showCreate, setShowCreate] = useState(false)
   const [newListName, setNewListName] = useState('')
   const [newListCategory, setNewListCategory] = useState('Geral')
+  const [newListType, setNewListType] = useState<'RECORRENTE' | 'PONTUAL' | 'MODELO'>('PONTUAL')
+  const [newListGrocy, setNewListGrocy] = useState(false)
   const [editingList, setEditingList] = useState<ShoppingList | null>(null)
   const [editListName, setEditListName] = useState('')
   const [editListCategory, setEditListCategory] = useState('')
+  const [editListType, setEditListType] = useState<'RECORRENTE' | 'PONTUAL' | 'MODELO'>('PONTUAL')
+  const [editListGrocy, setEditListGrocy] = useState(false)
   const [snack, setSnack] = useState<string | null>(null)
 
   const [newItemName, setNewItemName] = useState('')
@@ -81,7 +85,12 @@ export default function Lists() {
   const createList = async () => {
     if (!activeHousehold || !newListName.trim()) return
     try {
-      await api.post(`/households/${activeHousehold.id}/lists`, { name: newListName, category: newListCategory })
+      await api.post(`/households/${activeHousehold.id}/lists`, {
+        name: newListName,
+        category: newListCategory,
+        listType: newListType,
+        grocyAssociated: newListGrocy,
+      })
       setNewListName('')
       setNewListCategory('Geral')
       setShowCreate(false)
@@ -95,7 +104,12 @@ export default function Lists() {
   const saveEditList = async () => {
     if (!editingList || !editListName.trim()) return
     try {
-      await api.put(`/lists/${editingList.id}`, { name: editListName, category: editListCategory })
+      await api.put(`/lists/${editingList.id}`, {
+        name: editListName,
+        category: editListCategory,
+        listType: editListType,
+        grocyAssociated: editListGrocy,
+      })
       setEditingList(null)
       setSnack(t('lists.updated'))
       loadLists()
@@ -221,6 +235,37 @@ export default function Lists() {
     }
   }
 
+  const [showCheckout, setShowCheckout] = useState(false)
+  const [checkoutPayment, setCheckoutPayment] = useState('')
+  const [checkoutTotal, setCheckoutTotal] = useState('')
+  const [checkoutNotes, setCheckoutNotes] = useState('')
+  const [checkoutGrocy, setCheckoutGrocy] = useState(true)
+  const [checkingOut, setCheckingOut] = useState(false)
+
+  const doCheckout = async () => {
+    if (!selectedList) return
+    setCheckingOut(true)
+    try {
+      const data: Record<string, any> = { grocySync: checkoutGrocy }
+      if (checkoutPayment) data.paymentMethod = checkoutPayment
+      if (checkoutTotal) data.totalAmount = parseFloat(checkoutTotal)
+      if (checkoutNotes) data.notes = checkoutNotes
+      await api.post(`/lists/${selectedList.id}/checkout`, data)
+      setShowCheckout(false)
+      setCheckoutPayment('')
+      setCheckoutTotal('')
+      setCheckoutNotes('')
+      setCheckoutGrocy(true)
+      setSnack(t('purch.checkoutSuccess'))
+      await reloadSelectedList(selectedList.id)
+      loadLists()
+    } catch (err: any) {
+      setSnack(err.response?.data?.message || t('purch.checkoutError'))
+    } finally {
+      setCheckingOut(false)
+    }
+  }
+
   if (selectedList) {
     const items = selectedList.items || []
     const checkedCount = items.filter((i) => i.checked).length
@@ -282,6 +327,12 @@ export default function Lists() {
                 {t('lists.clearList')}
               </Button>
             )}
+            {checkedCount > 0 && (
+              <Button variant="contained" fullWidth size="small" startIcon={<PointOfSale />} sx={{ mt: 2 }}
+                onClick={() => setShowCheckout(true)}>
+                {t('purch.checkout')}
+              </Button>
+            )}
           </Box>
 
           {/* Items */}
@@ -289,7 +340,7 @@ export default function Lists() {
             <Card sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">{t('lists.items')}</Typography>
-                <Button size="small" startIcon={<Edit />} onClick={() => { setEditListName(selectedList.name); setEditListCategory(selectedList.category || 'Geral'); setEditingList(selectedList) }}>
+                 <Button size="small" startIcon={<Edit />} onClick={() => { setEditListName(selectedList.name); setEditListCategory(selectedList.category || 'Geral'); setEditListType(selectedList.listType || 'PONTUAL'); setEditListGrocy(selectedList.grocyAssociated || false); setEditingList(selectedList) }}>
                   {t('lists.edit')}
                 </Button>
               </Box>
@@ -482,8 +533,32 @@ export default function Lists() {
                 </Box>
               </MenuItem>
             ))}
-    </TextField>
-  </DialogContent>
+          </TextField>
+          <TextField
+            select
+            label={t('lists.type')}
+            value={editListType}
+            onChange={(e) => setEditListType(e.target.value as any)}
+            fullWidth
+            sx={{ mt: 1 }}
+          >
+            <MenuItem value="PONTUAL">{t('lists.type.pontual')}</MenuItem>
+            <MenuItem value="RECORRENTE">{t('lists.type.recorrente')}</MenuItem>
+            <MenuItem value="MODELO">{t('lists.type.modelo')}</MenuItem>
+          </TextField>
+          <TextField
+            select
+            label={t('lists.grocy')}
+            value={editListGrocy}
+            onChange={(e) => setEditListGrocy(e.target.value === 'true')}
+            fullWidth
+            sx={{ mt: 1 }}
+            slotProps={{ select: { renderValue: (v: unknown) => (v as boolean) ? t('lists.grocyYes') : t('lists.grocyNo') } }}
+          >
+            <MenuItem value={String(false)}>{t('lists.grocyNo')}</MenuItem>
+            <MenuItem value={String(true)}>{t('lists.grocyYes')}</MenuItem>
+          </TextField>
+        </DialogContent>
           <DialogActions>
             <Button onClick={() => setEditingList(null)}>{t('lists.cancel')}</Button>
             <Button variant="contained" onClick={saveEditList}>{t('lists.save')}</Button>
@@ -524,6 +599,62 @@ export default function Lists() {
 
         <Snackbar open={!!snack} autoHideDuration={3000} onClose={() => setSnack(null)} message={snack}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} />
+
+        {/* Checkout dialog */}
+        <Dialog open={showCheckout} onClose={() => setShowCheckout(false)} maxWidth="xs" fullWidth>
+          <DialogTitle>{t('purch.checkoutTitle')}</DialogTitle>
+          <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
+            <Typography variant="body2" color="text.secondary">
+              {t('purch.checkoutConfirm', { count: checkedCount })}
+            </Typography>
+            <TextField
+              select
+              label={t('purch.payment')}
+              value={checkoutPayment}
+              onChange={(e) => setCheckoutPayment(e.target.value)}
+              fullWidth
+            >
+              <MenuItem value="">{t('purch.noPayment')}</MenuItem>
+              {['DEBITO', 'CREDITO', 'DINHEIRO', 'PIX', 'VR', 'VA'].map((pm) => (
+                <MenuItem key={pm} value={pm}>{t(`pay.${pm.toLowerCase()}`)}</MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label={`${t('purch.total')} (${getCurrencySymbol(currency)})`}
+              type="number"
+              value={checkoutTotal}
+              onChange={(e) => setCheckoutTotal(e.target.value)}
+              fullWidth
+              helperText={t('purch.totalHelper')}
+            />
+            <TextField
+              label={t('purch.notes')}
+              value={checkoutNotes}
+              onChange={(e) => setCheckoutNotes(e.target.value)}
+              fullWidth
+              multiline
+              rows={2}
+            />
+            {selectedList.grocyAssociated && (
+              <TextField
+                select
+                label="Grocy"
+                value={checkoutGrocy ? 'yes' : 'no'}
+                onChange={(e) => setCheckoutGrocy(e.target.value === 'yes')}
+                fullWidth
+              >
+                <MenuItem value="yes">{t('purch.grocySyncYes')}</MenuItem>
+                <MenuItem value="no">{t('purch.grocySyncNo')}</MenuItem>
+              </TextField>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setShowCheckout(false)}>{t('purch.cancel')}</Button>
+            <Button variant="contained" onClick={doCheckout} disabled={checkingOut || checkedCount === 0}>
+              {checkingOut ? t('purch.saving') : t('purch.checkout')}
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     )
   }
@@ -559,6 +690,30 @@ export default function Lists() {
                 </Box>
               </MenuItem>
             ))}
+          </TextField>
+          <TextField
+            select
+            label={t('lists.type')}
+            value={newListType}
+            onChange={(e) => setNewListType(e.target.value as any)}
+            fullWidth
+            sx={{ mt: 1 }}
+          >
+            <MenuItem value="PONTUAL">{t('lists.type.pontual')}</MenuItem>
+            <MenuItem value="RECORRENTE">{t('lists.type.recorrente')}</MenuItem>
+            <MenuItem value="MODELO">{t('lists.type.modelo')}</MenuItem>
+          </TextField>
+          <TextField
+            select
+            label={t('lists.grocy')}
+            value={newListGrocy}
+            onChange={(e) => setNewListGrocy(e.target.value === 'true')}
+            fullWidth
+            sx={{ mt: 1 }}
+            slotProps={{ select: { renderValue: (v: unknown) => (v as boolean) ? t('lists.grocyYes') : t('lists.grocyNo') } }}
+          >
+            <MenuItem value={String(false)}>{t('lists.grocyNo')}</MenuItem>
+            <MenuItem value={String(true)}>{t('lists.grocyYes')}</MenuItem>
           </TextField>
         </DialogContent>
         <DialogActions>
@@ -611,7 +766,7 @@ export default function Lists() {
                     </TableCell>
                     <TableCell>{list.items?.length || 0}</TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
-                      <IconButton size="small" onClick={() => { setEditListName(list.name); setEditListCategory(list.category || 'Geral'); setEditingList(list) }}>
+                       <IconButton size="small" onClick={() => { setEditListName(list.name); setEditListCategory(list.category || 'Geral'); setEditListType(list.listType || 'PONTUAL'); setEditListGrocy(list.grocyAssociated || false); setEditingList(list) }}>
                         <Edit fontSize="small" />
                       </IconButton>
                       <IconButton size="small" onClick={() => archiveList(list)} title={t('lists.archive')}><Archive fontSize="small" /></IconButton>

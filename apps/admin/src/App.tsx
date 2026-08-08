@@ -8,6 +8,7 @@ import Layout from '@/components/Layout'
 import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import Lists from '@/pages/Lists'
+import Purchases from '@/pages/Purchases'
 import Members from '@/pages/Members'
 import Clients from '@/pages/Clients'
 import Integrations from '@/pages/Integrations'
@@ -56,6 +57,7 @@ export default function App() {
               <Route path="/admin" element={<ProtectedLayout mode={mode} onToggleTheme={toggleTheme} />}>
                 <Route index element={<Dashboard />} />
                 <Route path="lists" element={<Lists />} />
+                <Route path="purchases" element={<Purchases />} />
                 <Route path="members" element={<Members />} />
                 <Route path="clients" element={<Clients />} />
                 <Route path="integrations" element={<Integrations />} />

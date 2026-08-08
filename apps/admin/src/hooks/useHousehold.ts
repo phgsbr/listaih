@@ -46,7 +46,49 @@ export interface ShoppingList {
   createdAt: string
   updatedAt: string
   category: string | null
+  listType?: 'RECORRENTE' | 'PONTUAL' | 'MODELO'
+  grocyAssociated?: boolean
+  completedAt?: string | null
   items?: ShoppingListItem[]
+}
+
+export type PaymentMethod = 'DEBITO' | 'CREDITO' | 'VR' | 'VA' | 'DINHEIRO' | 'PIX'
+export type ReceiptStatus = 'PENDING' | 'PROCESSING' | 'PARSED' | 'FAILED' | 'NOT_PROVIDED'
+
+export interface PurchaseItem {
+  id: string
+  name: string
+  quantity: number
+  unit: string
+  estimatedPrice: number | null
+  actualPrice: number | null
+  category: string | null
+  notes: string | null
+  barcode: string | null
+  barcodeData: Record<string, any> | null
+  checked: boolean
+  checkedAt: string | null
+}
+
+export interface Purchase {
+  id: string
+  listId: string
+  householdId: string
+  userId: string
+  date: string
+  totalAmount: number | null
+  paymentMethod: PaymentMethod | null
+  notes: string | null
+  receiptPhoto: string | null
+  receiptParsed: Record<string, any> | null
+  receiptStatus: ReceiptStatus
+  itemCount: number
+  items: PurchaseItem[]
+  grocySynced: boolean
+  grocySyncedAt: string | null
+  createdAt: string
+  updatedAt: string
+  list?: { id: string; name: string }
 }
 
 export function useHousehold() {

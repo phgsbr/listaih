@@ -1,6 +1,6 @@
 # Listaih — Estado do Projeto
 
-> Última atualização: 08 Ago 2026 (Fase 4 — Android App estruturado)
+> Última atualização: 08 Ago 2026 (Fase 5B — Admin purchase history page + checkout)
 
 ---
 
@@ -89,7 +89,8 @@ Listaih/
 │   │           ├── Members.tsx     ✅ i18n (avatar shows profile photo)
 │   │           ├── Clients.tsx     ✅ i18n (tokens CRUD)
 │   │           ├── Integrations.tsx ✅ i18n (Grocy, HA, Alexa)
-│   │           └── Settings.tsx    ✅ i18n (profile, household, language+currency, security, about, danger zone)
+│   │       ├── Settings.tsx    ✅ i18n (profile, household, language+currency, security, about, danger zone)
+│   │       └── Purchases.tsx    ✅ i18n (purchase history, detail, checkout, edit)
 │   ├── backend/                     ✅ Build validado
 │   │   ├── Dockerfile              ✅ Multi-stage (node:22-alpine)
 │   │   ├── .dockerignore
@@ -98,13 +99,14 @@ Listaih/
 │   │   ├── nest-cli.json
 │   │   ├── .env / .env.example
 │   │   ├── prisma/
-│   │   │   ├── schema.prisma      ✅ 10 models (User, ApiToken, RefreshToken, Household, HouseholdMember, ShoppingList, ListItem, Product, PriceEntry, SystemConfig)
+│   │   │   ├── schema.prisma      ✅ 11 models (User, ApiToken, RefreshToken, Household, HouseholdMember, ShoppingList, ListItem, Purchase, Product, PriceEntry, SystemConfig) + 3 enums (PaymentMethod, ListType, ReceiptStatus)
 │   │   │   └── migrations/
 │   │   │       ├── 20260805024405_init
 │   │   │       ├── 20260805210807_add_api_tokens
 │   │   │       ├── 20260805231521_add_currency
 │   │   │       ├── 20260806041017_add_list_category
-│   │   │       └── 20260808002858_add_external_api
+│   │   │       ├── 20260808002858_add_external_api
+│   │   │       └── 20260808173208_phase5a_checkout_purchase_gs1_off
 │   │   └── src/
 │   │       ├── main.ts            json({ limit: '10mb' }), CORS, ServeStaticModule (/admin)
 │   │       ├── app.module.ts       9 módulos
@@ -112,11 +114,12 @@ Listaih/
 │   │       └── modules/
 │   │           ├── auth/           login, refresh, logout, change-password, JWT
 │   │           ├── users/          perfil, households, roles, regenerate-code
-│   │           ├── lists/          CRUD listas + itens, histórico, category
+│   │           ├── lists/          CRUD listas + itens, histórico, checkout, Purchase CRUD, GS1 parser, OFF service
 │   │           ├── setup/          Setup Wizard (one-time)
 │   │           ├── health/         Healthcheck (DB + Redis + integrações)
 │   │           ├── sync/           SyncGateway (Socket.io) + SyncService (Redis pub/sub)
-│   │           ├── system/         SystemConfig CRUD (Grocy, HA, currency)
+│   │           ├── system/         SystemConfig CRUD (Grocy, HA, currency, AI fields)
+│   │           ├── grocy/          Hybrid match, unit conversion, stock status, GS1 best_before
 │   │           └── tokens/         API tokens CRUD (for external clients)
 │   └── android/                     🚧 Em desenvolvimento
 │       ├── settings.gradle.kts
@@ -362,8 +365,9 @@ Listaih/
 - **Members.tsx** — role change (admin/editor/viewer), remover membro, copiar invite code, avatar mostra foto de perfil
 - **Clients.tsx** — tokens CRUD (GET, POST, DELETE), token exibido apenas na criação, warning de copiar agora
 - **Integrations.tsx** — Grocy (url, apiKey, testar conexão), Home Assistant (url, webhookToken), Alexa (placeholder futuro), wired to `/system/config`
-- **Settings.tsx** — perfil (nome, email), alterar senha, household (nome, invite code, regenerar), localização & moeda (seletor de idioma + moeda), segurança (HTTPS, rate limiting — disabled), backup (export, auto — disabled), sobre, zona de perigo (disabled)
-- **i18n** — todas as 7 páginas + Layout traduzidas, 3 idiomas (~270 keys cada)
+ - **Settings.tsx** — perfil (nome, email), alterar senha, household (nome, invite code, regenerar), localização & moeda (seletor de idioma + moeda), segurança (HTTPS, rate limiting — disabled), backup (export, auto — disabled), sobre, zona de perigo (disabled)
+ - **Purchases.tsx** ✅ Fase 5B — página de histórico de compras (sumário, tabela, detalhe com itens), checkout dialog integrado
+ - **i18n** — todas as 8 páginas + Layout traduzidas, 3 idiomas (~310 keys cada), interpolation support no t()
 - **Sistema de categorias** — 2 tiers (5 list categories + 35 product categories), ícones MDI, filtros
 - **Image paths fixed** — todos `src` usam paths relativos
 - **Profile photo upload fixed** — canvas resize 256×256 JPEG, json limit 10mb, @IsOptional no DTO

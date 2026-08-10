@@ -141,8 +141,20 @@ model Product {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   priceHistory PriceEntry[]
+  barcodes     ProductBarcode[]
 
   @@index([name])
+  @@index([barcode])
+}
+
+model ProductBarcode {
+  id        String   @id @default(uuid())
+  productId String
+  barcode   String   @unique
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
   @@index([barcode])
 }
 

@@ -13,6 +13,8 @@ import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { CheckoutDto } from './dto/checkout.dto';
 import { UpdatePurchaseDto } from './dto/update-purchase.dto';
+import { CreateProductDto } from './dto/create-product.dto';
+import { AddBarcodeDto } from './dto/add-barcode.dto';
 import { OffService } from './off.service';
 import { GS1Parser } from './gs1.parser';
 import { GrocySyncService } from '../grocy/grocy-sync.service';
@@ -197,6 +199,130 @@ export class ListsService {
     return item;
   }
 
+  /**
+   * Product lookup by barcode with Open Food Facts fallback.
+   * If no local Product exists, queries OFF; if OFF finds it, creates the
+   * Product automatically and returns it. Returns null when unknown.
+   */
+  async lookupProductByBarcode(userId: string, barcode: string) {
+    const normalized = (barcode ?? '').trim();
+    if (!normalized) {
+      throw new BadRequestException('Barcode invalido');
+    }
+
+    let product = await this.prisma.product.findUnique({
+      where: { barcode: normalized },
+      include: { barcodes: true },
+    });
+
+    // Try alternative barcodes table
+    if (!product) {
+      const alt = await this.prisma.productBarcode.findUnique({
+        where: { barcode: normalized },
+        include: { product: { include: { barcodes: true } } },
+      });
+      if (alt) product = alt.product;
+    }
+
+    // OFF fallback: create Product from Open Food Facts data
+    if (!product) {
+      const offProduct = await this.offService.lookupByBarcode(normalized);
+      if (offProduct) {
+        const name = offProduct.product_name || offProduct.generic_name;
+        if (name) {
+          product = await this.prisma.product.create({
+            data: {
+              name,
+              barcode: normalized,
+              category: offProduct.categories?.split(',')[0]?.trim() || undefined,
+              defaultUnit: 'unit',
+            },
+            include: { barcodes: true },
+          });
+          this.logger.log(`Created Product "${name}" from OFF lookup for barcode ${normalized}`);
+        }
+      } else {
+        this.logger.debug(`No product found for barcode ${normalized}`);
+      }
+    }
+
+    return product ?? null;
+  }
+
+  /**
+   * Create a new Product manually (barcode optional).
+   */
+  async createProduct(userId: string, dto: CreateProductDto) {
+    const barcode = dto.barcode?.trim();
+    if (barcode) {
+      const existing = await this.prisma.product.findUnique({
+        where: { barcode },
+      });
+      if (existing) {
+        throw new BadRequestException('Produto ja cadastrado com este codigo de barras');
+      }
+      const existingAlt = await this.prisma.productBarcode.findUnique({
+        where: { barcode },
+      });
+      if (existingAlt) {
+        throw new BadRequestException('Codigo de barras ja associado a outro produto');
+      }
+    }
+
+    const product = await this.prisma.product.create({
+      data: {
+        name: dto.name,
+        barcode: barcode || null,
+        category: dto.category,
+        defaultUnit: dto.defaultUnit ?? 'unit',
+      },
+      include: { barcodes: true },
+    });
+
+    this.logger.log(`Product created: ${product.name} (${product.id})`);
+    return product;
+  }
+
+  /**
+   * Associate an alternative barcode with an existing Product
+   * ("manteiga Pikachu = manteiga Sonic" case).
+   */
+  async addProductBarcode(userId: string, productId: string, dto: AddBarcodeDto) {
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId },
+    });
+    if (!product) {
+      throw new NotFoundException('Produto nao encontrado');
+    }
+
+    const barcode = dto.barcode.trim();
+    if (!barcode) {
+      throw new BadRequestException('Barcode invalido');
+    }
+
+    const existingMain = await this.prisma.product.findUnique({
+      where: { barcode },
+    });
+    if (existingMain) {
+      throw new BadRequestException('Codigo de barras ja cadastrado em outro produto');
+    }
+    const existingAlt = await this.prisma.productBarcode.findUnique({
+      where: { barcode },
+    });
+    if (existingAlt) {
+      throw new BadRequestException('Codigo de barras ja associado a outro produto');
+    }
+
+    await this.prisma.productBarcode.create({
+      data: { productId, barcode },
+    });
+
+    return this.prisma.product.findUnique({
+      where: { id: productId },
+      include: { barcodes: true },
+    });
+  }
+
   async updateItem(userId: string, listId: string, itemId: string, dto: UpdateItemDto) {
     const list = await this.verifyListAccess(userId, listId);
     const item = await this.prisma.listItem.findUnique({
@@ -216,6 +342,8 @@ export class ListsService {
     if (dto.notes !== undefined) data.notes = dto.notes;
     if (dto.position !== undefined) data.position = dto.position;
     if (dto.barcode !== undefined) data.barcode = dto.barcode;
+    if (dto.barcodeRaw !== undefined) data.barcodeRaw = dto.barcodeRaw;
+    if (dto.productId !== undefined) data.productId = dto.productId;
 
     if (dto.checked !== undefined) {
       data.checked = dto.checked;

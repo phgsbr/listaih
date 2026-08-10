@@ -54,4 +54,8 @@ export class UpdateItemDto {
   @IsOptional()
   @IsString()
   barcodeRaw?: string;
+
+  @IsOptional()
+  @IsString()
+  productId?: string;
 }

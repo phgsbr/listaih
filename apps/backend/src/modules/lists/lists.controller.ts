@@ -19,6 +19,8 @@ import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { CheckoutDto } from './dto/checkout.dto';
 import { UpdatePurchaseDto } from './dto/update-purchase.dto';
+import { CreateProductDto } from './dto/create-product.dto';
+import { AddBarcodeDto } from './dto/add-barcode.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller()
@@ -88,6 +90,26 @@ export class ListsController {
     @Param('itemId') itemId: string,
   ) {
     return this.listsService.deleteItem(req.user['id'], id, itemId);
+  }
+
+  // Product endpoints (barcode catalog for the app scanner)
+  @Get('products/lookup/:barcode')
+  lookupProduct(@Req() req: Request, @Param('barcode') barcode: string) {
+    return this.listsService.lookupProductByBarcode(req.user['id'], barcode);
+  }
+
+  @Post('products')
+  createProduct(@Req() req: Request, @Body() dto: CreateProductDto) {
+    return this.listsService.createProduct(req.user['id'], dto);
+  }
+
+  @Post('products/:productId/barcodes')
+  addProductBarcode(
+    @Req() req: Request,
+    @Param('productId') productId: string,
+    @Body() dto: AddBarcodeDto,
+  ) {
+    return this.listsService.addProductBarcode(req.user['id'], productId, dto);
   }
 
   @Get('households/:householdId/history')

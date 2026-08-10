@@ -10,10 +10,16 @@ interface ApiService {
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 
     @POST("api/auth/refresh")
-    suspend fun refreshToken(@Header("Authorization") refreshToken: String): Response<LoginResponse>
+    suspend fun refreshToken(@Body request: RefreshRequest): Response<LoginResponse>
 
     @POST("api/auth/logout")
     suspend fun logout(@Header("Authorization") accessToken: String): Response<Unit>
+
+    @POST("api/auth/change-password")
+    suspend fun changePassword(
+        @Header("Authorization") accessToken: String,
+        @Body request: ChangePasswordRequest
+    ): Response<Unit>
 
     @GET("api/users/me")
     suspend fun getProfile(@Header("Authorization") accessToken: String): Response<UserResponse>
@@ -26,6 +32,12 @@ interface ApiService {
 
     @GET("api/users/households")
     suspend fun getHouseholds(@Header("Authorization") accessToken: String): Response<List<HouseholdResponse>>
+
+    @PATCH("api/users/households/{householdId}/regenerate-code")
+    suspend fun regenerateInviteCode(
+        @Header("Authorization") accessToken: String,
+        @Path("householdId") householdId: String
+    ): Response<HouseholdResponse>
 
     @POST("api/users/households/join")
     suspend fun joinHousehold(
@@ -88,6 +100,18 @@ interface ApiService {
         @Path("itemId") itemId: String
     ): Response<Unit>
 
+    @GET("api/products/lookup/{barcode}")
+    suspend fun lookupProduct(
+        @Header("Authorization") accessToken: String,
+        @Path("barcode") barcode: String
+    ): Response<ProductResponse?>
+
+    @POST("api/products")
+    suspend fun createProduct(
+        @Header("Authorization") accessToken: String,
+        @Body request: CreateProductRequest
+    ): Response<ProductResponse>
+
     @GET("api/households/{id}/history")
     suspend fun getArchivedLists(
         @Header("Authorization") accessToken: String,
@@ -112,6 +136,12 @@ interface ApiService {
         @Header("Authorization") accessToken: String,
         @Path("id") purchaseId: String,
         @Body request: UpdatePurchaseRequest
+    ): Response<PurchaseResponse>
+
+    @GET("api/purchases/{id}")
+    suspend fun getPurchase(
+        @Header("Authorization") accessToken: String,
+        @Path("id") purchaseId: String
     ): Response<PurchaseResponse>
 
     @GET("api/system/config")

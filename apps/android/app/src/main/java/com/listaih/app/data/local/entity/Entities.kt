@@ -14,6 +14,7 @@ data class ShoppingListEntity(
     val archivedAt: Long?,
     val createdAt: Long,
     val updatedAt: Long,
+    val listType: String = "PONTUAL",
     val serverSynced: Boolean = false,
     val localVersion: Int = 0
 )
@@ -35,6 +36,9 @@ data class ListItemEntity(
     val position: Int,
     val createdAt: Long,
     val updatedAt: Long,
+    val barcode: String? = null,
+    val barcodeRaw: String? = null,
+    val productId: String? = null,
     val serverSynced: Boolean = false,
     val localVersion: Int = 0
 )
@@ -95,4 +99,21 @@ data class SyncQueueEntity(
     val payload: String, // JSON
     val createdAt: Long,
     val retryCount: Int = 0
+)
+
+data class ShoppingListWithCounts(
+    val id: String,
+    val name: String,
+    val category: String?,
+    val householdId: String,
+    val archivedAt: Long?,
+    val createdAt: Long,
+    val updatedAt: Long,
+    val listType: String,
+    val serverSynced: Boolean,
+    val localVersion: Int,
+    val checkedCount: Int,
+    val totalCount: Int,
+    val spentTotal: Double,
+    val estimatedTotal: Double
 )

@@ -1,12 +1,23 @@
 package com.listaih.app.data.network.model
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class LoginRequest(
     val email: String,
     val password: String
+)
+
+@Serializable
+data class RefreshRequest(
+    val refreshToken: String
+)
+
+@Serializable
+data class ChangePasswordRequest(
+    val currentPassword: String,
+    val newPassword: String
 )
 
 @Serializable
@@ -43,7 +54,8 @@ data class ShoppingListResponse(
     val items: List<ListItemResponse> = emptyList(),
     val householdId: String,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
+    val listType: String = "PONTUAL"
 )
 
 @Serializable
@@ -60,14 +72,18 @@ data class ListItemResponse(
     val checkedBy: String?,
     val checkedAt: String?,
     val position: Int,
-    val createdAt: String,
-    val updatedAt: String
+    val addedAt: String?,
+    val updatedAt: String,
+    val barcode: String? = null,
+    val barcodeRaw: String? = null,
+    val productId: String? = null
 )
 
 @Serializable
 data class CreateListRequest(
     val name: String,
-    val category: String?
+    val category: String?,
+    val listType: String? = null
 )
 
 @Serializable
@@ -83,7 +99,10 @@ data class CreateItemRequest(
     val quantity: Double,
     val unit: String,
     val estimatedPrice: Double?,
-    val category: String?
+    val category: String?,
+    val barcode: String? = null,
+    val barcodeRaw: String? = null,
+    val productId: String? = null
 )
 
 @Serializable
@@ -94,7 +113,38 @@ data class UpdateItemRequest(
     val estimatedPrice: Double?,
     val category: String?,
     val checked: Boolean?,
-    val position: Int?
+    val position: Int?,
+    val barcode: String? = null,
+    val barcodeRaw: String? = null,
+    val productId: String? = null
+)
+
+@Serializable
+data class ProductBarcodeResponse(
+    val id: String,
+    val productId: String,
+    val barcode: String,
+    val createdAt: String
+)
+
+@Serializable
+data class ProductResponse(
+    val id: String,
+    val name: String,
+    val barcode: String?,
+    val category: String?,
+    val defaultUnit: String,
+    val createdAt: String,
+    val updatedAt: String,
+    val barcodes: List<ProductBarcodeResponse> = emptyList()
+)
+
+@Serializable
+data class CreateProductRequest(
+    val name: String,
+    val barcode: String? = null,
+    val category: String? = null,
+    val defaultUnit: String? = null
 )
 
 @Serializable
@@ -123,6 +173,22 @@ data class HealthResponse(
 )
 
 @Serializable
+data class PurchaseItem(
+    val id: String? = null,
+    val name: String,
+    val quantity: Double,
+    val unit: String? = null,
+    val estimatedPrice: Double? = null,
+    val actualPrice: Double? = null,
+    val category: String? = null,
+    val notes: String? = null,
+    val barcode: String? = null,
+    val barcodeData: String? = null,
+    val checked: Boolean? = null,
+    val checkedAt: String? = null
+)
+
+@Serializable
 data class PurchaseResponse(
     val id: String,
     val listId: String,
@@ -136,7 +202,7 @@ data class PurchaseResponse(
     val receiptParsed: Map<String, @Contextual kotlin.Any>?,
     val receiptStatus: String,
     val itemCount: Int,
-    val items: List<JsonElement>,
+    val items: List<PurchaseItem> = emptyList(),
     val grocySynced: Boolean,
     val grocySyncedAt: String?,
     val createdAt: String,

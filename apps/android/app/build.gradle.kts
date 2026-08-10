@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
@@ -28,7 +27,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.11"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
 
     packagingOptions {
@@ -90,12 +89,13 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.hilt.work)
     ksp(libs.hilt.compiler)
 
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    implementation(libs.room.compiler)
+    ksp(libs.room.compiler)
 
     // DataStore
     implementation(libs.datastore.preferences)
@@ -103,6 +103,7 @@ dependencies {
 
     // Retrofit + OkHttp
     implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
     implementation(libs.retrofit.converter.kotlinx.serialization)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
@@ -127,6 +128,13 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.accompanist.systemuicontroller)
 
+    // CameraX + ML Kit (barcode scanning)
+    implementation(libs.camera.core)
+    implementation(libs.camera.camera2)
+    implementation(libs.camera.lifecycle)
+    implementation(libs.camera.view)
+    implementation(libs.mlkit.barcode.scanning)
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -139,4 +147,8 @@ dependencies {
 
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+hilt {
+    enableAggregatingTask = false
 }

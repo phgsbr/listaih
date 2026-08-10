@@ -8,6 +8,7 @@ import androidx.room.Update
 import androidx.room.Delete
 import com.listaih.app.data.local.entity.ListItemEntity
 import com.listaih.app.data.local.entity.ShoppingListEntity
+import com.listaih.app.data.local.entity.ShoppingListWithCounts
 import com.listaih.app.data.local.entity.ProductEntity
 import com.listaih.app.data.local.entity.PriceEntryEntity
 import com.listaih.app.data.local.entity.HouseholdEntity
@@ -41,11 +42,29 @@ interface ShoppingListDao {
     @Query("SELECT * FROM shopping_lists WHERE householdId = :householdId")
     suspend fun getAllLists(householdId: String): List<ShoppingListEntity>
 
+    @Query("SELECT * FROM shopping_lists")
+    suspend fun getAll(): List<ShoppingListEntity>
+
     @Query("SELECT * FROM shopping_lists WHERE serverSynced = 0")
     suspend fun getUnsyncedLists(): List<ShoppingListEntity>
 
     @Query("UPDATE shopping_lists SET serverSynced = 1 WHERE id = :id")
     suspend fun markSynced(id: String)
+
+    @Query("""
+        SELECT
+            sl.*,
+            COALESCE(SUM(CASE WHEN li.checked THEN 1 ELSE 0 END), 0) as checkedCount,
+            COUNT(li.id) as totalCount,
+            COALESCE(SUM(CASE WHEN li.checked THEN COALESCE(li.actualPrice, li.estimatedPrice, 0) * li.quantity ELSE 0 END), 0) as spentTotal,
+            COALESCE(SUM(COALESCE(li.estimatedPrice, 0) * li.quantity), 0) as estimatedTotal
+        FROM shopping_lists sl
+        LEFT JOIN list_items li ON li.listId = sl.id
+        WHERE sl.householdId = :householdId AND sl.archivedAt IS NULL
+        GROUP BY sl.id
+        ORDER BY sl.updatedAt DESC
+    """)
+    fun getActiveListsWithCounts(householdId: String): Flow<List<ShoppingListWithCounts>>
 }
 
 @Dao
@@ -67,6 +86,9 @@ interface ListItemDao {
 
     @Query("SELECT * FROM list_items WHERE id = :id")
     fun getItemById(id: String): Flow<ListItemEntity?>
+
+    @Query("SELECT * FROM list_items")
+    suspend fun getAllItems(): List<ListItemEntity>
 
     @Query("SELECT * FROM list_items WHERE listId = :listId AND serverSynced = 0")
     suspend fun getUnsyncedItems(listId: String): List<ListItemEntity>

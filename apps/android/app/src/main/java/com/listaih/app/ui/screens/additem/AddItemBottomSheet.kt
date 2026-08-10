@@ -1,24 +1,46 @@
 package com.listaih.app.ui.screens.additem
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AcUnit
+import androidx.compose.material.icons.filled.BakeryDining
+import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.DinnerDining
+import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.Kitchen
+import androidx.compose.material.icons.filled.LocalBar
+import androidx.compose.material.icons.filled.LocalDrink
+import androidx.compose.material.icons.filled.LocalGroceryStore
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SetMeal
+import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,20 +48,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.listaih.app.ui.theme.Theme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Search
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddItemBottomSheet(
     listId: String,
@@ -54,215 +69,194 @@ fun AddItemBottomSheet(
     var showSuggestions by remember { mutableStateOf(false) }
     var notes by remember { mutableStateOf("") }
 
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val units = listOf("un", "kg", "g", "L", "ml")
     val categories = listOf("Hortifruti", "Laticínios", "Padaria", "Carnes", "Peixaria", "Bebidas", "Limpeza", "Doces", "Enlatados", "Mercearia", "Congelados")
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
-        // Overlay
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.4f))
-                .fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(start = 24.dp, end = 24.dp, bottom = 32.dp)
+                .padding(bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Text(text = "Adicionar Item", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(400.dp)
-                    .background(MaterialTheme.colorScheme.surface, RectangleShape)
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Drag handle
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp)
-                        .background(MaterialTheme.colorScheme.outline, RectangleShape)
+                OutlinedTextField(
+                    value = productName,
+                    onValueChange = { productName = it; showSuggestions = it.isNotBlank() },
+                    label = { Text("Nome do produto") },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Filled.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    trailingIcon = {
+                        if (productName.isNotBlank()) {
+                            IconButton(onClick = { productName = "" }) {
+                                Icon(Icons.Filled.Clear, contentDescription = "Limpar")
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
-                Text(text = "Adicionar Item", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-
-                // Product name with search
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(text = "Nome do produto", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
-                    TextField(
-                        value = productName,
-                        onValueChange = { productName = it; showSuggestions = it.isNotBlank() },
-                        label = { Text("🔍  Nome do produto") },
+                if (showSuggestions && productName.isNotBlank()) {
+                    Card(
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        trailingIcon = {
-                            if (productName.isNotBlank()) {
-                                IconButton(onClick = { productName = "" }) {
-                                    Icon(Icons.Filled.Close, contentDescription = "Clear")
-                                }
-                            }
-                        }
-                    )
-
-                    // Suggestions
-                    if (showSuggestions && productName.isNotBlank()) {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = androidx.compose.material3.CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer
-                            )
+                        shape = MaterialTheme.shapes.medium,
+                        colors = androidx.compose.material3.CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Column(
-                                modifier = Modifier.padding(4.dp),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                getSuggestions(productName).forEach { suggestion ->
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp)
-                                            .background(Color.Transparent, RectangleShape)
-                                            .clip(RectangleShape),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = getCategoryIcon(suggestion.category)),
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                        androidx.compose.foundation.layout.Spacer(Modifier.width(8.dp))
-                                        Text(text = suggestion.name, fontSize = 14.sp)
-                                    }
+                            getSuggestions(productName).forEach { suggestion ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = getCategoryIcon(suggestion.category),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(Modifier.width(10.dp))
+                                    Text(text = suggestion.name, fontSize = 14.sp)
+                                    Spacer(Modifier.weight(1f))
+                                    Text(
+                                        text = suggestion.category,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             }
                         }
                     }
                 }
+            }
 
-                // Quantity and Price row
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedTextField(
+                    value = quantity,
+                    onValueChange = { quantity = it },
+                    label = { Text("Quantidade") },
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.weight(1f)
+                )
+
+                OutlinedTextField(
+                    value = estimatedPrice,
+                    onValueChange = { estimatedPrice = it },
+                    label = { Text("Preço estimado") },
+                    leadingIcon = { Text("R$ ", fontSize = 16.sp) },
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Unidade",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Medium
+                )
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(text = "Quantidade", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
-                        TextField(
-                            value = quantity,
-                            onValueChange = { quantity = it },
-                            label = { Text("Quantidade") },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
+                    units.forEach { unit ->
+                        UnitChip(
+                            text = unit,
+                            selected = selectedUnit == unit,
+                            onClick = { selectedUnit = unit }
                         )
                     }
+                }
+            }
 
-                    Column(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(text = "Preço estimado", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
-                        TextField(
-                            value = estimatedPrice,
-                            onValueChange = { estimatedPrice = it },
-                            label = { Text("Preço estimado") },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
-                            leadingIcon = { Text("R$ ", fontSize = 16.sp) }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Categoria",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Medium
+                )
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    categories.forEach { category ->
+                        UnitChip(
+                            text = category,
+                            selected = selectedCategory == category,
+                            onClick = { selectedCategory = category }
                         )
                     }
                 }
+            }
 
-                // Unit chips
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(text = "Unidade", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        units.forEach { unit ->
-                            UnitChip(
-                                text = unit,
-                                selected = selectedUnit == unit,
-                                onClick = { selectedUnit = unit }
-                            )
-                        }
-                    }
-                }
+            OutlinedTextField(
+                value = notes,
+                onValueChange = { notes = it },
+                label = { Text("Notas (opcional)") },
+                placeholder = { Text("Ex: pegar maduro") },
+                singleLine = true,
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-                // Category chips
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(text = "Categoria", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
-                    androidx.compose.foundation.layout.Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.TopStart
-                    ) {
-                        androidx.compose.foundation.layout.FlowRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            categories.forEach { category ->
-                                UnitChip(
-                                    text = category,
-                                    selected = selectedCategory == category,
-                                    onClick = { selectedCategory = category }
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Notes
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(text = "Notas (opcional)", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
-                    TextField(
-                        value = notes,
-                        onValueChange = { notes = it },
-                        label = { Text("Ex: pegar maduro") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+            Button(
+                onClick = {
+                    onAddItem(
+                        productName,
+                        quantity.toDoubleOrNull() ?: 1.0,
+                        selectedUnit,
+                        estimatedPrice.toDoubleOrNull(),
+                        selectedCategory
                     )
-                }
-
-                // Add button
-                Button(
-                    onClick = {
-                        onAddItem(
-                            productName,
-                            quantity.toDoubleOrNull() ?: 1.0,
-                            selectedUnit,
-                            estimatedPrice.toDoubleOrNull(),
-                            selectedCategory
-                        )
-                        onDismiss()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = productName.isNotBlank(),
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Text(text = "Adicionar", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                }
+                    onDismiss()
+                },
+                enabled = productName.isNotBlank(),
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+            ) {
+                Text(text = "Adicionar", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -270,17 +264,13 @@ fun AddItemBottomSheet(
 
 @Composable
 fun UnitChip(text: String, selected: Boolean, onClick: () -> Unit) {
-    androidx.compose.material3.Chip(
-        onClick = onClick,
+    FilterChip(
         selected = selected,
+        onClick = onClick,
+        label = { Text(text = text, fontSize = 14.sp, fontWeight = FontWeight.Medium) },
         modifier = Modifier.height(36.dp).wrapContentWidth(),
-        colors = androidx.compose.material3.ChipDefaults.chipColors(
-            containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
-            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
-        )
-    ) {
-        Text(text = text, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-    }
+        colors = FilterChipDefaults.filterChipColors()
+    )
 }
 
 private data class Suggestion(
@@ -304,27 +294,28 @@ private fun getSuggestions(query: String): List<Suggestion> {
     return allProducts.filter { it.name.lowercase().contains(query.lowercase()) }.take(5)
 }
 
-private fun getCategoryIcon(category: String): Int {
+private fun getCategoryIcon(category: String): ImageVector {
     return when (category.lowercase()) {
-        "hortifruti" -> androidx.compose.ui.res.R.drawable.ic_local_grocery_store
-        "laticínios", "laticinios" -> androidx.compose.ui.res.R.drawable.ic_local_drink
-        "padaria" -> androidx.compose.ui.res.R.drawable.ic_bakery_dining
-        "carnes" -> androidx.compose.ui.res.R.drawable.ic_set_meal
-        "peixaria" -> androidx.compose.ui.res.R.drawable.ic_seafood
-        "bebidas" -> androidx.compose.ui.res.R.drawable.ic_local_bar
-        "limpeza" -> androidx.compose.ui.res.R.drawable.ic_cleaning_services
-        "doces" -> androidx.compose.ui.res.R.drawable.ic_cake
-        "enlatados" -> androidx.compose.ui.res.R.drawable.ic_kitchen
-        "mercearia" -> androidx.compose.ui.res.R.drawable.ic_shopping_basket
-        "congelados" -> androidx.compose.ui.res.R.drawable.ic_ac_unit
-        else -> androidx.compose.ui.res.R.drawable.ic_help_outline
+        "hortifruti" -> Icons.Filled.LocalGroceryStore
+        "laticínios", "laticinios" -> Icons.Filled.LocalDrink
+        "padaria" -> Icons.Filled.BakeryDining
+        "carnes" -> Icons.Filled.SetMeal
+        "peixaria" -> Icons.Filled.DinnerDining
+        "bebidas" -> Icons.Filled.LocalBar
+        "limpeza" -> Icons.Filled.CleaningServices
+        "doces" -> Icons.Filled.Cake
+        "enlatados" -> Icons.Filled.Kitchen
+        "mercearia" -> Icons.Filled.ShoppingBasket
+        "congelados" -> Icons.Filled.AcUnit
+        else -> Icons.Filled.HelpOutline
     }
 }
 
-companion object {
-    @Composable
-    fun show(listId: String, onDismiss: () -> Unit, onAddItem: (String, Double, String, Double?, String?) -> Unit) {
-        // This would be called from a BottomSheetScaffold or ModalBottomSheetLayout
-        AddItemBottomSheet(listId = listId, onDismiss = onDismiss, onAddItem = onAddItem)
-    }
+@Composable
+fun ShowAddItemBottomSheet(
+    listId: String,
+    onDismiss: () -> Unit = {},
+    onAddItem: (String, Double, String, Double?, String?) -> Unit = { _, _, _, _, _ -> }
+) {
+    AddItemBottomSheet(listId = listId, onDismiss = onDismiss, onAddItem = onAddItem)
 }

@@ -34,6 +34,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,9 +57,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Payment
-import androidx.compose.material.icons.filled.QrScanner
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ArrowDropDownCircle
+import androidx.compose.ui.platform.LocalContext
+import com.listaih.app.R
+import com.listaih.app.data.scanner.HapticFeedback
+import com.listaih.app.data.scanner.LocalBtScanner
+import com.listaih.app.data.scanner.ScreenWake
+import com.listaih.app.ui.scanpopup.AssociableItem
+import com.listaih.app.ui.scanpopup.ScanPopupController
+import com.listaih.app.ui.scanpopup.ScanPopupHost
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,14 +83,62 @@ fun ShoppingModeScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    var showScanner by rememberSaveable { mutableStateOf(false) }
+
+    val btScanner = LocalBtScanner.current
+    val scanController = remember { ScanPopupController() }
+
+    fun findScanItem(barcode: String): ScanPopupController.ScanItem? {
+        return uiState.items.firstOrNull { it.barcode == barcode }?.let {
+            ScanPopupController.ScanItem(
+                id = it.id,
+                name = it.name,
+                quantity = it.quantity,
+                unit = it.unit,
+                estimatedPrice = it.estimatedPrice,
+                category = it.category,
+                barcode = it.barcode,
+            )
+        }
+    }
+
+    fun handleBarcode(barcode: String) {
+        when (val decision = scanController.handleBarcode(barcode, ::findScanItem)) {
+            is ScanPopupController.ScanDecision.Check ->
+                viewModel.confirmScannedItem(decision.itemId, decision.quantity)
+            is ScanPopupController.ScanDecision.Increment ->
+                viewModel.incrementScannedItem(decision.itemId, decision.quantity)
+            is ScanPopupController.ScanDecision.Dismiss -> Unit
+            null -> Unit
+        }
+        when (scanController.state) {
+            is ScanPopupController.ScanPopupState.Unrecognized -> {
+                HapticFeedback.error(context)
+                ScreenWake.wake(context)
+            }
+            is ScanPopupController.ScanPopupState.Recognized -> {
+                HapticFeedback.success(context)
+                ScreenWake.clear(context)
+            }
+            null -> ScreenWake.clear(context)
+        }
+        showScanner = false
+    }
+
+    val currentHandleBarcode by androidx.compose.runtime.rememberUpdatedState(::handleBarcode)
+
+    DisposableEffect(btScanner) {
+        btScanner?.onBarcodeScanned = { barcode -> currentHandleBarcode(barcode) }
+        onDispose {
+            btScanner?.onBarcodeScanned = null
+            ScreenWake.clear(context)
+        }
+    }
 
     LaunchedEffect(key1 = uiState.checkoutSuccess) {
         if (uiState.checkoutSuccess) {
             scope.launch {
-                val result = snackbarHostState.showSnackbar(
-                    "Compra finalizada com sucesso!",
-                    duration = 3000
-                )
+                val result = snackbarHostState.showSnackbar("Compra finalizada com sucesso!")
                 if (result == SnackbarResult.ActionPerformed) {
                     onCheckoutComplete()
                 }
@@ -92,7 +151,7 @@ fun ShoppingModeScreen(
     LaunchedEffect(key1 = uiState.checkoutError) {
         uiState.checkoutError?.let { error ->
             scope.launch {
-                snackbarHostState.showSnackbar(error, duration = 3000)
+                snackbarHostState.showSnackbar(error)
             }
             viewModel.clearError()
         }
@@ -157,8 +216,10 @@ fun ShoppingModeScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 8.dp)
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                        top = 8.dp, bottom = 88.dp
+                    )
                 ) {
                     items(uiState.items, key = { it.id }) { item ->
                         ShoppingItemRow(
@@ -193,10 +254,10 @@ fun ShoppingModeScreen(
                         )
 
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            TextButton(onClick = { /* TODO: Scanner */ }) {
+                            TextButton(onClick = { showScanner = true }) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
-                                        Icons.Filled.QrScanner,
+                                        Icons.Filled.QrCodeScanner,
                                         contentDescription = "Scanner",
                                         tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
@@ -205,7 +266,7 @@ fun ShoppingModeScreen(
                                     Text("Escanear", fontSize = 13.sp)
                                 }
                             }
-                            TextButton(onClick = { /* TODO: Clear checked */ }) {
+                            TextButton(onClick = { viewModel.uncheckAll() }) {
                                 Icon(
                                     Icons.Filled.Delete,
                                     contentDescription = "Clear",
@@ -224,6 +285,67 @@ fun ShoppingModeScreen(
                     uiState = uiState,
                     onDismiss = { viewModel.dismissPaymentDialog() },
                     onConfirm = { viewModel.doCheckout() }
+                )
+            }
+
+            if (scanController.state != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .padding(top = 8.dp)
+                ) {
+                    ScanPopupHost(
+                        state = scanController.state,
+                        items = uiState.items.map {
+                            AssociableItem(id = it.id, name = it.name, category = it.category)
+                        },
+                        busy = uiState.isScanBusy,
+                        onConfirmRecognized = {
+                            scanController.confirmCurrent()?.let { decision ->
+                                if (decision is ScanPopupController.ScanDecision.Check) {
+                                    viewModel.confirmScannedItem(decision.itemId, decision.quantity)
+                                }
+                            }
+                            ScreenWake.clear(context)
+                        },
+                        onDismiss = {
+                            scanController.clear()
+                            ScreenWake.clear(context)
+                        },
+                        onAssociate = { itemId ->
+                            val barcode = (scanController.state as? ScanPopupController.ScanPopupState.Unrecognized)?.barcode
+                            if (barcode != null) {
+                                viewModel.associateScannedItem(itemId, barcode)
+                            }
+                            scanController.clear()
+                            ScreenWake.clear(context)
+                        },
+                        onCreateNew = { name ->
+                            val barcode = (scanController.state as? ScanPopupController.ScanPopupState.Unrecognized)?.barcode
+                            if (barcode != null) {
+                                viewModel.createScannedProduct(barcode, name)
+                            }
+                            scanController.clear()
+                            ScreenWake.clear(context)
+                        },
+                        onCreateGeneric = {
+                            val barcode = (scanController.state as? ScanPopupController.ScanPopupState.Unrecognized)?.barcode
+                            if (barcode != null) {
+                                viewModel.createGenericScannedProduct(barcode)
+                            }
+                            scanController.clear()
+                            ScreenWake.clear(context)
+                        },
+                        onSuggestName = { barcode -> viewModel.suggestScannedName(barcode) }
+                    )
+                }
+            }
+
+            if (showScanner) {
+                BarcodeScannerScreen(
+                    onBackClick = { showScanner = false },
+                    onBarcodeScanned = ::handleBarcode
                 )
             }
         }
@@ -262,9 +384,9 @@ fun ShoppingItemRow(
             Checkbox(
                 checked = item.checked,
                 onCheckedChange = { onToggleCheck(it) },
-                colors = androidx.compose.material3.CheckboxDefaults.checkboxColors(
+                colors = androidx.compose.material3.CheckboxDefaults.colors(
                     checkedColor = MaterialTheme.colorScheme.primary,
-                    uncheckedBorderColor = MaterialTheme.colorScheme.outline
+                    uncheckedColor = MaterialTheme.colorScheme.outline
                 )
             )
 
@@ -284,10 +406,12 @@ fun ShoppingItemRow(
                         MaterialTheme.colorScheme.onSurface
                     },
                     style = if (item.checked) {
-                        androidx.compose.ui.text.TextStyle(
-                            textDecoration = androidx.compose.ui.text.TextDecoration.LineThrough
+                        MaterialTheme.typography.bodyLarge.copy(
+                            textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
                         )
-                    } else null
+                    } else {
+                        MaterialTheme.typography.bodyLarge
+                    }
                 )
                 Text(
                     text = "${formatQty(item.quantity)} ${item.unit}",
@@ -320,9 +444,6 @@ private fun formatQty(qty: Double): String {
     }
 }
 
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.ui.res.painterResource
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckoutDialog(
@@ -338,13 +459,13 @@ fun CheckoutDialog(
     var paymentDropdownExpanded by remember { mutableStateOf(false) }
 
     val paymentOptions = listOf(
-        "" to "Sem pagamento" to 0,
-        "DINHEIRO" to "Dinheiro" to R.drawable.payment_dinheiro,
-        "DEBITO" to "Débito" to R.drawable.payment_debito,
-        "CREDITO" to "Crédito" to R.drawable.payment_credito,
-        "PIX" to "PIX" to R.drawable.payment_pix,
-        "VR" to "VR" to R.drawable.payment_vr,
-        "VA" to "VA" to R.drawable.payment_va
+        Triple("", "Sem pagamento", 0),
+        Triple("DINHEIRO", "Dinheiro", R.drawable.payment_dinheiro),
+        Triple("DEBITO", "Débito", R.drawable.payment_debito),
+        Triple("CREDITO", "Crédito", R.drawable.payment_credito),
+        Triple("PIX", "PIX", R.drawable.payment_pix),
+        Triple("VR", "VR", R.drawable.payment_vr),
+        Triple("VA", "VA", R.drawable.payment_va)
     )
 
     AlertDialog(
@@ -357,52 +478,59 @@ fun CheckoutDialog(
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                OutlinedTextField(
-                    value = paymentOptions.find { it.first == paymentMethod }?.second ?: "Sem pagamento",
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Forma de pagamento") },
-                    leadingIcon = {
-                        val selected = paymentOptions.find { it.first == paymentMethod }
-                        if (selected != null && selected.third != 0) {
-                            Icon(
-                                painter = painterResource(selected.third),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(20.dp)
+                androidx.compose.material3.ExposedDropdownMenuBox(
+                    expanded = paymentDropdownExpanded,
+                    onExpandedChange = { paymentDropdownExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = paymentOptions.find { it.first == paymentMethod }?.second ?: "Sem pagamento",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Forma de pagamento") },
+                        leadingIcon = {
+                            val selected = paymentOptions.find { it.first == paymentMethod }
+                            if (selected != null && selected.third != 0) {
+                                Icon(
+                                    painter = painterResource(selected.third),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        },
+                        trailingIcon = {
+                            androidx.compose.material3.Icon(
+                                Icons.Filled.ArrowDropDownCircle,
+                                contentDescription = null
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                    )
+                    androidx.compose.material3.DropdownMenu(
+                        expanded = paymentDropdownExpanded,
+                        onDismissRequest = { paymentDropdownExpanded = false }
+                    ) {
+                        paymentOptions.forEach { (value, label, drawableRes) ->
+                            androidx.compose.material3.DropdownMenuItem(
+                                leadingIcon = {
+                                    if (drawableRes != 0) {
+                                        Icon(
+                                            painter = painterResource(drawableRes),
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                },
+                                text = { Text(label) },
+                                onClick = {
+                                    paymentMethod = value
+                                    paymentDropdownExpanded = false
+                                }
                             )
                         }
-                    },
-                    trailingIcon = {
-                        androidx.compose.material3.Icon(
-                            androidx.compose.material.icons.filled.ArrowDropDown,
-                            contentDescription = null
-                        )
-                    },
-                    modifier = Modifier.menuAnchor()
-                )
-                androidx.compose.material3.DropdownMenu(
-                    expanded = paymentDropdownExpanded,
-                    onDismissRequest = { paymentDropdownExpanded = false }
-                ) {
-                    paymentOptions.forEach { (value, label, drawableRes) ->
-                        androidx.compose.material3.DropdownMenuItem(
-                            leadingIcon = {
-                                if (drawableRes != 0) {
-                                    Icon(
-                                        painter = painterResource(drawableRes),
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurface,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            },
-                            text = { Text(label) },
-                            onClick = {
-                                paymentMethod = value
-                                paymentDropdownExpanded = false
-                            }
-                        )
                     }
                 }
                 OutlinedTextField(

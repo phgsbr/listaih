@@ -13,17 +13,19 @@ import com.listaih.app.data.repository.ShoppingRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import dagger.hilt.android.HiltWorkerFactory
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.EntryPoint
-import dagger.hilt.android.InstallIn
+import javax.inject.Provider
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import androidx.hilt.work.HiltWorker
 
-@AndroidEntryPoint
-class SyncWorker @Inject constructor(
-    context: Context,
-    params: WorkerParameters,
+@HiltWorker
+class SyncWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted params: WorkerParameters,
     private val database: AppDatabase,
     private val apiService: ApiService,
     private val appPreferences: AppPreferences,
@@ -35,7 +37,7 @@ class SyncWorker @Inject constructor(
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
-            val accessToken = appPreferences.getAccessToken().blockingFirst()
+            val accessToken = appPreferences.getAccessToken()
             if (accessToken == null) {
                 Log.d(TAG, "No access token, skipping sync")
                 return@withContext Result.success()
@@ -97,10 +99,4 @@ class SyncWorker @Inject constructor(
     private suspend fun processDelete(item: SyncQueueEntity) {
         // TODO: Implement
     }
-}
-
-@InstallIn(SingletonComponent::class)
-@EntryPoint
-interface SyncWorkerEntryPoint {
-    fun syncWorker(): SyncWorker
 }

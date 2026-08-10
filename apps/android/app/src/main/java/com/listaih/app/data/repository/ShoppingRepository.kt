@@ -6,19 +6,30 @@ import com.listaih.app.data.local.dao.ShoppingListDao
 import com.listaih.app.data.local.dao.SyncQueueDao
 import com.listaih.app.data.local.entity.ListItemEntity
 import com.listaih.app.data.local.entity.ShoppingListEntity
+import com.listaih.app.data.local.entity.ShoppingListWithCounts
 import com.listaih.app.data.local.entity.SyncQueueEntity
 import com.listaih.app.data.network.ApiService
 import com.listaih.app.data.network.model.*
 import com.listaih.app.data.preferences.AppPreferences
+import com.listaih.app.ui.screens.home.ShoppingListUi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+
+@Serializable
+data class ExportPayload(
+    val lists: List<ShoppingListEntity>,
+    val items: List<ListItemEntity>
+)
 
 @Singleton
 class ShoppingRepository @Inject constructor(
@@ -26,6 +37,8 @@ class ShoppingRepository @Inject constructor(
     private val apiService: ApiService,
     private val appPreferences: AppPreferences
 ) {
+
+    private val json = Json
 
     private val shoppingListDao: ShoppingListDao = database.shoppingListDao()
     private val listItemDao: ListItemDao = database.listItemDao()
@@ -43,15 +56,119 @@ class ShoppingRepository @Inject constructor(
         return listItemDao.getItemsByListId(listId)
     }
 
+    fun getActiveListsUiFlow(): Flow<List<ShoppingListUi>> {
+        val householdId = appPreferences.getHouseholdId() ?: return flowOf(emptyList())
+        if (householdId.isBlank()) return flowOf(emptyList())
+        return shoppingListDao.getActiveListsWithCounts(householdId).map { rows ->
+            rows.map { it.toUi() }
+        }
+    }
+
+    suspend fun getHouseholds(): Result<List<HouseholdResponse>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.getHouseholds("Bearer $accessToken")
+                if (response.isSuccessful) {
+                    Result.success(response.body() ?: emptyList())
+                } else {
+                    Result.failure(Exception(response.errorBody()?.string() ?: "Failed to fetch households"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    fun saveHouseholdId(householdId: String) {
+        appPreferences.setHouseholdId(householdId).blockingAwait()
+    }
+
+    suspend fun getPurchase(purchaseId: String): Result<PurchaseResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.getPurchase("Bearer $accessToken", purchaseId)
+                if (response.isSuccessful) {
+                    Result.success(response.body()!!)
+                } else {
+                    Result.failure(Exception(response.errorBody()?.string() ?: "Failed to fetch purchase"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getProfile(): Result<UserResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.getProfile("Bearer $accessToken")
+                if (response.isSuccessful) {
+                    Result.success(response.body()!!)
+                } else {
+                    Result.failure(Exception(response.errorBody()?.string() ?: "Failed to fetch profile"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun regenerateInviteCode(householdId: String): Result<HouseholdResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.regenerateInviteCode("Bearer $accessToken", householdId)
+                if (response.isSuccessful) {
+                    Result.success(response.body()!!)
+                } else {
+                    Result.failure(Exception(response.errorBody()?.string() ?: "Failed to regenerate invite code"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun changePassword(current: String, new: String): Result<Unit> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.changePassword("Bearer $accessToken", ChangePasswordRequest(current, new))
+                if (response.isSuccessful) {
+                    Result.success(Unit)
+                } else {
+                    Result.failure(Exception(response.errorBody()?.string() ?: "Change password failed"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun exportLocalData(): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val lists = shoppingListDao.getAll()
+                val items = listItemDao.getAllItems()
+                Result.success(Json.encodeToString(ExportPayload(lists, items)))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     suspend fun login(email: String, password: String): Result<LoginResponse> {
         return try {
-            val response = apiService.login(LoginRequest(email, password)).await()
+            val response = apiService.login(LoginRequest(email, password))
             if (response.isSuccessful) {
                 response.body()?.let { body ->
-                    appPreferences.setAccessToken(body.accessToken).await()
-                    appPreferences.setRefreshToken(body.refreshToken).await()
-                    appPreferences.setUserId(body.user.id).await()
-                    appPreferences.setHouseholdId("").await() // Will be set after household selection
+                    appPreferences.setAccessToken(body.accessToken)
+                    appPreferences.setRefreshToken(body.refreshToken)
+                    appPreferences.setUserId(body.user.id)
+                    appPreferences.setHouseholdId("") // Will be set after household selection
                     Result.success(body)
                 } ?: Result.failure(Exception("Empty response"))
             } else {
@@ -64,12 +181,12 @@ class ShoppingRepository @Inject constructor(
 
     suspend fun refreshAccessToken(): Boolean {
         return try {
-            val refreshToken = appPreferences.getRefreshToken().blockingFirst() ?: return false
-            val response = apiService.refreshToken("Bearer $refreshToken").await()
+            val refreshToken = appPreferences.getRefreshToken() ?: return false
+            val response = apiService.refreshToken(RefreshRequest(refreshToken))
             if (response.isSuccessful) {
                 response.body()?.let { body ->
-                    appPreferences.setAccessToken(body.accessToken).await()
-                    appPreferences.setRefreshToken(body.refreshToken).await()
+                    appPreferences.setAccessToken(body.accessToken)
+                    appPreferences.setRefreshToken(body.refreshToken)
                     true
                 } ?: false
             } else {
@@ -81,18 +198,18 @@ class ShoppingRepository @Inject constructor(
     }
 
     suspend fun logout() {
-        val accessToken = appPreferences.getAccessToken().blockingFirst()
+        val accessToken = appPreferences.getAccessToken()
         accessToken?.let { token ->
-            apiService.logout("Bearer $token").await()
+            apiService.logout("Bearer $token")
         }
-        appPreferences.clearAuth().await()
+        appPreferences.clearAuth()
     }
 
     suspend fun syncLists(householdId: String): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.getLists("Bearer $accessToken", householdId).await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.getLists("Bearer $accessToken", householdId)
                 if (response.isSuccessful) {
                     val lists = response.body() ?: emptyList()
                     val entities = lists.map { toEntity(it) }
@@ -110,8 +227,8 @@ class ShoppingRepository @Inject constructor(
     suspend fun syncListItems(listId: String): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.getList("Bearer $accessToken", listId).await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.getList("Bearer $accessToken", listId)
                 if (response.isSuccessful) {
                     val list = response.body() ?: return@withContext Result.failure(Exception("Empty list"))
                     val entities = list.items.map { toEntity(it) }
@@ -126,11 +243,11 @@ class ShoppingRepository @Inject constructor(
         }
     }
 
-    suspend fun createList(householdId: String, name: String, category: String?): Result<ShoppingListEntity> {
+    suspend fun createList(householdId: String, name: String, category: String?, listType: String? = null): Result<ShoppingListEntity> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.createList("Bearer $accessToken", householdId, CreateListRequest(name, category)).await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.createList("Bearer $accessToken", householdId, CreateListRequest(name, category, listType))
                 if (response.isSuccessful) {
                     val list = response.body() ?: return@withContext Result.failure(Exception("Empty response"))
                     val entity = toEntity(list)
@@ -148,33 +265,31 @@ class ShoppingRepository @Inject constructor(
     suspend fun updateList(listId: String, name: String?, category: String?, archivedAt: Long?): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
                 val request = UpdateListRequest(
                     name = name,
                     category = category,
                     archivedAt = archivedAt?.let { java.time.Instant.ofEpochMilli(it).toString() }
                 )
-                val response = apiService.updateList("Bearer $accessToken", listId, request).await()
+                val response = apiService.updateList("Bearer $accessToken", listId, request)
                 if (response.isSuccessful) {
-                    // Update local
-                    shoppingListDao.getListById(listId).first().also { existing ->
-                        existing?.let { entity ->
-                            name?.let { entity.name = it }
-                            category?.let { entity.category = it }
-                            archivedAt?.let { entity.archivedAt = it }
-                            entity.updatedAt = System.currentTimeMillis()
-                            entity.serverSynced = true
-                            shoppingListDao.update(entity)
-                        }
+                    shoppingListDao.getListById(listId).first()?.let { entity ->
+                        val updated = entity.copy(
+                            name = name ?: entity.name,
+                            category = category ?: entity.category,
+                            archivedAt = archivedAt ?: entity.archivedAt,
+                            updatedAt = System.currentTimeMillis(),
+                            serverSynced = true
+                        )
+                        shoppingListDao.update(updated)
                     }
                     Result.success(Unit)
                 } else {
-                    // Queue for later sync
-                    queueSync("list", listId, "update", request)
+                    queueSync("list", listId, "update", Json.encodeToString(request))
                     Result.failure(Exception(response.errorBody()?.string() ?: "Update failed"))
                 }
             } catch (e: Exception) {
-                queueSync("list", listId, "update", UpdateListRequest(name, category, archivedAt?.let { java.time.Instant.ofEpochMilli(it).toString() }))
+                queueSync("list", listId, "update", Json.encodeToString(UpdateListRequest(name, category, archivedAt?.let { java.time.Instant.ofEpochMilli(it).toString() })))
                 Result.failure(e)
             }
         }
@@ -183,27 +298,37 @@ class ShoppingRepository @Inject constructor(
     suspend fun deleteList(listId: String): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.deleteList("Bearer $accessToken", listId).await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.deleteList("Bearer $accessToken", listId)
                 if (response.isSuccessful) {
                     shoppingListDao.getListById(listId).first()?.let { shoppingListDao.delete(it) }
                     Result.success(Unit)
                 } else {
-                    queueSync("list", listId, "delete", mapOf())
+                    queueSync("list", listId, "delete", "{}")
                     Result.failure(Exception(response.errorBody()?.string() ?: "Delete failed"))
                 }
             } catch (e: Exception) {
-                queueSync("list", listId, "delete", mapOf())
+                queueSync("list", listId, "delete", "{}")
                 Result.failure(e)
             }
         }
     }
 
-    suspend fun createItem(listId: String, name: String, quantity: Double, unit: String, estimatedPrice: Double?, category: String?): Result<ListItemEntity> {
+    suspend fun createItem(
+        listId: String,
+        name: String,
+        quantity: Double,
+        unit: String,
+        estimatedPrice: Double?,
+        category: String?,
+        barcode: String? = null,
+        barcodeRaw: String? = null,
+        productId: String? = null
+    ): Result<ListItemEntity> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.createItem("Bearer $accessToken", listId, CreateItemRequest(name, quantity, unit, estimatedPrice, category)).await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.createItem("Bearer $accessToken", listId, CreateItemRequest(name, quantity, unit, estimatedPrice, category, barcode, barcodeRaw, productId))
                 if (response.isSuccessful) {
                     val item = response.body() ?: return@withContext Result.failure(Exception("Empty response"))
                     val entity = toEntity(item)
@@ -221,10 +346,9 @@ class ShoppingRepository @Inject constructor(
     suspend fun updateItem(itemId: String, listId: String, request: UpdateItemRequest): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.updateItem("Bearer $accessToken", listId, itemId, request).await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.updateItem("Bearer $accessToken", listId, itemId, request)
                 if (response.isSuccessful) {
-                    // Handle checked status update with actualPrice calculation
                     if (request.checked == true) {
                         listItemDao.getItemById(itemId).first()?.let { existing ->
                             val updated = existing.copy(
@@ -245,6 +369,9 @@ class ShoppingRepository @Inject constructor(
                                 unit = request.unit ?: existing.unit,
                                 estimatedPrice = request.estimatedPrice ?: existing.estimatedPrice,
                                 category = request.category ?: existing.category,
+                                barcode = request.barcode ?: existing.barcode,
+                                barcodeRaw = request.barcodeRaw ?: existing.barcodeRaw,
+                                productId = request.productId ?: existing.productId,
                                 checked = request.checked ?: existing.checked,
                                 position = request.position ?: existing.position,
                                 updatedAt = System.currentTimeMillis(),
@@ -255,11 +382,11 @@ class ShoppingRepository @Inject constructor(
                     }
                     Result.success(Unit)
                 } else {
-                    queueSync("item", itemId, "update", request)
+                    queueSync("item", itemId, "update", Json.encodeToString(request))
                     Result.failure(Exception(response.errorBody()?.string() ?: "Update failed"))
                 }
             } catch (e: Exception) {
-                queueSync("item", itemId, "update", request)
+                queueSync("item", itemId, "update", Json.encodeToString(request))
                 Result.failure(e)
             }
         }
@@ -268,17 +395,17 @@ class ShoppingRepository @Inject constructor(
     suspend fun deleteItem(itemId: String, listId: String): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.deleteItem("Bearer $accessToken", listId, itemId).await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.deleteItem("Bearer $accessToken", listId, itemId)
                 if (response.isSuccessful) {
                     listItemDao.getItemById(itemId).first()?.let { listItemDao.delete(it) }
                     Result.success(Unit)
                 } else {
-                    queueSync("item", itemId, "delete", mapOf())
+                    queueSync("item", itemId, "delete", "{}")
                     Result.failure(Exception(response.errorBody()?.string() ?: "Delete failed"))
                 }
             } catch (e: Exception) {
-                queueSync("item", itemId, "delete", mapOf())
+                queueSync("item", itemId, "delete", "{}")
                 Result.failure(e)
             }
         }
@@ -286,7 +413,7 @@ class ShoppingRepository @Inject constructor(
 
     suspend fun getHealth(): Result<HealthResponse> {
         return try {
-            val response = apiService.getHealth().await()
+            val response = apiService.getHealth()
             if (response.isSuccessful) {
                 Result.success(response.body()!!)
             } else {
@@ -300,8 +427,8 @@ class ShoppingRepository @Inject constructor(
     suspend fun getSystemConfig(): Result<SystemConfigResponse> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.getSystemConfig("Bearer $accessToken").await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.getSystemConfig("Bearer $accessToken")
                 if (response.isSuccessful) {
                     Result.success(response.body()!!)
                 } else {
@@ -316,8 +443,8 @@ class ShoppingRepository @Inject constructor(
     suspend fun getPurchases(householdId: String): Result<List<PurchaseResponse>> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.getPurchases("Bearer $accessToken", householdId).await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.getPurchases("Bearer $accessToken", householdId)
                 if (response.isSuccessful) {
                     Result.success(response.body() ?: emptyList())
                 } else {
@@ -332,15 +459,19 @@ class ShoppingRepository @Inject constructor(
     suspend fun checkout(listId: String, request: CheckoutRequest): Result<PurchaseResponse> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.checkout("Bearer $accessToken", listId, request).await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.checkout("Bearer $accessToken", listId, request)
                 if (response.isSuccessful) {
                     Result.success(response.body()!!)
                 } else {
                     val errBody = response.errorBody()?.string()
                     if (errBody != null) {
-                        val err = json.decodeFromString<ApiError>(errBody)
-                        Result.failure(Exception(err.message ?: "Checkout failed"))
+                        try {
+                            val err = json.decodeFromString<ApiError>(errBody)
+                            Result.failure(Exception(err.message ?: "Checkout failed"))
+                        } catch (e: Exception) {
+                            Result.failure(Exception(errBody))
+                        }
                     } else {
                         Result.failure(Exception("Checkout failed"))
                     }
@@ -354,8 +485,8 @@ class ShoppingRepository @Inject constructor(
     suspend fun updatePurchase(purchaseId: String, request: UpdatePurchaseRequest): Result<PurchaseResponse> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.updatePurchase("Bearer $accessToken", purchaseId, request).await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.updatePurchase("Bearer $accessToken", purchaseId, request)
                 if (response.isSuccessful) {
                     Result.success(response.body()!!)
                 } else {
@@ -370,8 +501,8 @@ class ShoppingRepository @Inject constructor(
     suspend fun updateSystemConfig(config: Map<String, Any>): Result<SystemConfigResponse> {
         return withContext(Dispatchers.IO) {
             try {
-                val accessToken = appPreferences.getAccessToken().blockingFirst() ?: return@withContext Result.failure(Exception("No access token"))
-                val response = apiService.updateSystemConfig("Bearer $accessToken", config).await()
+                val accessToken = appPreferences.getAccessToken() ?: return@withContext Result.failure(Exception("No access token"))
+                val response = apiService.updateSystemConfig("Bearer $accessToken", config)
                 if (response.isSuccessful) {
                     Result.success(response.body()!!)
                 } else {
@@ -383,12 +514,12 @@ class ShoppingRepository @Inject constructor(
         }
     }
 
-    private fun queueSync(entityType: String, entityId: String, operation: String, payload: Any) {
+    private suspend fun queueSync(entityType: String, entityId: String, operation: String, payload: String) {
         val queueItem = SyncQueueEntity(
             entityType = entityType,
             entityId = entityId,
             operation = operation,
-            payload = kotlinx.serialization.json.Json.encodeToString(payload as kotlinx.serialization.KSerializer<*>),
+            payload = payload,
             createdAt = System.currentTimeMillis()
         )
         syncQueueDao.insert(queueItem)
@@ -403,6 +534,7 @@ class ShoppingRepository @Inject constructor(
             archivedAt = list.archivedAt?.let { java.time.Instant.parse(it).toEpochMilli() },
             createdAt = java.time.Instant.parse(list.createdAt).toEpochMilli(),
             updatedAt = java.time.Instant.parse(list.updatedAt).toEpochMilli(),
+            listType = list.listType,
             serverSynced = true
         )
     }
@@ -421,9 +553,33 @@ class ShoppingRepository @Inject constructor(
             checkedBy = item.checkedBy,
             checkedAt = item.checkedAt?.let { java.time.Instant.parse(it).toEpochMilli() },
             position = item.position,
-            createdAt = java.time.Instant.parse(item.createdAt).toEpochMilli(),
+            createdAt = (item.addedAt ?: item.updatedAt).let { java.time.Instant.parse(it).toEpochMilli() },
             updatedAt = java.time.Instant.parse(item.updatedAt).toEpochMilli(),
+            barcode = item.barcode,
+            barcodeRaw = item.barcodeRaw,
+            productId = item.productId,
             serverSynced = true
+        )
+    }
+
+    private fun ShoppingListWithCounts.toUi(): ShoppingListUi {
+        val icon = when (category?.lowercase()) {
+            "farmacia", "farmácia", "medicamentos" -> "medication"
+            "alimentos", "mercado" -> "shopping_cart"
+            else -> "shopping_cart"
+        }
+        return ShoppingListUi(
+            id = id,
+            name = name,
+            icon = icon,
+            checkedItems = checkedCount,
+            totalItems = totalCount,
+            estimatedTotal = estimatedTotal,
+            hasOnlineMembers = false,
+            members = emptyList(),
+            archived = archivedAt != null,
+            isModel = listType == "MODELO",
+            listType = listType
         )
     }
 }

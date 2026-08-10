@@ -28,8 +28,8 @@ class SocketSyncService @Inject constructor(
     fun connect() {
         scope.launch {
             try {
-                val baseUrl = appPreferences.getBaseUrl().blockingFirst() ?: "http://10.0.2.2:3000"
-                val accessToken = appPreferences.getAccessToken().blockingFirst()
+                val baseUrl = appPreferences.getBaseUrl().blockingFirst() ?: "http://127.0.0.1:3000"
+                val accessToken = appPreferences.getAccessToken()
 
                 val opts = IO.Options().apply {
                     transports = arrayOf("websocket", "polling")
@@ -91,7 +91,7 @@ class SocketSyncService @Inject constructor(
     }
 
     private fun joinHousehold() {
-        val householdId = appPreferences.getHouseholdId().blockingFirst()
+        val householdId = appPreferences.getHouseholdId()
         householdId?.let { id ->
             socket?.emit("join_household", id)
         }

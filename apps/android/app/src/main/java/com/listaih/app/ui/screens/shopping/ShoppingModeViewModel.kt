@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.listaih.app.data.network.model.CheckoutRequest
 import com.listaih.app.data.network.model.UpdateItemRequest
+import com.listaih.app.data.repository.ScanItemActions
 import com.listaih.app.data.repository.ShoppingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ data class ShoppingUiState(
     val totalCount: Int,
     val estimatedTotal: Double,
     val isLoading: Boolean = false,
+    val isScanBusy: Boolean = false,
     val checkoutSuccess: Boolean = false,
     val checkoutError: String? = null,
     val showPaymentDialog: Boolean = false,
@@ -46,6 +48,7 @@ data class ShoppingItemUi(
 @HiltViewModel
 class ShoppingModeViewModel @Inject constructor(
     private val repository: ShoppingRepository,
+    private val scanActions: ScanItemActions,
     savedStateHandle: androidx.lifecycle.SavedStateHandle,
 ) : ViewModel() {
 
@@ -125,6 +128,29 @@ class ShoppingModeViewModel @Inject constructor(
         }
     }
 
+    fun refresh() {
+        loadItems()
+    }
+
+    fun uncheckAll() {
+        viewModelScope.launch {
+            val checked = _uiState.value.items.filter { it.checked }
+            checked.forEach { item ->
+                val request = com.listaih.app.data.network.model.UpdateItemRequest(
+                    name = null,
+                    quantity = null,
+                    unit = null,
+                    estimatedPrice = null,
+                    category = null,
+                    checked = false,
+                    position = null,
+                )
+                repository.updateItem(item.id, listId, request)
+            }
+            loadItems()
+        }
+    }
+
     fun openPaymentDialog() {
         val checkedItems = _uiState.value.items.filter { it.checked }
         if (checkedItems.isEmpty()) {
@@ -195,5 +221,71 @@ class ShoppingModeViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.value = _uiState.value.copy(checkoutError = null)
+    }
+
+    // ---- Fase 6: post-scan popup actions ----
+
+    fun confirmScannedItem(itemId: String, quantity: Double) {
+        viewModelScope.launch {
+            setScanBusy(true)
+            scanActions.confirm(listId, itemId, quantity).onFailure { e ->
+                _uiState.value = _uiState.value.copy(checkoutError = e.message)
+            }
+            setScanBusy(false)
+            loadItems()
+        }
+    }
+
+    fun incrementScannedItem(itemId: String, quantity: Double) {
+        viewModelScope.launch {
+            setScanBusy(true)
+            scanActions.increment(listId, itemId, quantity).onFailure { e ->
+                _uiState.value = _uiState.value.copy(checkoutError = e.message)
+            }
+            setScanBusy(false)
+        }
+    }
+
+    fun associateScannedItem(itemId: String, barcode: String) {
+        val item = _uiState.value.items.firstOrNull { it.id == itemId } ?: return
+        viewModelScope.launch {
+            setScanBusy(true)
+            scanActions.associateBarcode(
+                listId, itemId, barcode, item.name, item.category
+            ).onFailure { e ->
+                _uiState.value = _uiState.value.copy(checkoutError = e.message)
+            }
+            setScanBusy(false)
+        }
+    }
+
+    fun createScannedProduct(barcode: String, name: String) {
+        viewModelScope.launch {
+            setScanBusy(true)
+            scanActions.createScannedItem(listId, barcode, name, checked = true).onFailure { e ->
+                _uiState.value = _uiState.value.copy(checkoutError = e.message)
+            }
+            setScanBusy(false)
+            loadItems()
+        }
+    }
+
+    fun createGenericScannedProduct(barcode: String) {
+        viewModelScope.launch {
+            setScanBusy(true)
+            scanActions.createGenericItem(listId, barcode).onFailure { e ->
+                _uiState.value = _uiState.value.copy(checkoutError = e.message)
+            }
+            setScanBusy(false)
+            loadItems()
+        }
+    }
+
+    suspend fun suggestScannedName(barcode: String): String? {
+        return scanActions.suggestName(barcode)
+    }
+
+    private fun setScanBusy(busy: Boolean) {
+        _uiState.value = _uiState.value.copy(isScanBusy = busy)
     }
 }

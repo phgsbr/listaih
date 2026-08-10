@@ -8,7 +8,7 @@ Backend é o produto central (NestJS). Admin WebUI em React. Android, Wear OS, A
 - **Fase 1 (Core Backend):** ✅ Concluído
 - **Fase 2 (WebSocket Sync):** ✅ Concluído
 - **Fase 3 (Admin WebUI + i18n + External API):** ✅ Concluído
-- **Fase 4 (Android):** 🚧 Em desenvolvimento
+- **Fase 4 (Android):** 🚧 Em desenvolvimento — Fases 1–6 do ANDROID-PLAN concluídas e validadas no device; próximas: 10 (Home real + filtros), 7 (Settings leve), 8 (Onboarding), 9 (Wear OS)
 - **Fase 5 (Grocy):** ⬜ Pendente
 - **Fase 6 (Home Assistant):** ⬜ Pendente
 - **Fase 7 (Alexa):** ⬜ Pendente
@@ -94,6 +94,10 @@ cd apps/backend && npx prisma generate && npx prisma migrate deploy
 - **API de itens envia `addedAt` (e não `createdAt`)** — `ListItemResponse.addedAt: String?`; `toEntity` usa `addedAt ?: updatedAt`
 - **Scanner HID**: `data/scanner/BtScannerManager.kt` — comparar `keyCode` com literais `66`/`134` (constantes de framework em `||` compilam p/ sparse-switch com payload rejeitado pelo runtime); `ENTER`(66) é tragado pelo IME no Samsung, usar `NUMPAD_ENTER`(134); callbacks do scanner via `rememberUpdatedState` (closure stale não atualiza); simular scan: keyevents `7..16` (dígitos 0–9) + `134` num comando único (idle 3s)
 - UI check no device: `uiautomator dump` + regex (screenshot PNG corrompe via `adb exec-out` no PowerShell)
+- **Popup pós-scan (Fase 6)**: `ScanPopupController` sem timer (próximo scan confirma o anterior); reconhecido → popup com Confirmar, scan repetido = +1 na quantidade; não reconhecido → acende tela (`FLAG_TURN_SCREEN_ON`) com 3 opções (Associar à lista / Cadastrar novo / Genérico); `findScanItem` lê `viewModel.uiState.value.items` — nunca o `items` capturado da composição (callback do scanner cruza recomposições)
+- **`queueSync` recebe `payload: String`** (serializar tipado antes) — `payload: Any` crasha em runtime (`Serializer for class 'Any' is not found`)
+- **PATCH de item com productId**: recompilar `dist` não basta — reiniciar `node dist/main.js` (processo local)
+- **Repo**: `github.com/phgsbr/listaih` (privado), branch `master`, remote `origin`, push normal
 
 ### Wear OS
 - Compose for Wear OS (`androidx.wear.compose:compose-material`)

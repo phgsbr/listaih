@@ -10,11 +10,12 @@ sem perder o estado das decisões, arquivos e validações.
 
 ## 1. Estado geral
 
-- **Projeto:** Listaih (Fase 4 — Android em desenvolvimento). Repositório sem `remote` configurado.
-  Branch: `master`.
-- **Fases 1–5 do plano Android concluídas e validadas no device físico** (ver §4).
-- **Nada foi commitado** nas sessões Android recentes — working tree contém todo o trabalho
-  das Fases 1–5 + artifacts temporários (ver §7.1).
+- **Projeto:** Listaih (Fase 4 — Android em desenvolvimento). Branch: `master`; remote `origin` →
+  **github.com/phgsbr/listaih** (privado, configurado 10 Ago).
+- **Fases 1–6 do plano Android concluídas e validadas no device físico** (ver §4).
+- **Working tree commitado (10 Ago):** 5 commits — `1b20e84` (gitignore debug), `6fdd063`
+  (backend barcode→product), `4524abb` (gitignore .env), `f6e93e7` (android Fase 5/6 + wrapper
+  Gradle 8.4), `8ae4d6b` (docs). Push em `origin/master`.
 - Backend (NestJS) e Admin (React) estão em fases concluídas.
 
 ## 2. Decisões do usuário (a preservar)
@@ -69,7 +70,7 @@ sem perder o estado das decisões, arquivos e validações.
 | 3 — Backend: endpoints de Product | ✅ 10 Ago (API) | lookup por barcode (OFF fallback), create, ProductBarcode alternativo |
 | 4 — Android: OFF + barcode nos models | ✅ 10 Ago | ProductRepository, barcode/barcodeRaw/productId nos requests |
 | 5 — Scanner HID + Haptics | ✅ 10 Ago (device) | BtScannerManager, HapticFeedback, LocalBtScanner |
-| 6 — Popup pós-scan + Associação | ⬜ Próxima | — |
+| 6 — Popup pós-scan + Associação | ✅ 10 Ago (device) | Fluxo completo: reconhecer → Confirmar/+1 → desconhecido → Associar à lista → re-scan reconhece |
 | 10 — Home real + Filtros | ⬜ | — |
 | 7 — Settings leve | ⬜ | — |
 | 8 — Onboarding expandido | ⬜ | — |
@@ -90,9 +91,20 @@ sem perder o estado das decisões, arquivos e validações.
 6. **Room**: `fallbackToDestructiveMigration()` — schema novo não pede migration manual em dev.
 7. **UTF-8**: nunca editar arquivos com acentos via PowerShell `Set-Content` (corrompe). Usar Edit tool.
 8. **$ sh adb**: no PowerShell usar `& $adb ...` (adb é executável/path do SDK).
+9. **Matcher de scan no popup (Fase 6)**: `findScanItem` deve ler `viewModel.uiState.value.items` —
+   nunca o `items` capturado da composição (callback externo do scanner cruza recomposições → lista "vazia").
+10. **`queueSync` com `payload: Any` crasha em runtime** (`Serializer for class 'Any' is not found`).
+    Assinatura é `payload: String` — serializar tipado antes (`Json.encodeToString(request)`).
+11. **PATCH de item com `productId`**: requer `UpdateItemDto.productId` no source **e processo reiniciado**
+    (recompilar `dist` não basta — `node dist/main.js` precisa ser reiniciado).
+12. **PowerShell `Set-Content` em Kotlin/TS corrompe UTF-8** (arquivo quebrado); desfazer com
+    `git checkout --` apaga trabalho não commitado — preferir reconstruir com Edit tool + antes commit.
 
 ## 6. Validações feitas
 
+- Fase 6 validada no device (02:00–02:35 de 10 Ago): popup reconhecido (Confirmar → PATCH checked),
+  +1 por scan repetido (2→3 unit), popup "Código não reconhecido" (123500123501) → Associar à lista
+  → chooser → PATCH 200 com productId **sem crash** → re-scan reconhece o código recém-vinculado.
 - Fase 5 validada no device (00:58 de 10 Ago): scan simulado → `barcode complete: 7899990001111`
   → toast + vibração → PUT no backend (`checked: true`, `actualPrice: 19`, `checkedAt`)
   → UI "Comprados: 1" + "✓ por current_user". Repetido 2x (NUMPAD_ENTER).
@@ -106,25 +118,23 @@ sem perder o estado das decisões, arquivos e validações.
 
 ## 7. Pendências / próximos passos
 
-1. **Limpeza + commit** do working tree Android (ver §7.1) — necessita aprovação do usuário.
-2. **Fase 6 — Popup pós-scan + Associação** (próxima): `ScanPopupController` sem timer;
-   scan reconhecido → oferta de quantidade (+1 no repetido); não reconhecido → acende tela
-   (FLAG_TURN_SCREEN_ON) + 3 opções (Associar à lista / Cadastrar novo / Genérico); haptics já prontos.
-3. Fase 10 — Home real + Filtros (chips ligados às queries Room reais).
+1. **Fase 10 — Home real + Filtros** (próxima): chips ligados às queries Room reais
+   (ativas/arquivadas), badge do tipo no card (estrutura visual já existe em HomeScreen.kt).
+2. Fase 7 — Settings leve (tema claro/escuro, manter Perfil/Senha/URL/Sobre); Fase 8 — Onboarding
+   expandido (URL do servidor + `/setup/status`); Fase 9 — Wear OS companion (opcional).
+3. Manter docs atualizados após cada fase (`progress.md`, `HANDOFF-android.md`) — atualizados em 10 Ago.
 
-### 7.1 Working tree (não commitado)
+### 7.1 Working tree (estado em 10 Ago 2026)
 
-- **Fases 1–5**: MainActivity, ListDetailScreen/VM, ShoppingModeScreen/VM, BarcodeScannerScreen,
-  shopping/data scanner (BtScannerManager, HapticFeedback, LocalBtScanner), AddListScreen,
-  ProductRepository, ApiService/ApiModels (products, addedAt, RefreshRequest), AuthInterceptor,
-  ShoppingRepository (createItem com barcode), AppNavHost, manifest cleartext.
-- **Backend Fase 3**: products controller/service, ProductBarcode migration, DTOs.
-- **Artifacts temporários a limpar**: `compile_out*.txt`, `ui_dump_*.xml`, `backend_run.log*`,
-  dumps, screenshots, outputs de build (definir com o usuário o que excluir).
+- **Tudo commitado** via 5 commits (ver §1). Repo: `github.com/phgsbr/listaih` (privado), branch `master`.
+- `docs/progress.md` registra: Fase 6 validada, fixes (matcher stale, queueSync `payload: String`,
+  DTO productId + restart do backend), ShoppingRepository reconstruído — se precisar, atualizar.
+- Temporários fora do git (gitignore): `compile_out*.txt`, `ui_dump_*.xml`, `backend_run.log.err`,
+  `gradle-temp/`, zip do Gradle, screenshots; `_tmp_login.json` **deletado** (continha JWT).
+  `.env` do backend fora do repo (gitignore + commit `4524abb`).
 
 ## 8. Riscos / limitações conhecidas
 
-- Muito trabalho não commitado; artifacts misturados no working tree (limpeza precisa de decisão).
 - Redis não instalado (SyncService usa WARN).
 - Docker não instalado no ambiente (compose do deploy não testado).
 - Keyguard pode bloquear testes longos (desbloqueio manual do usuário).
@@ -133,6 +143,6 @@ sem perder o estado das decisões, arquivos e validações.
 ## 9. Como retomar
 
 1. Ler este doc + `docs/ANDROID-PLAN.md` seção 8 (Instruções para o Agente).
-2. Rodar `git status` + `git diff` para rever o working tree.
+2. Rodar `git status` + `git diff` para rever o working tree (repo: `github.com/phgsbr/listaih` — privado).
 3. Aplicar JDK 17 ANTES de qualquer comando gradle.
-4. Continuar pela **Fase 6** do plano (próxima) ou pela limpeza/commit se o usuário aprovar.
+4. Continuar pela **Fase 10** do plano (Home real + Filtros) — depende só da Fase 1 (pronta).

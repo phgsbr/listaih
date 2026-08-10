@@ -206,7 +206,24 @@ Comportamento pós-checkout por tipo de lista:
 | 5.3 | `BarcodeScannerScreen` mantido como fallback de câmera | `BarcodeScannerScreen.kt` |
 | 5.4 | `HapticFeedback.kt` — `VibrationEffect` (80ms sucesso, duplo erro) + `ToneGenerator` beep | Novo `HapticFeedback.kt` |
 
-### FASE 6 — Popup de Detalhe Pós-Scan
+### FASE 6 — ✅ CONCLUÍDA (10 Ago) — Popup de Detalhe Pós-Scan
+
+> **Implementado e VALIDADO no device físico (Samsung `RQ8T206PXPW`, 10 Ago):** fluxo
+> completo de ponta a ponta — scan reconhecido → popup com Confirmar → PATCH checked;
+> scan repetido com popup aberto → +1 na quantidade; scan desconhecido →
+> "Código não reconhecido" (acende a tela) com 3 opções; **Associar à lista** →
+> chooser → `POST /api/products` + `PATCH` com productId (200, sem crash) → re-scan
+> do mesmo código → reconhecido. Detalhes em `docs/progress.md`.
+> **Bugs corrigidos no caminho:**
+> 1. **Matcher stale**: `findScanItem` lia `items` da composição (callback externo do
+>    scanner cruza recomposições → lista "vazia"). Corrigido: `viewModel.uiState.value.items`.
+> 2. **Crash `queueSync`**: `payload: Any` + `Json.encodeToString` → `Serializer for class 'Any'`
+>    em runtime. Corrigido: assinatura `payload: String` (callers serializam tipado).
+> 3. **400 no PATCH de associação**: backend rodava com `UpdateItemDto` sem `productId` —
+>    recompilar `dist` não basta, o processo `node dist/main.js` precisa ser reiniciado.
+> 4. **`ShoppingRepository.kt` reconstruído** após `git checkout --` acidental (working tree
+>    não commitado na época) — coroutines suspensas, `RefreshRequest(refreshToken)` no body,
+>    métodos de ViewModels recuperados. `assembleDebug` OK.
 
 | # | Ação | Detalhe |
 |---|---|---|
@@ -272,7 +289,7 @@ Comportamento pós-checkout por tipo de lista:
 | 3 | Fase 3 — Backend: endpoints de Product | Fase 1 | ✅ 10 Ago (API) |
 | 4 | Fase 4 — Android: OFF + barcode nos models | Fase 3 | ✅ 10 Ago |
 | 5 | Fase 5 — Scanner HID + Haptics | Fase 1 | ✅ 10 Ago (device) |
-| 6 | Fase 6 — Popup pós-scan + Associação | Fase 4 + Fase 5 | ⬜ Próxima |
+| 6 | Fase 6 — Popup pós-scan + Associação | Fase 4 + Fase 5 | ✅ 10 Ago (device) |
 | 7 | Fase 10 — Home real + Filtros | Fase 1 | ⬜ |
 | 8 | Fase 7 — Settings leve | Fase 1 | ⬜ |
 | 9 | Fase 8 — Onboarding expandido | Fase 1 | ⬜ |

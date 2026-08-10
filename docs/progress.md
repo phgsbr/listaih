@@ -1,6 +1,6 @@
 # Listaih — Estado do Projeto
 
-> Última atualização: 10 Ago 2026 (Fase 5 Android — scanner HID validado no device)
+> Última atualização: 10 Ago 2026 (Fase 6 Android — popup pós-scan + associação validados no device; repo no GitHub)
 
 ---
 
@@ -17,7 +17,7 @@
 | 1. Core Backend | Setup wizard, auth, healthcheck, Docker, Caddy, single-household | ✅ Concluído |
 | 2. WebSocket Sync | Socket.io, eventos em tempo real, Redis pub/sub | ✅ Concluído |
 | 3. Admin WebUI | React 19 + Vite 8 + MUI v9, dashboard, i18n, integrações | ✅ Concluído |
-| 4. App Android | Kotlin + Compose, offline-first, Wear OS | 🚧 Em desenvolvimento (Fases 1–5 do plano concluídas) |
+| 4. App Android | Kotlin + Compose, offline-first, Wear OS | 🚧 Em desenvolvimento (Fases 1–6 do plano concluídas; faltam 10, 7, 8, 9) |
 | 5. Grocy | Sync bidirecional, mapeamento de produtos | 🚧 Em desenvolvimento |
 | 6. Home Assistant | Webhooks, MQTT discovery, notificações | ⬜ Pendente |
 | 7. Alexa Skill | Account linking, intents, Cloudflare Tunnel | ⬜ Pendente |
@@ -122,7 +122,7 @@ Listaih/
 │   │           ├── system/         SystemConfig CRUD (Grocy, HA, currency, AI fields)
 │   │           ├── grocy/          Hybrid match, unit conversion, stock status, GS1 best_before
 │   │           └── tokens/         API tokens CRUD (for external clients)
-│   └── android/                     🚧 Em desenvolvimento (Fases 1–5 do plano)
+│       └── android/                     🚧 Em desenvolvimento (Fases 1–6 do plano)
 │       ├── settings.gradle.kts
 │       ├── build.gradle.kts
 │       ├── gradle/libs.versions.toml
@@ -484,7 +484,7 @@ Listaih/
 3. ✅ Fase 3 — Backend: endpoints de Product (lookup, create, associate)
 4. ✅ Fase 4 — Android: OFF + barcode nos models (CreateItemRequest, UpdateItemRequest, ProductRepository)
 5. ✅ Fase 5 — Scanner Bluetooth HID + Câmera + Haptics
-6. ⬜ Fase 6 — Popup pós-scan + Associação
+6. ✅ Fase 6 — Popup pós-scan + Associação (validado no device 10 Ago)
 7. ⬜ Fase 10 — Home real + Filtros
 8. ⬜ Fase 7 — Settings leve (remover admin do mobile)
 9. ⬜ Fase 8 — Onboarding expandido
@@ -501,11 +501,24 @@ Listaih/
 - **Simulação HID via adb**: keyevents 7–16 = dígitos 0–9; `66` (ENTER) é tragado pelo IME no Samsung — usar `134` (NUMPAD_ENTER); idle de 3s permite rajada única
 - **Screen-off**: durante testes usar `settings put system screen_off_timeout 1800000` (revertido para 30000 ao final); keyguard padrão exige desbloqueio manual do usuário
 
+### ✅ Concluído (Fase 6 — Popup pós-scan + Associação, validado no device 10 Ago)
+- **Implementado**: `ScanPopupController` (sem timer; próximo scan confirma o anterior), popup reconhecido (nome, qtd, preço — não acende tela) com Confirmar, scan repetido do mesmo código = +1 na quantidade, popup não reconhecido (acende tela `FLAG_TURN_SCREEN_ON`) com 3 opções: **Associar à lista** / **Cadastrar novo** / **Genérico**, `ScanItemActions.kt` (ações do popup). Associação: chooser de itens → cria Product (`POST /api/products`) → `PATCH` item com `productId`.
+- **Validado no device Samsung `RQ8T206PXPW` (10 Ago, ~02:00–02:35)**:
+  1. Scan de código associado (7899990001111) → popup reconhecido "Manteiga Teste / 2 unit" → Confirmar → PATCH checked ✓
+  2. Re-scan com popup aberto → +1 (2 → 3 unit, atualiza backend) ✓
+  3. Scan desconhecido (123500123501) → popup "Código não reconhecido" ✓
+  4. Associar à lista → chooser → "Manteiga Teste" → **PATCH 200** com productId, **sem crash** ✓
+  5. Re-scan do código recém-associado → popup reconhecido ✓ (barcode vinculado)
+- **Bugs corrigidos no caminho**:
+  1. **Matcher stale no popup**: `findScanItem` lia `items` da composição (callback externo do scanner podia cruzar recomposições → lista "vazia"). Corrigido: ler `viewModel.uiState.value.items`.
+  2. **Crash `kotlinx.serialization.SerializationException: Serializer for class 'Any'`**: `queueSync(entityType, id, op, payload: Any)` chamava `Json.encodeToString(payload)` — sem serializer de `Any` em runtime. Corrigido: assinatura `payload: String` (callers serializam tipado).
+  3. **400 no PATCH de associação**: backend rodava com `UpdateItemDto` antigo (sem `productId`); dist recompilado mas processo não reiniciado. Corrigido: `node dist/main.js` reiniciado (PID 60172 → 142252).
+  4. **`ShoppingRepository.kt` reconstruído**: `git checkout --` acidental reverteu para o HEAD (quebrado, 429 linhas); a versão da Fase 6 (658 linhas) não estava commitada. Reconstruído do zero: coroutines suspensas (sem `blockingFirst`/`.await()`), `RefreshRequest(refreshToken)` no body, `entity.copy()` no updateList, métodos recuperados (`getActiveListsUiFlow`, `getHouseholds`, `saveHouseholdId`, `getPurchase`, `getProfile`, `regenerateInviteCode`, `changePassword`, `exportLocalData`). `assembleDebug` OK.
+
 ### 🚧 Próximo passo imediato
-**Fase 6 — Popup de detalhe pós-scan + Associação** (ver ANDROID-PLAN.md seção 4):
-`ScanPopupController` (sem timer; próximo scan confirma o anterior), popup reconhecido (não acende tela)
-vs não reconhecido (acende com FLAG_TURN_SCREEN_ON; 3 botões: Associar à lista / Cadastrar novo / Genérico),
-scan repetido = +1 na quantidade. Depois: Fase 10 (Home real + filtros).
+**Fase 10 — Home real + Filtros** (ver ANDROID-PLAN.md seção 4): chips ligados às queries
+reais do Room (ativas/arquivadas), badge do tipo no card (estrutura visual já existe).
+Depois: Fase 7 (Settings leve), Fase 8 (Onboarding expandido), Fase 9 (Wear OS companion).
 
 ### 🚧 Em andamento (anterior, agora reorganizado no plano)
 - Integração completa Repository → UI (ViewModels)
@@ -519,7 +532,7 @@ scan repetido = +1 na quantidade. Depois: Fase 10 (Home real + filtros).
 3. ✅ Fase 3: Backend endpoints de Product (lookup/OFF, create, barcode alternativo) — validado por API 10 Ago
 4. ✅ Fase 4: Android OFF + barcode nos models (ProductRepository, CreateItem/UpdateItem)
 5. ✅ Fase 5: Scanner Bluetooth HID + Haptics (validado no device 10 Ago)
-6. Implementar Fase 6: Popup pós-scan + Associação
+6. ✅ Fase 6: Popup pós-scan + Associação (validado no device 10 Ago)
 7. Implementar Fase 10: Home real + Filtros
 
 ### Melhorias futuras (não bloqueantes)
@@ -532,17 +545,23 @@ scan repetido = +1 na quantidade. Depois: Fase 10 (Home real + filtros).
 
 ## Próximos Passos (Android)
 
-> Ordem de execução oficial: `docs/ANDROID-PLAN.md` seção 5. Fases 1–5 do plano
-> concluídas e validadas. A seguir, **Fase 6 — Popup pós-scan + Associação**.
+> Ordem de execução oficial: `docs/ANDROID-PLAN.md` seção 5. Fases 1–6 do plano
+> concluídas e validadas. A seguir, **Fase 10 — Home real + Filtros**.
+>
+> **Repo no GitHub (10 Ago):** `github.com/phgsbr/listaih` (privado, branch `master`).
+> Commits: `1b20e84` (gitignore debug), `6fdd063` (backend barcode→product),
+> `4524abb` (gitignore .env), `f6e93e7` (android Fase 5/6 + wrapper Gradle 8.4),
+> `8ae4d6b` (docs). `.env` do backend fora do repo.
 
-### Fase 6 — Popup pós-scan + Associação (próxima)
-1. `ScanPopupController` — popup pós-scan **sem timer** (próximo scan confirma o anterior)
-2. Scan reconhecido: item encontrado → oferta de quantidade (+1 no scan repetido)
-3. Scan não reconhecido: acende a tela (FLAG_TURN_SCREEN_ON); popup com 3 opções: **Associar à lista / Cadastrar novo / Genérico**
-4. Haptics diferenciados (sucesso/erro) já prontos na Fase 5; espelhar popup no Wear (opcional, quando configurado)
+### Fase 6 — ✅ Concluída (10 Ago)
+Popup pós-scan sem timer (reconhecido: Confirmar, +1 por scan repetido; não reconhecido:
+Associar à lista / Cadastrar novo / Genérico) — validado no device (ver seção Fase 4 acima).
+Bugs corrigidos no caminho: matcher stale (`uiState.value.items`), crash `queueSync`
+(`payload: String`), 400 no PATCH de associação (backend reiniciado com `productId` no DTO),
+`ShoppingRepository.kt` reconstruído após checkout acidental.
 
 ### Fases seguintes (após Fase 6)
-- Fase 10 — Home real + Filtros
+- Fase 10 — Home real + Filtros (chips ligados às queries Room reais)
 - Fase 7 — Settings leve (remover admin do mobile)
 - Fase 8 — Onboarding expandido
 - Fase 9 — Wear OS companion (opcional — toggle)

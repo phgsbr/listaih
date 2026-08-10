@@ -77,7 +77,7 @@ cd apps/backend && npx prisma generate && npx prisma migrate deploy
 - `apps/android/app` — Phone app module
 - `apps/android/wear` — Wear OS module
 - Material 3 theming (`androidx.compose.material3`)
-- Room database (`androidx.room`) com 7 entities + sync queue
+- Room database (`androidx.room`) com 7 entities + sync queue; `fallbackToDestructiveMigration()` (schema novo não pede migration manual em dev)
 - DataStore Preferences (`androidx.datastore`) para auth tokens e settings
 - Retrofit + Kotlinx Serialization para API REST
 - Socket.io client (`io.socket:socket.io-client`) para real-time sync
@@ -88,6 +88,12 @@ cd apps/backend && npx prisma generate && npx prisma migrate deploy
 - Accompanist para permissions e system UI controller
 - `minSdk 26`, `targetSdk 34`, `compileSdk 34`
 - Kotlin 1.9.22, AGP 8.4.2, Compose Compiler 1.5.11
+- Build: JDK 17 (`$env:JAVA_HOME="C:\Program Files\Android\Android Studio\jbr"`); sempre `.\gradlew.bat :app:assembleDebug --console=plain`; APK em `apps/android/app/build/outputs/apk/debug/app-debug.apk`; device `RQ8T206PXPW` (adb em `C:\Users\Pedro Henrique\AppData\Local\Android\Sdk\platform-tools\adb.exe`); `adb install -r` preserva dados
+- **baseUrl default `http://127.0.0.1:3000`** — device físico usa `adb reverse tcp:3000 tcp:3000`; manifest tem `usesCleartextTraffic="true"`
+- **JWT access 15min / refresh 7d**: `AuthInterceptor` faz refresh+retry automático — `/api/auth/refresh` recebe `RefreshRequest` no **body** (header quebra); pula login/refresh; client próprio evita ciclo
+- **API de itens envia `addedAt` (e não `createdAt`)** — `ListItemResponse.addedAt: String?`; `toEntity` usa `addedAt ?: updatedAt`
+- **Scanner HID**: `data/scanner/BtScannerManager.kt` — comparar `keyCode` com literais `66`/`134` (constantes de framework em `||` compilam p/ sparse-switch com payload rejeitado pelo runtime); `ENTER`(66) é tragado pelo IME no Samsung, usar `NUMPAD_ENTER`(134); callbacks do scanner via `rememberUpdatedState` (closure stale não atualiza); simular scan: keyevents `7..16` (dígitos 0–9) + `134` num comando único (idle 3s)
+- UI check no device: `uiautomator dump` + regex (screenshot PNG corrompe via `adb exec-out` no PowerShell)
 
 ### Wear OS
 - Compose for Wear OS (`androidx.wear.compose:compose-material`)
@@ -113,6 +119,8 @@ cd apps/backend && npx prisma generate && npx prisma migrate deploy
 3. `20260805231521_add_currency` — currency no SystemConfig
 4. `20260806041017_add_list_category` — category no ShoppingList
 5. `20260808002858_add_external_api` — apiEnabled, apiBaseUrl, apiKey no SystemConfig
+6. `20260808173208_phase5a_checkout_purchase_gs1_off` — Purchase model, checkout, GS1 parser, OFF no ListItem
+7. `20260810021352_add_product_barcodes` — ProductBarcode model (barcode alternativo → Product)
 
 ## External API (Agentes IA / Clientes Externos)
 **Módulo:** `apps/backend/src/modules/external-api/`

@@ -1,6 +1,6 @@
 # Listaih — Estado do Projeto
 
-> Última atualização: 08 Ago 2026 (Fase 5B — Admin purchase history page + checkout)
+> Última atualização: 10 Ago 2026 (Fase 5 Android — scanner HID validado no device)
 
 ---
 
@@ -17,7 +17,7 @@
 | 1. Core Backend | Setup wizard, auth, healthcheck, Docker, Caddy, single-household | ✅ Concluído |
 | 2. WebSocket Sync | Socket.io, eventos em tempo real, Redis pub/sub | ✅ Concluído |
 | 3. Admin WebUI | React 19 + Vite 8 + MUI v9, dashboard, i18n, integrações | ✅ Concluído |
-| 4. App Android | Kotlin + Compose, offline-first, Wear OS | 🚧 Em desenvolvimento |
+| 4. App Android | Kotlin + Compose, offline-first, Wear OS | 🚧 Em desenvolvimento (Fases 1–5 do plano concluídas) |
 | 5. Grocy | Sync bidirecional, mapeamento de produtos | 🚧 Em desenvolvimento |
 | 6. Home Assistant | Webhooks, MQTT discovery, notificações | ⬜ Pendente |
 | 7. Alexa Skill | Account linking, intents, Cloudflare Tunnel | ⬜ Pendente |
@@ -101,12 +101,13 @@ Listaih/
 │   │   ├── prisma/
 │   │   │   ├── schema.prisma      ✅ 11 models (User, ApiToken, RefreshToken, Household, HouseholdMember, ShoppingList, ListItem, Purchase, Product, PriceEntry, SystemConfig) + 3 enums (PaymentMethod, ListType, ReceiptStatus)
 │   │   │   └── migrations/
-│   │   │       ├── 20260805024405_init
-│   │   │       ├── 20260805210807_add_api_tokens
-│   │   │       ├── 20260805231521_add_currency
-│   │   │       ├── 20260806041017_add_list_category
-│   │   │       ├── 20260808002858_add_external_api
-│   │   │       └── 20260808173208_phase5a_checkout_purchase_gs1_off
+│       │   │       ├── 20260805024405_init
+│       │   │       ├── 20260805210807_add_api_tokens
+│       │   │       ├── 20260805231521_add_currency
+│       │   │       ├── 20260806041017_add_list_category
+│       │   │       ├── 20260808002858_add_external_api
+│       │   │       ├── 20260808173208_phase5a_checkout_purchase_gs1_off
+│       │   │       └── 20260810021352_add_product_barcodes
 │   │   └── src/
 │   │       ├── main.ts            json({ limit: '10mb' }), CORS, ServeStaticModule (/admin)
 │   │       ├── app.module.ts       9 módulos
@@ -121,34 +122,40 @@ Listaih/
 │   │           ├── system/         SystemConfig CRUD (Grocy, HA, currency, AI fields)
 │   │           ├── grocy/          Hybrid match, unit conversion, stock status, GS1 best_before
 │   │           └── tokens/         API tokens CRUD (for external clients)
-│   └── android/                     🚧 Em desenvolvimento
+│   └── android/                     🚧 Em desenvolvimento (Fases 1–5 do plano)
 │       ├── settings.gradle.kts
 │       ├── build.gradle.kts
 │       ├── gradle/libs.versions.toml
 │       ├── app/
 │       │   ├── build.gradle.kts
 │       │   ├── src/main/
-│       │   │   ├── AndroidManifest.xml
+│       │   │   ├── AndroidManifest.xml    usesCleartextTraffic="true"
 │       │   │   ├── java/com/listaih/app/
 │       │   │   │   ├── ListaihApplication.kt
-│       │   │   │   ├── MainActivity.kt
+│       │   │   │   ├── MainActivity.kt       onKeyDown → BtScannerManager, CompositionLocalProvider
 │       │   │   │   ├── MainViewModel.kt
 │       │   │   │   ├── data/
 │       │   │   │   │   ├── local/
-│       │   │   │   │   │   ├── AppDatabase.kt
+│       │   │   │   │   │   ├── AppDatabase.kt   fallbackToDestructiveMigration
 │       │   │   │   │   │   ├── Converters.kt
-│       │   │   │   │   │   ├── entity/Entities.kt
+│       │   │   │   │   │   ├── entity/Entities.kt (ShoppingListWithCounts)
 │       │   │   │   │   │   └── dao/Daos.kt
 │       │   │   │   │   ├── network/
-│       │   │   │   │   │   ├── ApiService.kt
-│       │   │   │   │   │   └── model/ApiModels.kt
+│       │   │   │   │   │   ├── ApiService.kt    + products (lookup/create/barcodes)
+│       │   │   │   │   │   └── model/ApiModels.kt (ListItemResponse.addedAt: String?)
 │       │   │   │   │   ├── preferences/AppPreferences.kt
-│       │   │   │   │   └── repository/ShoppingRepository.kt
+│       │   │   │   │   ├── repository/
+│       │   │   │   │   │   ├── ShoppingRepository.kt
+│       │   │   │   │   │   └── ProductRepository.kt   (Fase 4)
+│       │   │   │   │   └── scanner/                (Fase 5)
+│       │   │   │   │       ├── BtScannerManager.kt (buffer HID, ENTER/NUMPAD_ENTER, idle 3s)
+│       │   │   │   │       ├── HapticFeedback.kt   (sucesso/erro + beep)
+│       │   │   │   │       └── LocalBtScanner.kt   (CompositionLocal)
 │       │   │   │   ├── di/
 │       │   │   │   │   ├── AppModule.kt
 │       │   │   │   │   ├── NetworkModule.kt
-│       │   │   │   │   └── AuthInterceptor.kt
-│       │   │   │   ├── navigation/AppNavHost.kt
+│       │   │   │   │   └── AuthInterceptor.kt     (refresh+retry automático, @Body RefreshRequest)
+│       │   │   │   ├── navigation/AppNavHost.kt      (mapeia ícone→category)
 │       │   │   │   ├── sync/
 │       │   │   │   │   ├── SyncWorker.kt
 │       │   │   │   │   ├── BootReceiver.kt
@@ -157,11 +164,14 @@ Listaih/
 │       │   │   │       ├── theme/Theme.kt, Typography.kt
 │       │   │   │       └── screens/
 │       │   │   │           ├── onboarding/OnboardingScreen.kt
-│       │   │   │           ├── login/LoginScreen.kt
+│       │   │   │           ├── login/LoginScreen.kt, LoginViewModel.kt
 │       │   │   │           ├── home/HomeScreen.kt
-│       │   │   │           ├── detail/ListDetailScreen.kt
+│       │   │   │           ├── detail/ListDetailScreen.kt, ListDetailViewModel.kt
+│       │   │   │           ├── addlist/AddListScreen.kt        (PONTUAL/RECORRENTE)
 │       │   │   │           ├── additem/AddItemBottomSheet.kt
-│       │   │   │           └── settings/SettingsScreen.kt
+│       │   │   │           ├── shopping/ShoppingModeScreen.kt, ShoppingModeViewModel.kt, BarcodeScannerScreen.kt
+│       │   │   │           ├── purchases/PurchasesScreen.kt, PurchasesViewModel.kt
+│       │   │   │           └── settings/SettingsScreen.kt, SettingsViewModel.kt
 │       │   │   └── res/
 │       │   │       ├── values/strings.xml, colors.xml, themes.xml
 │       │   │       └── xml/backup_rules.xml, data_extraction_rules.xml
@@ -189,25 +199,30 @@ Listaih/
 
 ## Modelo de Dados (Prisma)
 
-### Models (10)
+### Models (12)
 | Model | Descrição |
 |---|---|
-| `SystemConfig` | Config singleton (isSetup, adminUserId, grocyUrl, grocyApiKey, haUrl, haWebhookToken, currency) |
+| `SystemConfig` | Config singleton (isSetup, adminUserId, grocyUrl, grocyApiKey, haUrl, haWebhookToken, currency, apiEnabled, apiBaseUrl, apiKey) |
 | `User` | email, name, passwordHash, avatar, provider, googleId?, appleId? |
 | `ApiToken` | name, token, tokenHash, prefix, type, userId, lastUsedAt, revokedAt |
 | `RefreshToken` | token, userId, expiresAt |
 | `Household` | name, inviteCode |
 | `HouseholdMember` | householdId, userId, role (ADMIN/EDITOR/VIEWER) |
-| `ShoppingList` | name, householdId, category?, template, archivedAt |
-| `ListItem` | listId, name, quantity, unit, estimatedPrice, actualPrice, category, checked, position |
+| `ShoppingList` | name, householdId, category?, template, listType?, archivedAt |
+| `ListItem` | listId, name, quantity, unit, estimatedPrice, actualPrice, category, checked, position, barcode?, barcodeRaw?, productId?, offData? |
 | `Product` | name, barcode?, category?, defaultUnit |
+| `ProductBarcode` | barcode @unique, productId (barcode alternativo → Product) |
 | `PriceEntry` | productId, storeName?, price, date, userId |
+| `Purchase` | listId, storeName?, total, paymentMethod, status?, items (JSON), createdAt |
 
-### Enums (2)
+### Enums (5)
 | Enum | Valores |
 |---|---|
 | `Unit` | unit, kg, g, L, ml |
 | `HouseholdRole` | ADMIN, EDITOR, VIEWER |
+| `PaymentMethod` | cash, pix, credit_card, debit_card, other |
+| `ListType` | PONTUAL, RECORRENTE, MODELO |
+| `ReceiptStatus` | pending, uploaded, missing |
 
 ---
 
@@ -256,6 +271,23 @@ Listaih/
 | PATCH | `/lists/:id/items/:itemId` | Atualizar item (auto-calc actualPrice quando checked) | ✅ JWT |
 | DELETE | `/lists/:id/items/:itemId` | Remover item | ✅ JWT |
 | GET | `/households/:id/history` | Listas arquivadas | ✅ JWT |
+
+### Products (`/api/products`) — Fase 3 (10 Ago)
+| Método | Rota | Descrição | Auth |
+|---|---|---|---|
+| GET | `/products/lookup/:barcode` | Buscar produto por barcode (findUnique → fallback ProductBarcode → OFF cria Product) | ✅ JWT |
+| POST | `/products` | Criar produto (name, barcode?, category?, defaultUnit?) | ✅ JWT |
+| POST | `/products/:productId/barcodes` | Associar barcode alternativo a um produto | ✅ JWT |
+
+### Purchases (`/api/`) — Phase 5A
+| Método | Rota | Descrição | Auth |
+|---|---|---|---|
+| POST | `/lists/:id/checkout` | Finalizar compra (paymentMethod, grocySync, total itens checked) | ✅ JWT |
+| GET | `/households/:householdId/purchases` | Histórico de compras da casa | ✅ JWT |
+| GET | `/lists/:id/purchases` | Compras de uma lista | ✅ JWT |
+| GET | `/purchases/:id` | Detalhe de uma compra | ✅ JWT |
+| PATCH | `/purchases/:id` | Atualizar compra (storeName, total, paymentMethod) | ✅ JWT |
+| GET | `/lists/:id/stock-status` | Status de estoque (Grocy) por item | ✅ JWT |
 
 ### System (`/api/system`)
 | Método | Rota | Descrição | Auth |
@@ -339,8 +371,14 @@ Listaih/
 - **Rede:** Retrofit + Kotlinx Serialization + OkHttp interceptors (JWT auth)
 - **Real-time:** Socket.io client para WebSocket sync (6 eventos)
 - **Sync:** WorkManager periodic (15 min) + fila local (SyncQueueEntity)
+- **Device físico:** baseUrl default `http://127.0.0.1:3000` — testar com `adb reverse tcp:3000 tcp:3000`; manifest tem `usesCleartextTraffic="true"` (HTTP local)
+- **Categoria de lista:** whitelist backend `['Alimentos','Farmacia','Papelaria','Material de Construcao','Geral']` — ícone do AddListScreen mapeado para categoria válida
 - **Wear OS:** Module separado com Compose for Wear OS (ScalingLazyColumn, Vignette, CircularProgressIndicator)
-- **Build:** AGP 8.4.2, Kotlin 1.9.22, Compose Compiler 1.5.11, minSdk 26/30
+- **Build:** AGP 8.4.2, Kotlin 1.9.22, Compose Compiler 1.5.11, minSdk 26/30; JDK 17 (`$env:JAVA_HOME="C:\Program Files\Android\Android Studio\jbr"`); sempre `assembleDebug`
+- **JWT:** access 15min, refresh 7d — `AuthInterceptor` faz refresh+retry automático (chama `/api/auth/refresh` com `RefreshRequest` no **body**, client próprio p/ evitar ciclo; pula login/refresh no interceptor)
+- **API items:** `ListItemResponse.addedAt: String?` (backend **não** envia `createdAt`) — `toEntity` usa `addedAt ?: updatedAt`
+- **Scanner HID:** `BtScannerManager` — comparar `keyCode` com **literais** (`== 66 || == 134`); constantes de framework em `||` geram sparse-switch com payload rejeitado pelo runtime; ENTER (66) é tragado pelo IME no Samsung → usar `134` (NUMPAD_ENTER); `rememberUpdatedState` p/ callbacks do scanner (DisposableEffect com closure stale não atualiza)
+- **Simulação HID no device:** keyevents `7..16` = dígitos `0..9`, `134` = finish; enviar em comando único com idle 3s
 
 ### Credenciais de teste (local)
 - PostgreSQL: user `listaih`, password `listaih`, database `listaih`, port 5432
@@ -382,6 +420,17 @@ Listaih/
 
 ## Status Detalhado — Fase 4 (App Android)
 
+### ✅ Concluído (Fases 1–2 do plano — validado no device 09 Ago)
+- **Fase 1.1 — Login real**: `LoginScreen` chama `repository.login()` → JWT salvo → `getHouseholds()` → `householdId`. **Validado no device Samsung `RQ8T206PXPW`**: onboarding → login (admin@exemplo.com) → Home com dados reais.
+- **Fase 1.2 — Home real**: DAO `getActiveListsWithCounts` (com `COALESCE`, não `??` — parser do Room rejeita `??`), `ShoppingListWithCounts` em Entities.kt, `getActiveListsUiFlow()`/`toShoppingListUi()` no repository, MainViewModel observa o Flow. Removidas as listas mock.
+- **Fase 1.3 — Detail real**: novo `ListDetailViewModel.kt` (Hilt, SavedStateHandle `listId`/`listName`; observa `getListItems`, `syncListItems` no init, toggle/checkAll/uncheckAll/deleteChecked/addItem/updateItem/renameList). `ListDetailScreen` sem mocks. Abre sem crash no device.
+- **Fase 1.4 — Barcode real**: `ListItemEntity` e `ListItemResponse` com `barcode`/`barcodeRaw`/`productId`; `ShoppingModeViewModel` usa `entity.barcode`.
+- **Fase 2 — Criar lista com tipo**: `AddListScreen` com FilterChips PONTUAL/RECORRENTE (sem MODELO), `CreateListRequest.listType`, `ShoppingListEntity.listType` (coluna nova, coberta por `fallbackToDestructiveMigration`), `createList(householdId, name, category, listType)`, badge do tipo no card da Home. **Validado no device**: "Teste App" criada via UI → backend confirmou `type=RECORRENTE`, `category=Alimentos`.
+- **Bugs corrigidos na validação no device**:
+  - `android:usesCleartextTraffic="true"` no manifest (Android bloqueia HTTP local por padrão → "CLEARTEXT communication not permitted")
+  - Ícone do AddListScreen era enviado como `category` → 400 (whitelist backend `['Alimentos','Farmacia','Papelaria','Material de Construcao','Geral']`); AppNavHost agora mapeia Compras→`Alimentos`, Farmácia→`Farmacia`
+  - baseUrl default `http://10.0.2.2:3000` (emulador) → `http://127.0.0.1:3000` para device físico via `adb reverse tcp:3000 tcp:3000`
+
 ### ✅ Concluído (Estrutura base)
 - **Projeto Kotlin + Jetpack Compose** criado em `apps/android/` com Gradle Version Catalogs
 - **Módulos:** `app` (Phone) + `wear` (Wear OS)
@@ -413,42 +462,97 @@ Listaih/
   - WearSelectScreen — Lista de listas com badges
   - WearVoiceScreen — Microfone, reconhecimento simulado
 - **Temas:** Material 3 (Phone + Wear) com cores do design system
+- **Settings conectado ao backend:** perfil real, casa, convite, alterar senha, export JSON real
+- **Purchases (histórico):** cards de resumo, detalhe com edição, checkout integrado
 
-### 🚧 Em andamento
+### 📋 Plano Aprovado — Fase 4 Revisada
+**Documento oficial:** `docs/ANDROID-PLAN.md` — aprovado em 09 Ago 2026.
+
+**Decisões-chave:**
+- Single-household (sem seleção de casa)
+- Fluxo de compra livre; scanner = acelerador opcional (sem seleção de modo)
+- Popup pós-scan sem timer; próximo scan confirma o anterior
+- Associação de produto: 3 opções (Associar / Cadastrar / Genérico)
+- Criar lista expõe PONTUAL e RECORRENTE (sem MODELO)
+- Grocy: app só envia `grocySync: true` no checkout; backend faz match por barcode
+- Open Food Facts: backend busca via `barcodeRaw`; app não chama OFF
+- Wear OS: opcional, último; popup espelha no relógio se configurado
+
+**Ordem de execução (ver ANDROID-PLAN.md seção 5):**
+1. ✅ Fase 1 — Login real + dados reais (Home, Detail, ShoppingMode)
+2. ✅ Fase 2 — Criar lista com tipo PONTUAL/RECORRENTE
+3. ✅ Fase 3 — Backend: endpoints de Product (lookup, create, associate)
+4. ✅ Fase 4 — Android: OFF + barcode nos models (CreateItemRequest, UpdateItemRequest, ProductRepository)
+5. ✅ Fase 5 — Scanner Bluetooth HID + Câmera + Haptics
+6. ⬜ Fase 6 — Popup pós-scan + Associação
+7. ⬜ Fase 10 — Home real + Filtros
+8. ⬜ Fase 7 — Settings leve (remover admin do mobile)
+9. ⬜ Fase 8 — Onboarding expandido
+10. ⬜ Fase 9 — Wear OS companion (opcional)
+
+### ✅ Concluído (Fase 5 — Scanner HID + Haptics, validado no device 10 Ago)
+- **Fase 5 — Scanner Bluetooth HID**: `BtScannerManager` (buffer de dígitos, ENTER/NUMPAD_ENTER finaliza, idle 3s, callback `onBarcodeScanned`), `HapticFeedback` (sucesso: 80ms + beep; erro: dupla + alarm tone), `LocalBtScanner` (CompositionLocal provido pela `MainActivity` — `onKeyDown` delega). Câmera (`BarcodeScannerScreen`) mantida como fallback.
+- **Validado no device Samsung `RQ8T206PXPW`**: scan simulado via `adb input keyevent` (13 dígitos + `134`) → match por barcode → toggle + haptic + toast + PUT no backend (`checked: true`, `actualPrice` auto-calculado) → UI "Comprados: 1". Testes 2x.
+- **Correções no caminho (validação no device)**:
+  - `AuthInterceptor` com refresh automático: corrigido body vs header (`POST /api/auth/refresh` espera `{ refreshToken }` no body — o app mandava no header → 401 em loop pós-15min)
+  - **Bug antigo de itens nunca sincronizando**: API envia `addedAt`, modelo esperava `createdAt` → NPE em `Instant.parse` no `toEntity` (por isso "Itens (0)" desde sempre). Corrigido: `ListItemResponse.addedAt: String?` + fallback
+  - **Kotlin compiler + sparse-switch**: `||` com duas constantes de framework compila para sparse-switch com payload rejeitado pelo runtime (cai sempre no default). Corrigido com comparação literal `== 66 || == 134`
+  - **Callback stale**: `DisposableEffect(btScanner)` registrava handler da 1ª composição (items vazios) → scan nunca dava match. Corrigido com `rememberUpdatedState` (ListDetailScreen e ShoppingModeScreen)
+- **Simulação HID via adb**: keyevents 7–16 = dígitos 0–9; `66` (ENTER) é tragado pelo IME no Samsung — usar `134` (NUMPAD_ENTER); idle de 3s permite rajada única
+- **Screen-off**: durante testes usar `settings put system screen_off_timeout 1800000` (revertido para 30000 ao final); keyguard padrão exige desbloqueio manual do usuário
+
+### 🚧 Próximo passo imediato
+**Fase 6 — Popup de detalhe pós-scan + Associação** (ver ANDROID-PLAN.md seção 4):
+`ScanPopupController` (sem timer; próximo scan confirma o anterior), popup reconhecido (não acende tela)
+vs não reconhecido (acende com FLAG_TURN_SCREEN_ON; 3 botões: Associar à lista / Cadastrar novo / Genérico),
+scan repetido = +1 na quantidade. Depois: Fase 10 (Home real + filtros).
+
+### 🚧 Em andamento (anterior, agora reorganizado no plano)
 - Integração completa Repository → UI (ViewModels)
 - Testes de build e execução
 - Socket.io real-time handlers
 - Sincronização bidirecional completa
 
-### Próximos passos imediatos
-1. Validar build: `cd apps/android && ./gradlew assembleDebug`
-2. Implementar ViewModels para cada tela
-3. Conectar UI ao Repository
-4. Testar sync offline-first
-5. Implementar Wear OS complication/tiles
-
----
-
-## Próximos Passos (Retomada)
-
-### Imediato (validação)
-1. Testar o admin em `http://localhost:3000/admin/` com Ctrl+F5
-2. Verificar se o seletor de idioma funciona em Settings e na sidebar
-3. Verificar se a troca de idioma traduz todas as páginas
-4. **Build do Android:** `cd apps/android && ./gradlew assembleDebug`
-
-### Fase 4 — App Android (continuação)
-1. Implementar ViewModels para Home, Detail, AddItem, Settings
-2. Conectar UI screens ao ShoppingRepository
-3. Testar sync offline-first com WorkManager
-4. Implementar handlers Socket.io para real-time updates
-5. Testar Wear OS no emulador
+### Próximos passos imediatos (atualizados conforme plano)
+1. ✅ Fase 1: Login real, MainViewModel, ListDetailViewModel, ShoppingMode barcode
+2. ✅ Fase 2: AddListScreen com tipo (validado no device 09 Ago)
+3. ✅ Fase 3: Backend endpoints de Product (lookup/OFF, create, barcode alternativo) — validado por API 10 Ago
+4. ✅ Fase 4: Android OFF + barcode nos models (ProductRepository, CreateItem/UpdateItem)
+5. ✅ Fase 5: Scanner Bluetooth HID + Haptics (validado no device 10 Ago)
+6. Implementar Fase 6: Popup pós-scan + Associação
+7. Implementar Fase 10: Home real + Filtros
 
 ### Melhorias futuras (não bloqueantes)
 - Code-splitting no admin (chunks > 500kb warning do Vite)
 - `getListCategoryLabel()` poderia usar i18n em vez de hardcoded pt-BR
 - Backup/exportação de dados (botões atualmente disabled)
 - Zona de perigo (limpar arquivadas, resetar integrações, resetar sistema — disabled)
+
+---
+
+## Próximos Passos (Android)
+
+> Ordem de execução oficial: `docs/ANDROID-PLAN.md` seção 5. Fases 1–5 do plano
+> concluídas e validadas. A seguir, **Fase 6 — Popup pós-scan + Associação**.
+
+### Fase 6 — Popup pós-scan + Associação (próxima)
+1. `ScanPopupController` — popup pós-scan **sem timer** (próximo scan confirma o anterior)
+2. Scan reconhecido: item encontrado → oferta de quantidade (+1 no scan repetido)
+3. Scan não reconhecido: acende a tela (FLAG_TURN_SCREEN_ON); popup com 3 opções: **Associar à lista / Cadastrar novo / Genérico**
+4. Haptics diferenciados (sucesso/erro) já prontos na Fase 5; espelhar popup no Wear (opcional, quando configurado)
+
+### Fases seguintes (após Fase 6)
+- Fase 10 — Home real + Filtros
+- Fase 7 — Settings leve (remover admin do mobile)
+- Fase 8 — Onboarding expandido
+- Fase 9 — Wear OS companion (opcional — toggle)
+
+### Validação no device (a cada fase)
+- Build: `.\gradlew.bat :app:assembleDebug --console=plain` (JDK 17 do Android Studio)
+- Instalar: `adb install -r apps/android/app/build/outputs/apk/debug/app-debug.apk` (preserva dados)
+- `adb reverse tcp:3000 tcp:3000` (device físico)
+- Checks: UI via `uiautomator dump` + regex; backend via logcat OkHttp/Retrofit; scan via keyevents `7..16` + `134`
+- Restaurar `screen_off_timeout` (30000) ao final dos testes; keyguard exige desbloqueio manual
 
 ---
 

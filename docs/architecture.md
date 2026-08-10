@@ -1,6 +1,6 @@
 # Listaih — Arquitetura do Sistema
 
-> Última atualização: 04 Ago 2026
+> Última atualização: 10 Ago 2026 (status Grocy atualizado — backend implementado)
 
 ---
 
@@ -130,7 +130,7 @@ curl -X POST http://localhost/api/auth/login \
 - **Listaih → Grocy:** Busca produtos/chores para autocomplete na criação de itens
 - **Grocy → Listaih:** Ao concluir lista, Listaih envia itens ao Grocy (shopping list ou stock)
 - **Config:** `SystemConfig.grocyUrl` + `SystemConfig.grocyApiKey` + `grocyEnabled`
-- **Status:** Futuro (Fase 5)
+- **Status:** ✅ Backend implementado (`/api/grocy/` — test-connection, send-to-stock, sync-list, sync-from-grocy; GrocyApiClient + GrocySyncService). E2E não testado (Grocy não roda local). Android envia `grocySync: true` no checkout
 
 ### Home Assistant
 - **Listaih → HA:** Notificações via webhook REST (item adicionado, lista concluída)

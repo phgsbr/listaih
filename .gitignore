@@ -1,41 +1,44 @@
-# Dependencies
+# Node / NestJS
 node_modules/
-
-# Build outputs
-dist/
-build/
-*.tsbuildinfo
-
-# environment
-.env
-.env.*
-!.env.example
-
-# IDE
-.idea/
-.vscode/
-*.iml
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Prisma
-prisma/migrations/dev/
-
-# Docker
-docker-compose.override.yml
-
-# Logs
+apps/backend/dist/
 *.log
-logs/
+*.log.err
 
-# Coverage
-coverage/
-
-# Android (futuro)
+# Android build artifacts
+apps/android/.gradle/
+apps/android/build/
+apps/android/app/build/
+apps/android/app/schemas/
+apps/android/local.properties
 *.apk
-*.aab
-*.keystore
-*.jks
-local.properties
+
+# Gradle distribution junk (extracted copies used for offline builds)
+apps/android/gradle-8.4-bin.zip
+apps/android/gradle-temp/
+apps/android/gradle/agents/
+apps/android/gradle/init.d/
+apps/android/gradle/plugins/
+apps/android/gradle/*.jar
+
+# Debug / temporary artifacts (UI dumps, compile logs, dependency dumps)
+ui_dump_*.xml
+compile_out*.txt
+compile_fase6.txt
+deps_out.txt
+*_out.txt
+backend_run.log.err
+_tmp_login.json
+backend_out.log
+backend_out.log.err
+m3-1.2.1-src.jar
+icons-1.6.8-src.jar
+apps/android/ui_dump_*.xml
+
+# Debug screenshots
+android_*.png
+android_*.jpg
+shot*.png
+shot*.jpg
+*_polished.png
+*_test_*.png
+*_test_*.jpg

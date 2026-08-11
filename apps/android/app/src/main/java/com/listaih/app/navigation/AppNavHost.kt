@@ -18,6 +18,7 @@ import com.listaih.app.ui.screens.login.LoginScreen
 import com.listaih.app.ui.screens.onboarding.OnboardingScreen
 import com.listaih.app.ui.screens.purchases.PurchasesScreen
 import com.listaih.app.ui.screens.settings.SettingsScreen
+import com.listaih.app.ui.screens.setup.SetupScreen
 import com.listaih.app.ui.screens.shopping.ShoppingModeScreen
 
 @Composable
@@ -33,7 +34,19 @@ fun AppNavHost(
         startDestination = if (isLoggedIn) "main" else "onboarding"
     ) {
         composable("onboarding") {
-            OnboardingScreen(onFinish = { navController.navigate("login") { popUpTo("onboarding") { inclusive = true } } })
+            OnboardingScreen(
+                onLogin = { navController.navigate("login") { popUpTo("onboarding") { inclusive = true } } },
+                onSetup = { navController.navigate("setup") { popUpTo("onboarding") { inclusive = true } } }
+            )
+        }
+
+        composable("setup") {
+            SetupScreen(onComplete = { householdId ->
+                viewModel.onLoginSuccess(householdId)
+                navController.navigate("main") {
+                    popUpTo("setup") { inclusive = true }
+                }
+            })
         }
 
         composable("login") {

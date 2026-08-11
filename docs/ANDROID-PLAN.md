@@ -291,8 +291,8 @@ Comportamento pós-checkout por tipo de lista:
 | 5 | Fase 5 — Scanner HID + Haptics | Fase 1 | ✅ 10 Ago (device) |
 | 6 | Fase 6 — Popup pós-scan + Associação | Fase 4 + Fase 5 | ✅ 10 Ago (device) |
 | 7 | Fase 10 — Home real + Filtros | Fase 1 | ⬜ |
-| 8 | Fase 7 — Settings leve | Fase 1 | ⬜ |
-| 9 | Fase 8 — Onboarding expandido | Fase 1 | ⬜ |
+| 8 | Fase 7 — Settings leve | Fase 1 | ✅ 11 Ago (device) |
+| 9 | Fase 8 — Onboarding expandido | Fase 1 | ✅ 11 Ago (device) |
 | 10 | Fase 9 — Wear OS | Fases 1-7 sólidas | ⬜ (opcional) |
 
 ---

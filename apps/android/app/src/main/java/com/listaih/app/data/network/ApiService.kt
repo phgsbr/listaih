@@ -157,8 +157,8 @@ interface ApiService {
     suspend fun getHealth(): Response<HealthResponse>
 
     @GET("api/setup/status")
-    suspend fun getSetupStatus(): Response<Map<String, Any>>
+    suspend fun getSetupStatus(): Response<SetupStatusResponse>
 
     @POST("api/setup")
-    suspend fun setup(@Body request: Map<String, Any>): Response<LoginResponse>
+    suspend fun setup(@Body request: Map<String, Any>): Response<SetupResponse>
 }

@@ -17,7 +17,7 @@
 | 1. Core Backend | Setup wizard, auth, healthcheck, Docker, Caddy, single-household | ✅ Concluído |
 | 2. WebSocket Sync | Socket.io, eventos em tempo real, Redis pub/sub | ✅ Concluído |
 | 3. Admin WebUI | React 19 + Vite 8 + MUI v9, dashboard, i18n, integrações | ✅ Concluído |
-| 4. App Android | Kotlin + Compose, offline-first, Wear OS | 🚧 Em desenvolvimento (Fases 1–6 do plano concluídas; faltam 10, 7, 8, 9) |
+| 4. App Android | Kotlin + Compose, offline-first, Wear OS | 🚧 Em desenvolvimento (Fases 1–8 do plano concluídas; falta 9 — Wear OS) |
 | 5. Grocy | Sync bidirecional, mapeamento de produtos | 🚧 Em desenvolvimento |
 | 6. Home Assistant | Webhooks, MQTT discovery, notificações | ⬜ Pendente |
 | 7. Alexa Skill | Account linking, intents, Cloudflare Tunnel | ⬜ Pendente |
@@ -485,9 +485,9 @@ Listaih/
 4. ✅ Fase 4 — Android: OFF + barcode nos models (CreateItemRequest, UpdateItemRequest, ProductRepository)
 5. ✅ Fase 5 — Scanner Bluetooth HID + Câmera + Haptics
 6. ✅ Fase 6 — Popup pós-scan + Associação (validado no device 10 Ago)
-7. ⬜ Fase 10 — Home real + Filtros
-8. ⬜ Fase 7 — Settings leve (remover admin do mobile)
-9. ⬜ Fase 8 — Onboarding expandido
+7. ✅ Fase 10 — Home real + Filtros (validado no device 11 Ago, commit f441ace)
+8. ✅ Fase 7 — Settings leve (tema claro/escuro/sistema, URL do servidor com teste de conexão, toggle Wear OS) — 11 Ago (device)
+9. ✅ Fase 8 — Onboarding expandido (Conectar ao servidor + Entrar ou criar conta via /api/setup/status) — 11 Ago (device)
 10. ⬜ Fase 9 — Wear OS companion (opcional)
 
 ### ✅ Concluído (Fase 5 — Scanner HID + Haptics, validado no device 10 Ago)
@@ -516,9 +516,10 @@ Listaih/
   4. **`ShoppingRepository.kt` reconstruído**: `git checkout --` acidental reverteu para o HEAD (quebrado, 429 linhas); a versão da Fase 6 (658 linhas) não estava commitada. Reconstruído do zero: coroutines suspensas (sem `blockingFirst`/`.await()`), `RefreshRequest(refreshToken)` no body, `entity.copy()` no updateList, métodos recuperados (`getActiveListsUiFlow`, `getHouseholds`, `saveHouseholdId`, `getPurchase`, `getProfile`, `regenerateInviteCode`, `changePassword`, `exportLocalData`). `assembleDebug` OK.
 
 ### 🚧 Próximo passo imediato
-**Fase 10 — Home real + Filtros** (ver ANDROID-PLAN.md seção 4): chips ligados às queries
-reais do Room (ativas/arquivadas), badge do tipo no card (estrutura visual já existe).
-Depois: Fase 7 (Settings leve), Fase 8 (Onboarding expandido), Fase 9 (Wear OS companion).
+**Fase 9 — Wear OS Companion** (ver ANDROID-PLAN.md seção 4): Data Layer API
+Phone → Watch (lista ativa + progresso), WearScanPopupScreen (acende e destrava tela),
+haptics no Watch, toggle já existente no Settings ("Usar Wear OS para detalhar scan").
+Fases 1–8 concluídas e validadas no device (Home real, Settings leve, Onboarding expandido, 11 Ago).
 
 ### 🚧 Em andamento (anterior, agora reorganizado no plano)
 - Integração completa Repository → UI (ViewModels)
@@ -533,7 +534,9 @@ Depois: Fase 7 (Settings leve), Fase 8 (Onboarding expandido), Fase 9 (Wear OS c
 4. ✅ Fase 4: Android OFF + barcode nos models (ProductRepository, CreateItem/UpdateItem)
 5. ✅ Fase 5: Scanner Bluetooth HID + Haptics (validado no device 10 Ago)
 6. ✅ Fase 6: Popup pós-scan + Associação (validado no device 10 Ago)
-7. Implementar Fase 10: Home real + Filtros
+7. ✅ Fase 10: Home real + Filtros (validado no device 11 Ago)
+8. ✅ Fase 7: Settings leve (validado no device 11 Ago)
+9. ✅ Fase 8: Onboarding expandido (validado no device 11 Ago)
 
 ### Melhorias futuras (não bloqueantes)
 - Code-splitting no admin (chunks > 500kb warning do Vite)
@@ -545,13 +548,12 @@ Depois: Fase 7 (Settings leve), Fase 8 (Onboarding expandido), Fase 9 (Wear OS c
 
 ## Próximos Passos (Android)
 
-> Ordem de execução oficial: `docs/ANDROID-PLAN.md` seção 5. Fases 1–6 do plano
-> concluídas e validadas. A seguir, **Fase 10 — Home real + Filtros**.
+> Ordem de execução oficial: `docs/ANDROID-PLAN.md` seção 5. Fases 1–8 do plano
+> concluídas e validadas no device. A seguir, **Fase 9 — Wear OS Companion**.
 >
-> **Repo no GitHub (10 Ago):** `github.com/phgsbr/listaih` (privado, branch `master`).
-> Commits: `1b20e84` (gitignore debug), `6fdd063` (backend barcode→product),
-> `4524abb` (gitignore .env), `f6e93e7` (android Fase 5/6 + wrapper Gradle 8.4),
-> `8ae4d6b` (docs). `.env` do backend fora do repo.
+> **Repo no GitHub:** `github.com/phgsbr/listaih` (privado, branch `master`).
+> Último commit: `8e9e720` (Fase 7 — Settings leve + fix HealthResponse, 11 Ago).
+> `.env` do backend fora do repo.
 
 ### Fase 6 — ✅ Concluída (10 Ago)
 Popup pós-scan sem timer (reconhecido: Confirmar, +1 por scan repetido; não reconhecido:
@@ -561,10 +563,10 @@ Bugs corrigidos no caminho: matcher stale (`uiState.value.items`), crash `queueS
 `ShoppingRepository.kt` reconstruído após checkout acidental.
 
 ### Fases seguintes (após Fase 6)
-- Fase 10 — Home real + Filtros (chips ligados às queries Room reais)
-- Fase 7 — Settings leve (remover admin do mobile)
-- Fase 8 — Onboarding expandido
-- Fase 9 — Wear OS companion (opcional — toggle)
+- ✅ Fase 10 — Home real + Filtros (chips ligados às queries Room reais) — 11 Ago
+- ✅ Fase 7 — Settings leve (tema, URL do servidor, toggle Wear OS, remover admin do mobile) — 11 Ago
+- ✅ Fase 8 — Onboarding expandido (conectar ao servidor + setup status → wizard/login) — 11 Ago
+- ⬜ Fase 9 — Wear OS companion (opcional)
 
 ### Validação no device (a cada fase)
 - Build: `.\gradlew.bat :app:assembleDebug --console=plain` (JDK 17 do Android Studio)

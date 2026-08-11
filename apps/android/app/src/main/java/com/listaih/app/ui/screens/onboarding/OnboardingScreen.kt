@@ -15,26 +15,46 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudQueue
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.listaih.app.R
 
 @Composable
-fun OnboardingScreen(onFinish: () -> Unit) {
+fun OnboardingScreen(
+    onLogin: () -> Unit,
+    onSetup: () -> Unit,
+    viewModel: OnboardingViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    var showServerDialog by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -102,23 +122,138 @@ fun OnboardingScreen(onFinish: () -> Unit) {
             )
 
             Spacer(Modifier.size(40.dp))
-        }
 
-        Button(
-            onClick = onFinish,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .systemBarsPadding()
-                .fillMaxWidth()
-                .padding(24.dp)
-                .size(56.dp),
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+            Button(
+                onClick = { viewModel.checkSetup(onLogin, onSetup) },
+                enabled = !uiState.setupChecking,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .size(56.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                if (uiState.setupChecking) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(22.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(text = "Entrar ou criar conta", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+
+            Spacer(Modifier.size(12.dp))
+
+            OutlinedButton(
+                onClick = { showServerDialog = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .size(56.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.CloudQueue,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(text = "Conectar ao servidor", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+            }
+
+            Spacer(Modifier.size(12.dp))
+
+            Text(
+                text = "Servidor: ${uiState.serverUrl}",
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
             )
-        ) {
-            Text(text = "Começar", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+
+            uiState.setupError?.let { msg ->
+                Spacer(Modifier.size(8.dp))
+                Text(
+                    text = msg,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(Modifier.size(32.dp))
         }
+    }
+
+    if (showServerDialog) {
+        var url by remember { mutableStateOf(uiState.serverUrl) }
+        var testMessage by remember { mutableStateOf<String?>(null) }
+        var testSuccess by remember { mutableStateOf<Boolean?>(null) }
+        var testing by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            onDismissRequest = { showServerDialog = false },
+            title = { Text("Conectar ao servidor") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        text = "Endereço do servidor Listaih (ex: http://192.168.0.10:3000). A mudança vale imediatamente.",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    OutlinedTextField(
+                        value = url,
+                        onValueChange = { url = it; testMessage = null },
+                        label = { Text("URL") },
+                        singleLine = true,
+                        placeholder = { Text("http://127.0.0.1:3000") }
+                    )
+                    testMessage?.let {
+                        Text(
+                            text = it,
+                            fontSize = 13.sp,
+                            color = if (testSuccess == true) Color(0xFF2E7D32) else MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(
+                        enabled = !testing,
+                        onClick = {
+                            viewModel.saveServerUrl(url.trim())
+                            showServerDialog = false
+                        }
+                    ) {
+                        Text("Salvar")
+                    }
+                    TextButton(
+                        enabled = !testing,
+                        onClick = {
+                            testing = true
+                            testMessage = null
+                            viewModel.testConnection(url.trim()) { ok ->
+                                testing = false
+                                testSuccess = ok
+                                testMessage = if (ok) "Conexão OK" else "Falha na conexão (verifique a URL)"
+                            }
+                        }
+                    ) {
+                        if (testing) {
+                            CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                        } else {
+                            Text("Testar conexão")
+                        }
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showServerDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
 

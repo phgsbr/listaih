@@ -179,6 +179,40 @@ data class HealthResponse(
 )
 
 @Serializable
+data class SetupStatusResponse(
+    val isSetup: Boolean,
+    val installedAt: String? = null
+)
+
+@Serializable
+data class SetupRequest(
+    val name: String,
+    val email: String,
+    val password: String,
+    val householdName: String
+)
+
+@Serializable
+data class SetupAdmin(
+    val id: String,
+    val email: String,
+    val name: String
+)
+
+@Serializable
+data class SetupHousehold(
+    val id: String,
+    val name: String
+)
+
+@Serializable
+data class SetupResponse(
+    val message: String,
+    val admin: SetupAdmin? = null,
+    val household: SetupHousehold? = null
+)
+
+@Serializable
 data class PurchaseItem(
     val id: String? = null,
     val name: String,

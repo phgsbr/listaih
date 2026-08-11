@@ -167,6 +167,43 @@ class ShoppingRepository @Inject constructor(
         }
     }
 
+    suspend fun getSetupStatus(): Result<SetupStatusResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getSetupStatus()
+                if (response.isSuccessful) {
+                    response.body()?.let { Result.success(it) }
+                        ?: Result.failure(Exception("Empty response"))
+                } else {
+                    Result.failure(Exception(response.errorBody()?.string() ?: "Setup status failed"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun runSetup(dto: SetupRequest): Result<SetupResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.setup(mapOf(
+                    "name" to dto.name,
+                    "email" to dto.email,
+                    "password" to dto.password,
+                    "householdName" to dto.householdName
+                ))
+                if (response.isSuccessful) {
+                    response.body()?.let { Result.success(it) }
+                        ?: Result.failure(Exception("Empty response"))
+                } else {
+                    Result.failure(Exception(response.errorBody()?.string() ?: "Setup failed"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
     suspend fun login(email: String, password: String): Result<LoginResponse> {
         return try {
             val response = apiService.login(LoginRequest(email, password))

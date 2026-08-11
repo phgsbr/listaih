@@ -1,4 +1,4 @@
-package com.listaih.app.data.repository
+﻿package com.listaih.app.data.repository
 
 import com.listaih.app.data.local.AppDatabase
 import com.listaih.app.data.local.dao.ListItemDao
@@ -60,6 +60,13 @@ class ShoppingRepository @Inject constructor(
         val householdId = appPreferences.getHouseholdId() ?: return flowOf(emptyList())
         if (householdId.isBlank()) return flowOf(emptyList())
         return shoppingListDao.getActiveListsWithCounts(householdId).map { rows ->
+            rows.map { it.toUi() }
+        }
+    }
+
+    fun getAllListsUiFlow(householdId: String): Flow<List<ShoppingListUi>> {
+        if (householdId.isBlank()) return flowOf(emptyList())
+        return shoppingListDao.getAllListsWithCounts(householdId).map { rows ->
             rows.map { it.toUi() }
         }
     }
@@ -165,10 +172,12 @@ class ShoppingRepository @Inject constructor(
             val response = apiService.login(LoginRequest(email, password))
             if (response.isSuccessful) {
                 response.body()?.let { body ->
-                    appPreferences.setAccessToken(body.accessToken)
-                    appPreferences.setRefreshToken(body.refreshToken)
-                    appPreferences.setUserId(body.user.id)
-                    appPreferences.setHouseholdId("") // Will be set after household selection
+                    withContext(Dispatchers.IO) {
+                        appPreferences.setAccessToken(body.accessToken).blockingAwait()
+                        appPreferences.setRefreshToken(body.refreshToken).blockingAwait()
+                        appPreferences.setUserId(body.user.id).blockingAwait()
+                        appPreferences.setHouseholdId("").blockingAwait()
+                    }
                     Result.success(body)
                 } ?: Result.failure(Exception("Empty response"))
             } else {
@@ -185,8 +194,10 @@ class ShoppingRepository @Inject constructor(
             val response = apiService.refreshToken(RefreshRequest(refreshToken))
             if (response.isSuccessful) {
                 response.body()?.let { body ->
-                    appPreferences.setAccessToken(body.accessToken)
-                    appPreferences.setRefreshToken(body.refreshToken)
+                    withContext(Dispatchers.IO) {
+                        appPreferences.setAccessToken(body.accessToken).blockingAwait()
+                        appPreferences.setRefreshToken(body.refreshToken).blockingAwait()
+                    }
                     true
                 } ?: false
             } else {
@@ -564,7 +575,7 @@ class ShoppingRepository @Inject constructor(
 
     private fun ShoppingListWithCounts.toUi(): ShoppingListUi {
         val icon = when (category?.lowercase()) {
-            "farmacia", "farmácia", "medicamentos" -> "medication"
+            "farmacia", "farmÃ¡cia", "medicamentos" -> "medication"
             "alimentos", "mercado" -> "shopping_cart"
             else -> "shopping_cart"
         }

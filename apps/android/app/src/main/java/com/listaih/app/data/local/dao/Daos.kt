@@ -65,6 +65,21 @@ interface ShoppingListDao {
         ORDER BY sl.updatedAt DESC
     """)
     fun getActiveListsWithCounts(householdId: String): Flow<List<ShoppingListWithCounts>>
+
+    @Query("""
+        SELECT
+            sl.*,
+            COALESCE(SUM(CASE WHEN li.checked THEN 1 ELSE 0 END), 0) as checkedCount,
+            COUNT(li.id) as totalCount,
+            COALESCE(SUM(CASE WHEN li.checked THEN COALESCE(li.actualPrice, li.estimatedPrice, 0) * li.quantity ELSE 0 END), 0) as spentTotal,
+            COALESCE(SUM(COALESCE(li.estimatedPrice, 0) * li.quantity), 0) as estimatedTotal
+        FROM shopping_lists sl
+        LEFT JOIN list_items li ON li.listId = sl.id
+        WHERE sl.householdId = :householdId
+        GROUP BY sl.id
+        ORDER BY CASE WHEN sl.archivedAt IS NULL THEN 0 ELSE 1 END, sl.updatedAt DESC
+    """)
+    fun getAllListsWithCounts(householdId: String): Flow<List<ShoppingListWithCounts>>
 }
 
 @Dao

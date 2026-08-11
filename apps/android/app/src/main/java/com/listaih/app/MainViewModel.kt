@@ -6,11 +6,11 @@ import com.listaih.app.data.preferences.AppPreferences
 import com.listaih.app.data.repository.ShoppingRepository
 import com.listaih.app.ui.screens.home.ShoppingListUi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,7 +27,14 @@ class MainViewModel @Inject constructor(
     val currentHouseholdId = _currentHouseholdId.asStateFlow()
 
     // Observe lists from Room database (offline-first) converted to UI model
-    val shoppingLists = repository.getActiveListsUiFlow()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val shoppingLists = _currentHouseholdId.flatMapLatest { householdId ->
+        if (householdId == null || householdId.isBlank()) {
+            flowOf(emptyList())
+        } else {
+            repository.getAllListsUiFlow(householdId)
+        }
+    }
 
     init {
         checkAuthStatus()

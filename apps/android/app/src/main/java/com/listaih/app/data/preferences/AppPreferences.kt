@@ -36,6 +36,7 @@ class AppPreferences @Inject constructor(context: Context) {
         val KEY_NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
         val KEY_HAPTIC_FEEDBACK = booleanPreferencesKey("haptic_feedback")
         val KEY_OFFLINE_MODE = booleanPreferencesKey("offline_mode")
+        val KEY_WEAR_SCAN_DETAIL = booleanPreferencesKey("wear_scan_detail")
     }
 
     fun getAccessToken(): String? = dataStore.data().blockingFirst()[KEY_ACCESS_TOKEN]
@@ -115,6 +116,10 @@ class AppPreferences @Inject constructor(context: Context) {
     fun getOfflineMode(): Flowable<Boolean> = dataStore.data().map { it[KEY_OFFLINE_MODE] ?: false }
 
     fun setOfflineMode(enabled: Boolean): Completable = update { it[KEY_OFFLINE_MODE] = enabled }
+
+    fun getWearScanDetail(): Flowable<Boolean> = dataStore.data().map { it[KEY_WEAR_SCAN_DETAIL] ?: false }
+
+    fun setWearScanDetail(enabled: Boolean): Completable = update { it[KEY_WEAR_SCAN_DETAIL] = enabled }
 
     fun clearAuth(): Completable = update {
         it.remove(KEY_ACCESS_TOKEN)

@@ -164,12 +164,18 @@ data class SystemConfigResponse(
 )
 
  @Serializable
+data class IntegrationStatus(
+    val enabled: Boolean = false,
+    val url: String? = null
+)
+
+@Serializable
 data class HealthResponse(
     val status: String,
     val timestamp: String,
     val database: String,
     val redis: String?,
-    val integrations: Map<String, String>
+    val integrations: Map<String, IntegrationStatus> = emptyMap()
 )
 
 @Serializable

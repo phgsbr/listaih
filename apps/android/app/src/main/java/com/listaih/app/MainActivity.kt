@@ -42,12 +42,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var darkTheme by androidx.compose.runtime.remember { mutableStateOf(false) }
+            var theme by androidx.compose.runtime.remember { mutableStateOf("system") }
 
             LaunchedEffect(Unit) {
                 preferences.getTheme().subscribe { value ->
-                    darkTheme = value == "dark"
+                    theme = value
                 }
+            }
+
+            val darkTheme = when (theme) {
+                "dark" -> true
+                "light" -> false
+                else -> androidx.compose.foundation.isSystemInDarkTheme()
             }
 
             CompositionLocalProvider(LocalBtScanner provides btScannerManager) {

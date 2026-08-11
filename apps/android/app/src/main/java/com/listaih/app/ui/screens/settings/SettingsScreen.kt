@@ -1,8 +1,5 @@
-package com.listaih.app.ui.screens.settings
+﻿package com.listaih.app.ui.screens.settings
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,26 +19,23 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachMoney
-import androidx.compose.material.icons.filled.Backup
-import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material.icons.filled.DoorFront
-import androidx.compose.material.icons.filled.FamilyRestroom
+import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -79,36 +73,29 @@ fun SettingsScreen(
     onLogout: () -> Unit
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
-    val darkTheme by viewModel.darkTheme.collectAsState()
+    val theme by viewModel.theme.collectAsState()
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
     val hapticFeedback by viewModel.hapticFeedback.collectAsState()
     val offlineMode by viewModel.offlineMode.collectAsState()
     val language by viewModel.language.collectAsState()
     val currency by viewModel.currency.collectAsState()
+    val wearScanDetail by viewModel.wearScanDetail.collectAsState()
+    val baseUrl by viewModel.baseUrl.collectAsState()
     val userName by viewModel.userName.collectAsState()
     val userEmail by viewModel.userEmail.collectAsState()
-    val householdName by viewModel.householdName.collectAsState()
-    val inviteCode by viewModel.inviteCode.collectAsState()
     val loading by viewModel.loading.collectAsState()
     val message by viewModel.message.collectAsState()
 
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showCurrencyDialog by remember { mutableStateOf(false) }
-    var showInviteDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
+    var showServerDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
     var showPrivacyDialog by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showPasswordDialog by remember { mutableStateOf(false) }
-    var showExportDialog by remember { mutableStateOf(false) }
-    var exportedJson by remember { mutableStateOf("") }
 
     val context = LocalContext.current
-
-    fun copyToClipboard(text: String, label: String = "Código") {
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText(label, text))
-        Toast.makeText(context, if (label == "Código") "Código copiado!" else "Dados copiados!", Toast.LENGTH_SHORT).show()
-    }
 
     LaunchedEffect(message) {
         message?.let {
@@ -120,7 +107,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Configurações", fontSize = 20.sp, fontWeight = FontWeight.Medium) },
+                title = { Text(text = "ConfiguraÃ§Ãµes", fontSize = 20.sp, fontWeight = FontWeight.Medium) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
@@ -153,35 +140,36 @@ fun SettingsScreen(
                 )
             }
 
-            SettingsSection(title = "Casa") {
+            SettingsSection(title = "AparÃªncia") {
                 SettingsItem(
-                    icon = Icons.Filled.FamilyRestroom,
-                    title = "Minha Casa",
-                    subtitle = householdName.ifBlank { "carregando..." }
-                )
-                SettingsItem(
-                    icon = Icons.Filled.Code,
-                    title = "Código de convite",
-                    subtitle = inviteCode.ifBlank { "carregando..." },
-                    onClick = { if (inviteCode.isNotBlank()) showInviteDialog = true }
-                )
-                SettingsItem(
-                    icon = Icons.Filled.RestartAlt,
-                    title = "Gerar novo código",
-                    subtitle = "Invalida o código anterior",
-                    enabled = inviteCode.isNotBlank() && !loading,
-                    onClick = { viewModel.regenerateInviteCode() }
+                    icon = Icons.Filled.Palette,
+                    title = "Tema",
+                    subtitle = when (theme) {
+                        "dark" -> "Escuro"
+                        "light" -> "Claro"
+                        else -> "Sistema"
+                    },
+                    onClick = { showThemeDialog = true }
                 )
             }
 
-            SettingsSection(title = "Localização & Moeda") {
+            SettingsSection(title = "Servidor") {
+                SettingsItem(
+                    icon = Icons.Filled.Dns,
+                    title = "EndereÃ§o do servidor",
+                    subtitle = baseUrl,
+                    onClick = { showServerDialog = true }
+                )
+            }
+
+            SettingsSection(title = "LocalizaÃ§Ã£o & Moeda") {
                 SettingsItem(
                     icon = Icons.Filled.Language,
                     title = "Idioma",
                     subtitle = when (language) {
-                        "pt-BR" -> "Português (Brasil)"
+                        "pt-BR" -> "PortuguÃªs (Brasil)"
                         "en-US" -> "English (US)"
-                        "es-ES" -> "Español (España)"
+                        "es-ES" -> "EspaÃ±ol (EspaÃ±a)"
                         else -> language
                     },
                     onClick = { showLanguageDialog = true }
@@ -191,7 +179,7 @@ fun SettingsScreen(
                     title = "Moeda",
                     subtitle = when (currency) {
                         "BRL" -> "Real Brasileiro (BRL)"
-                        "USD" -> "Dólar Americano (USD)"
+                        "USD" -> "DÃ³lar Americano (USD)"
                         "EUR" -> "Euro (EUR)"
                         else -> currency
                     },
@@ -199,27 +187,10 @@ fun SettingsScreen(
                 )
             }
 
-            SettingsSection(title = "Aparência") {
-                SettingsItem(
-                    icon = Icons.Filled.Checkroom,
-                    title = "Tema escuro",
-                    trailing = {
-                        Switch(
-                            checked = darkTheme,
-                            onCheckedChange = { viewModel.setDarkTheme(it) },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colorScheme.primary,
-                                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
-                            )
-                        )
-                    }
-                )
-            }
-
-            SettingsSection(title = "Notificações") {
+            SettingsSection(title = "NotificaÃ§Ãµes") {
                 SettingsItem(
                     icon = Icons.Filled.Notifications,
-                    title = "Notificações push",
+                    title = "NotificaÃ§Ãµes push",
                     trailing = {
                         Switch(
                             checked = notificationsEnabled,
@@ -233,7 +204,7 @@ fun SettingsScreen(
                 )
                 SettingsItem(
                     icon = Icons.Filled.Tune,
-                    title = "Feedback tátil",
+                    title = "Feedback tÃ¡til",
                     trailing = {
                         Switch(
                             checked = hapticFeedback,
@@ -265,19 +236,20 @@ fun SettingsScreen(
                 )
             }
 
-            SettingsSection(title = "Backup") {
+            SettingsSection(title = "Wear OS") {
                 SettingsItem(
-                    icon = Icons.Filled.Backup,
-                    title = "Exportar dados",
-                    subtitle = "Gera um backup JSON dos dados locais",
-                    enabled = !loading,
-                    onClick = {
-                        viewModel.exportData { json ->
-                            if (json != null) {
-                                exportedJson = json
-                                showExportDialog = true
-                            }
-                        }
+                    icon = Icons.Filled.Watch,
+                    title = "Detalhar scan no relÃ³gio",
+                    subtitle = "Usar o Wear OS para detalhar o scan",
+                    trailing = {
+                        Switch(
+                            checked = wearScanDetail,
+                            onCheckedChange = { viewModel.setWearScanDetail(it) },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        )
                     }
                 )
             }
@@ -285,75 +257,137 @@ fun SettingsScreen(
             SettingsSection(title = "Sobre") {
                 SettingsItem(
                     icon = Icons.Filled.Info,
-                    title = "Versão",
+                    title = "VersÃ£o",
                     subtitle = "1.0.0",
                     onClick = { showAboutDialog = true }
                 )
                 SettingsItem(
                     icon = Icons.Filled.Security,
-                    title = "Privacidade & segurança",
+                    title = "Privacidade & seguranÃ§a",
                     onClick = { showPrivacyDialog = true }
                 )
             }
 
-            SettingsSection(title = "Zona de perigo") {
-                SettingsItem(
-                    icon = Icons.Filled.DeleteSweep,
-                    title = "Limpar listas arquivadas",
-                    subtitle = "Irreversível",
-                    titleColor = MaterialTheme.colorScheme.error,
-                    enabled = false
-                )
-                SettingsItem(
-                    icon = Icons.Filled.RestartAlt,
-                    title = "Resetar integrações",
-                    subtitle = "Remove Grocy, HA, Alexa",
-                    titleColor = MaterialTheme.colorScheme.error,
-                    enabled = false
-                )
-                SettingsItem(
-                    icon = Icons.Filled.DoorFront,
-                    title = "Resetar sistema",
-                    subtitle = "Apaga tudo e reinicia setup",
-                    titleColor = MaterialTheme.colorScheme.error,
-                    enabled = false
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable(enabled = true, onClick = { showLogoutDialog = true })
-                        .background(MaterialTheme.colorScheme.errorContainer, MaterialTheme.shapes.medium)
-                        .padding(16.dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+                    .clickable(enabled = true, onClick = { showLogoutDialog = true })
+                    .background(MaterialTheme.colorScheme.errorContainer, MaterialTheme.shapes.medium)
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        Icon(
-                            Icons.Filled.Logout,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onErrorContainer,
-                            modifier = Modifier.size(22.dp)
-                        )
-                        Spacer(Modifier.width(12.dp))
-                        Text(
-                            text = "Sair da conta",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    }
+                    Icon(
+                        Icons.Filled.Logout,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        text = "Sair da conta",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
                 }
             }
         }
     }
 
+    if (showThemeDialog) {
+        ChoiceDialog(
+            title = "Tema",
+            options = listOf(
+                "system" to "Sistema",
+                "dark" to "Escuro",
+                "light" to "Claro"
+            ),
+            selected = theme,
+            onDismiss = { showThemeDialog = false },
+            onSelect = { viewModel.setTheme(it); showThemeDialog = false }
+        )
+    }
+
+    if (showServerDialog) {
+        var url by remember { mutableStateOf(baseUrl) }
+        var testMessage by remember { mutableStateOf<String?>(null) }
+        var testSuccess by remember { mutableStateOf<Boolean?>(null) }
+        var testing by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            onDismissRequest = { showServerDialog = false },
+            title = { Text("Servidor") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        text = "EndereÃ§o do servidor Listaih (ex: http://192.168.0.10:3000). A mudanÃ§a vale imediatamente.",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    OutlinedTextField(
+                        value = url,
+                        onValueChange = { url = it; testMessage = null },
+                        label = { Text("URL") },
+                        singleLine = true,
+                        placeholder = { Text("http://127.0.0.1:3000") }
+                    )
+                    testMessage?.let {
+                        Text(
+                            text = it,
+                            fontSize = 13.sp,
+                            color = if (testSuccess == true) Color(0xFF2E7D32) else MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = !testing,
+                    onClick = {
+                        viewModel.saveBaseUrl(url.trim())
+                        showServerDialog = false
+                    }
+                ) {
+                    Text("Salvar")
+                }
+            },
+            dismissButton = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(onClick = { showServerDialog = false }) {
+                        Text("Cancelar")
+                    }
+                    TextButton(
+                        enabled = !testing && !loading,
+                        onClick = {
+                            testing = true
+                            testMessage = null
+                            viewModel.testConnection(url.trim()) { ok ->
+                                testing = false
+                                testSuccess = ok
+                                testMessage = if (ok) "ConexÃ£o OK" else "Falha na conexÃ£o (verifique a URL)"
+                            }
+                        }
+                    ) {
+                        if (testing) {
+                            CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                        } else {
+                            Text("Testar conexÃ£o")
+                        }
+                    }
+                }
+            }
+        )
+    }
+
     if (showLanguageDialog) {
         ChoiceDialog(
             title = "Idioma",
-            options = listOf("pt-BR" to "Português (Brasil)", "en-US" to "English (US)", "es-ES" to "Español (España)"),
+            options = listOf("pt-BR" to "PortuguÃªs (Brasil)", "en-US" to "English (US)", "es-ES" to "EspaÃ±ol (EspaÃ±a)"),
             selected = language,
             onDismiss = { showLanguageDialog = false },
             onSelect = { viewModel.setLanguage(it); showLanguageDialog = false }
@@ -363,51 +397,10 @@ fun SettingsScreen(
     if (showCurrencyDialog) {
         ChoiceDialog(
             title = "Moeda",
-            options = listOf("BRL" to "Real Brasileiro (BRL)", "USD" to "Dólar Americano (USD)", "EUR" to "Euro (EUR)"),
+            options = listOf("BRL" to "Real Brasileiro (BRL)", "USD" to "DÃ³lar Americano (USD)", "EUR" to "Euro (EUR)"),
             selected = currency,
             onDismiss = { showCurrencyDialog = false },
             onSelect = { viewModel.setCurrency(it); showCurrencyDialog = false }
-        )
-    }
-
-    if (showInviteDialog) {
-        AlertDialog(
-            onDismissRequest = { showInviteDialog = false },
-            title = { Text("Código de convite") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(
-                        text = "Compartilhe este código para adicionar alguém à sua casa:",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(MaterialTheme.shapes.medium)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                            .padding(vertical = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = inviteCode,
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 6.sp
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { copyToClipboard(inviteCode); showInviteDialog = false }) {
-                    Text("Copiar")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showInviteDialog = false }) {
-                    Text("Fechar")
-                }
-            }
         )
     }
 
@@ -461,7 +454,7 @@ fun SettingsScreen(
                                 validationError = "A nova senha precisa ter ao menos 6 caracteres"
                             }
                             newPassword != confirmPassword -> {
-                                validationError = "As senhas não coincidem"
+                                validationError = "As senhas nÃ£o coincidem"
                             }
                             else -> {
                                 showPasswordDialog = false
@@ -481,53 +474,13 @@ fun SettingsScreen(
         )
     }
 
-    if (showExportDialog) {
-        AlertDialog(
-            onDismissRequest = { showExportDialog = false },
-            title = { Text("Backup gerado") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "Seus dados locais foram exportados como JSON. Copie o conteúdo abaixo ou compartilhe.",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(MaterialTheme.shapes.medium)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                            .padding(12.dp)
-                    ) {
-                        Text(
-                            text = exportedJson,
-                            fontSize = 11.sp,
-                            maxLines = 8,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { copyToClipboard(exportedJson, "Backup"); showExportDialog = false }) {
-                    Text("Copiar")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showExportDialog = false }) {
-                    Text("Fechar")
-                }
-            }
-        )
-    }
-
     if (showAboutDialog) {
         AlertDialog(
             onDismissRequest = { showAboutDialog = false },
             title = { Text("Listaih") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("Versão 1.0.0")
+                    Text("VersÃ£o 1.0.0")
                     Text(
                         "Listas de compras colaborativas para sua casa.",
                         fontSize = 14.sp,
@@ -546,10 +499,10 @@ fun SettingsScreen(
     if (showPrivacyDialog) {
         AlertDialog(
             onDismissRequest = { showPrivacyDialog = false },
-            title = { Text("Privacidade & segurança") },
+            title = { Text("Privacidade & seguranÃ§a") },
             text = {
                 Text(
-                    "Seus dados são armazenados localmente no seu servidor. Nenhuma informação é compartilhada com terceiros.",
+                    "Seus dados sÃ£o armazenados localmente no seu servidor. Nenhuma informaÃ§Ã£o Ã© compartilhada com terceiros.",
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -566,7 +519,7 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
             title = { Text("Sair da conta?") },
-            text = { Text("Você precisará entrar novamente para acessar suas listas.") },
+            text = { Text("VocÃª precisarÃ¡ entrar novamente para acessar suas listas.") },
             confirmButton = {
                 TextButton(onClick = { showLogoutDialog = false; onLogout() }) {
                     Text("Sair", color = MaterialTheme.colorScheme.error)

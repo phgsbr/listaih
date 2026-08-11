@@ -26,6 +26,7 @@ object NetworkModule {
         }
 
         return OkHttpClient.Builder()
+            .addInterceptor(BaseUrlInterceptor(appPreferences))
             .addInterceptor(loggingInterceptor)
             .addInterceptor(AuthInterceptor(appPreferences))
             .build()

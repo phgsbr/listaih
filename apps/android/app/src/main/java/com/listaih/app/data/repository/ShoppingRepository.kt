@@ -216,6 +216,26 @@ class ShoppingRepository @Inject constructor(
         appPreferences.clearAuth()
     }
 
+    suspend fun testConnection(url: String): Result<Boolean> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val base = url.trim().trimEnd('/')
+                val request = okhttp3.Request.Builder()
+                    .url("$base/api/health")
+                    .get()
+                    .build()
+                okhttp3.OkHttpClient().newCall(request).execute().use { response ->
+                    android.util.Log.d("ListaihHealth", "code=${response.code}")
+                    if (response.isSuccessful) Result.success(true)
+                    else Result.failure(Exception("HTTP ${response.code}"))
+                }
+            } catch (e: Exception) {
+                android.util.Log.d("ListaihHealth", "exception=${e}")
+                Result.failure(e)
+            }
+        }
+    }
+
     suspend fun syncLists(householdId: String): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {

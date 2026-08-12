@@ -97,7 +97,7 @@ cd apps/backend && npx prisma generate && npx prisma migrate deploy
 - **Popup pós-scan (Fase 6)**: `ScanPopupController` sem timer (próximo scan confirma o anterior); reconhecido → popup com Confirmar, scan repetido = +1 na quantidade; não reconhecido → acende tela (`FLAG_TURN_SCREEN_ON`) com 3 opções (Associar à lista / Cadastrar novo / Genérico); `findScanItem` lê `viewModel.uiState.value.items` — nunca o `items` capturado da composição (callback do scanner cruza recomposições)
 - **`queueSync` recebe `payload: String`** (serializar tipado antes) — `payload: Any` crasha em runtime (`Serializer for class 'Any' is not found`)
 - **PATCH de item com productId**: recompilar `dist` não basta — reiniciar `node dist/main.js` (processo local)
-- **Repo**: `github.com/phgsbr/listaih` (privado), branch `master`, remote `origin`, push normal
+- **Repo**: `github.com/phgsbr/listaih` (**público**, branch `master`, remote `origin`, push normal)
 
 ### Wear OS
 - Compose for Wear OS (`androidx.wear.compose:compose-material`)
@@ -124,7 +124,7 @@ cd apps/backend && npx prisma generate && npx prisma migrate deploy
 - `Dockerfile` multi-stage (apps/backend): stage admin (npm ci + `npm run build`), stage backend (npm ci + prisma generate + nest build), production (openssl/libc6-compat **obrigatório** p/ schema-engine do Prisma no Alpine; copia `prisma`/`@prisma`/`.prisma` do builder; `CMD = npx prisma migrate deploy && node dist/main.js`)
 - Admin dist vai para `/app/admin/dist`; backend serve `/admin` via `ADMIN_DIST_PATH` env (`app.module.ts`) — sem ela o rootPath relativo quebra no container (404)
 - Healthcheck do backend: `wget -qO- http://localhost:3000/api/health`
-- Deploy alvo: **ZimaOS** (home lab) — passos em `deploy/README-ZIMAOS.md` (git clone+SMB, `.env`, `docker compose up -d --build`, validação, backup com pg_dump)
+- Deploy alvo: **ZimaOS** (home lab) — **repo é PÚBLICO**, fluxo simplificado em `deploy/README-ZIMAOS.md`: `git clone https://github.com/phgsbr/listaih.git` (sem token) → `.env` → `docker compose up -d --build`. GHCR/tar são alternativas opcionais (push GHCR exige PAT; visibilidade do package GHCR só muda pela UI do GitHub)
 - Validações locais OK: health (db+redis up), admin 200, setup+login, external 401 sem chave (esperado)
 - Docker `docker` no PATH exige sessão nova: `$env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [Environment]::GetEnvironmentVariable("Path","User")`
 

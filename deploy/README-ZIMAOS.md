@@ -8,36 +8,14 @@ Backend (API + Admin WebUI), PostgreSQL e Redis rodando como stack Docker Compos
 
 ## Passo a passo
 
-### 1. Levar o repositório para o ZimaOS
-
-**Opção A — git clone (recomendado):**
+### 1. Clonar o repositório (público — sem token)
 ```bash
-# no ZimaOS (SSH/terminal). Repo privado: use um token de acesso do GitHub
-git clone https://<TOKEN>@github.com/phgsbr/listaih.git listaih
+git clone https://github.com/phgsbr/listaih.git listaih
 cd listaih
 ```
 
-**Opção B — copiar via SMB:** monte a pasta compartilhada do ZimaOS no Windows e copie
-o conteúdo do repositório (os arquivos de deploy são apenas os da raiz + `apps/backend` + `apps/admin`).
-
-**Opção C — imagem publicada no GHCR (sem código no ZimaOS):**
-Se o ZimaOS não tiver terminal/SSH ou se preferir só a imagem pronta:
-1. Publicação (feita na máquina com Docker, uma vez por versão):
-   ```bash
-   docker login ghcr.io -u phgsbr   # cola o PAT com scope write:packages
-   docker build -f apps/backend/Dockerfile -t ghcr.io/phgsbr/listaih:0.1.0 .
-   docker push ghcr.io/phgsbr/listaih:0.1.0
-   ```
-2. No ZimaOS (terminal OU UI de Stacks), use o compose combinado:
-   ```bash
-   docker compose -f docker-compose.yml -f docker-compose.zimaos.yml up -d
-   ```
-   O override troca `build:` pela `image: ghcr.io/phgsbr/listaih:0.1.0`.
-   No ZimaOS o pull pede autenticação no GHCR: `docker login ghcr.io -u phgsbr` com um PAT de leitura (`read:packages`).
-
 ### 2. Configurar o ambiente
 ```bash
-cd listaih
 cp .env.example .env
 # edite .env: POSTGRES_PASSWORD e JWT_SECRET (gere com: openssl rand -hex 32)
 ```
@@ -88,5 +66,15 @@ docker compose up -d --build
   docker exec listaih-postgres pg_dump -U listaih listaih > backup.sql
   ```
 
-## Alternativa: imagem publicada (se a UI de Stacks não suportar `build:`)
-Já coberta pela **Opção C** acima — use `docker-compose.zimaos.yml` (override `build: null` + `image:`).
+## Alternativa: imagem publicada (GHCR, sem build no ZimaOS)
+Se o ZimaOS não tiver terminal/SSH ou se preferir só a imagem pronta:
+```bash
+# uma vez, na máquina com Docker (publicação)
+docker build -f apps/backend/Dockerfile -t ghcr.io/phgsbr/listaih:0.1.0 .
+docker push ghcr.io/phgsbr/listaih:0.1.0
+```
+No ZimaOS:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.zimaos.yml up -d
+```
+O override (`docker-compose.zimaos.yml`) troca `build:` pela `image:` do GHCR.

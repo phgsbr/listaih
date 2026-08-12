@@ -551,7 +551,7 @@ Fases 1–8 concluídas e validadas no device (Home real, Settings leve, Onboard
 > Ordem de execução oficial: `docs/ANDROID-PLAN.md` seção 5. Fases 1–8 do plano
 > concluídas e validadas no device. A seguir, **Fase 9 — Wear OS Companion**.
 >
-> **Repo no GitHub:** `github.com/phgsbr/listaih` (privado, branch `master`).
+> **Repo no GitHub:** `github.com/phgsbr/listaih` (público, branch `master`).
 > Último commit: `8e9e720` (Fase 7 — Settings leve + fix HealthResponse, 11 Ago).
 > `.env` do backend fora do repo.
 

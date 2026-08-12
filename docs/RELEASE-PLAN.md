@@ -44,11 +44,11 @@ Liberar a v0.1 utilizável do Listaih: backend no container (validado local e pr
 - [x] Migrations aplicadas (6, via `prisma migrate deploy` no start)
 
 ### 1.4 Deploy no ZimaOS (usuário)
-- [x] Via GitHub decidida: **imagem no GHCR** (`ghcr.io/phgsbr/listaih:0.1.0`)
-- [x] Imagem buildada e publicada (digest `sha256:cf55117...`, 11 Ago)
-- [x] `docker-compose.zimaos.yml` criado (override `build: null` + `image:`) e testado localmente (`--no-build` + health OK)
-- [x] README-ZIMAOS atualizado com a Opção C (publicar/pull + login GHCR)
-- [ ] Stack de pé no ZimaOS (`docker compose -f ... -f docker-compose.zimaos.yml up -d`)
+- [x] Repositório tornado **público** (`github.com/phgsbr/listaih`) — clone sem token, GHCR sem login
+- [x] Deploy simplificado: `git clone` + `docker compose up -d --build` (sem GHCR, sem tar)
+- [x] README-ZIMAOS reescrito (fluxo único, GHCR como alternativa opcional)
+- [x] `.gitignore` + `*.tar` (arquivo de imagem não vai para o repo)
+- [ ] Stack de pé no ZimaOS (`docker compose up -d --build` após clone)
 - [ ] Validação pela LAN: `/api/health`, `/admin/` em `http://<zima>:3000`
 - [ ] Phone: Settings → Servidor → `http://<zima>:3000` + teste de conexão OK
 
@@ -97,13 +97,13 @@ Liberar a v0.1 utilizável do Listaih: backend no container (validado local e pr
 
 - [ ] Críticos/médios dos testes corrigidos e validados
 - [ ] `progress.md`, `HANDOFF-android.md`, AGENTS.md finalizados
-- [ ] Tag `v0.1` no git (sem release público — repo privado)
+- [ ] Tag `v0.1` no git (repo público — tag sem release de assets)
 - [ ] RELEASE-PLAN.md 100% concluído
 
 ---
 
 ## Riscos e planos B
 - **Docker Desktop/WSL2 falha** (virtualização off) → Docker Engine no WSL2 puro
-- **UI de Stacks do ZimaOS não suporta `build:`** → publicar imagem em `ghcr.io/phgsbr/listaih` e usar `image:` no compose
+- **UI de Stacks do ZimaOS não suporta `build:`** → usar `image:` no compose (GHCR; visibilidade do package via UI do GitHub se preciso)
 - **Wear 100% mock** → revisão cobre o existente; dados reais ficam para a integração (fora da v0.1)
 - **PowerShell/UTF-8** → validar saídas com cuidado em respostas JSON

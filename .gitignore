@@ -45,3 +45,6 @@ shot*.jpg
 *_polished.png
 *_test_*.png
 *_test_*.jpg
+
+# Docker image archives (regenerável com docker save)
+*.tar

@@ -11,7 +11,7 @@ sem perder o estado das decisões, arquivos e validações.
 ## 1. Estado geral
 
 - **Projeto:** Listaih (Fase 4 — Android em desenvolvimento). Branch: `master`; remote `origin` →
-  **github.com/phgsbr/listaih** (privado, configurado 10 Ago).
+  **github.com/phgsbr/listaih** (público, configurado 10 Ago).
 - **Fases 1–6 do plano Android concluídas e validadas no device físico** (ver §4).
 - **Working tree commitado (10 Ago):** 5 commits — `1b20e84` (gitignore debug), `6fdd063`
   (backend barcode→product), `4524abb` (gitignore .env), `f6e93e7` (android Fase 5/6 + wrapper
@@ -126,7 +126,7 @@ sem perder o estado das decisões, arquivos e validações.
 
 ### 7.1 Working tree (estado em 10 Ago 2026)
 
-- **Tudo commitado** via 5 commits (ver §1). Repo: `github.com/phgsbr/listaih` (privado), branch `master`.
+- **Tudo commitado** via 5 commits (ver §1). Repo: `github.com/phgsbr/listaih` (público), branch `master`.
 - `docs/progress.md` registra: Fase 6 validada, fixes (matcher stale, queueSync `payload: String`,
   DTO productId + restart do backend), ShoppingRepository reconstruído — se precisar, atualizar.
 - Temporários fora do git (gitignore): `compile_out*.txt`, `ui_dump_*.xml`, `backend_run.log.err`,
@@ -143,6 +143,6 @@ sem perder o estado das decisões, arquivos e validações.
 ## 9. Como retomar
 
 1. Ler este doc + `docs/ANDROID-PLAN.md` seção 8 (Instruções para o Agente).
-2. Rodar `git status` + `git diff` para rever o working tree (repo: `github.com/phgsbr/listaih` — privado).
+2. Rodar `git status` + `git diff` para rever o working tree (repo: `github.com/phgsbr/listaih` — público).
 3. Aplicar JDK 17 ANTES de qualquer comando gradle.
 4. Continuar pela **Fase 10** do plano (Home real + Filtros) — depende só da Fase 1 (pronta).

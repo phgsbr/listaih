@@ -20,7 +20,7 @@ import { GrocyModule } from './modules/grocy/grocy.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'admin', 'dist'),
+      rootPath: process.env.ADMIN_DIST_PATH || join(__dirname, '..', '..', 'admin', 'dist'),
       serveRoot: '/admin',
       serveStaticOptions: { index: ['index.html'] },
     }),

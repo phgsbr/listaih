@@ -1,0 +1,26 @@
+# Git / VCS
+.git
+.gitignore
+
+# Dependências e builds
+**/node_modules
+**/dist
+apps/android
+apps/backend/.env
+apps/backend/start.log
+apps/backend/start-err.log
+
+# Docs e artefatos locais
+docs
+*.log
+*.png
+*.jpg
+*.jar
+*.apk
+*.xml
+*.html
+ui_dump_*
+compile_out*
+backend_run.log*
+.env
+.env.*

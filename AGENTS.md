@@ -116,9 +116,17 @@ cd apps/backend && npx prisma generate && npx prisma migrate deploy
 - URL: `http://localhost:3000/admin/`
 
 ## Limitações do ambiente
-- Docker não instalado — `docker compose up` não testável
-- Redis não instalado — SyncService emite WARN, WebSocket sync não testável
+- Redis não instalado localmente — para WebSocket real-time use o container (compose) ou instale Redis; sem Redis o SyncService emite WARN e o WebSocket sync não funciona
 - PowerShell pode corromper UTF-8 com acentos em testes de API
+
+## Docker / Deploy (validado 11 Ago 2026)
+- Docker Desktop 4.86 (WSL2) instalado localmente; stack completa: `docker compose up -d --build` em `.env` raiz (POSTGRES_PASSWORD, JWT_SECRET, BACKEND_PORT — não commitar)
+- `Dockerfile` multi-stage (apps/backend): stage admin (npm ci + `npm run build`), stage backend (npm ci + prisma generate + nest build), production (openssl/libc6-compat **obrigatório** p/ schema-engine do Prisma no Alpine; copia `prisma`/`@prisma`/`.prisma` do builder; `CMD = npx prisma migrate deploy && node dist/main.js`)
+- Admin dist vai para `/app/admin/dist`; backend serve `/admin` via `ADMIN_DIST_PATH` env (`app.module.ts`) — sem ela o rootPath relativo quebra no container (404)
+- Healthcheck do backend: `wget -qO- http://localhost:3000/api/health`
+- Deploy alvo: **ZimaOS** (home lab) — passos em `deploy/README-ZIMAOS.md` (git clone+SMB, `.env`, `docker compose up -d --build`, validação, backup com pg_dump)
+- Validações locais OK: health (db+redis up), admin 200, setup+login, external 401 sem chave (esperado)
+- Docker `docker` no PATH exige sessão nova: `$env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [Environment]::GetEnvironmentVariable("Path","User")`
 
 ## Migrations Prisma
 1. `20260805024405_init` — schema inicial

@@ -20,6 +20,21 @@ cd listaih
 **Opção B — copiar via SMB:** monte a pasta compartilhada do ZimaOS no Windows e copie
 o conteúdo do repositório (os arquivos de deploy são apenas os da raiz + `apps/backend` + `apps/admin`).
 
+**Opção C — imagem publicada no GHCR (sem código no ZimaOS):**
+Se o ZimaOS não tiver terminal/SSH ou se preferir só a imagem pronta:
+1. Publicação (feita na máquina com Docker, uma vez por versão):
+   ```bash
+   docker login ghcr.io -u phgsbr   # cola o PAT com scope write:packages
+   docker build -f apps/backend/Dockerfile -t ghcr.io/phgsbr/listaih:0.1.0 .
+   docker push ghcr.io/phgsbr/listaih:0.1.0
+   ```
+2. No ZimaOS (terminal OU UI de Stacks), use o compose combinado:
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.zimaos.yml up -d
+   ```
+   O override troca `build:` pela `image: ghcr.io/phgsbr/listaih:0.1.0`.
+   No ZimaOS o pull pede autenticação no GHCR: `docker login ghcr.io -u phgsbr` com um PAT de leitura (`read:packages`).
+
 ### 2. Configurar o ambiente
 ```bash
 cd listaih
@@ -74,9 +89,4 @@ docker compose up -d --build
   ```
 
 ## Alternativa: imagem publicada (se a UI de Stacks não suportar `build:`)
-```bash
-# no Windows (máquina com Docker):
-docker build -f apps/backend/Dockerfile -t ghcr.io/phgsbr/listaih:0.1.0 .
-docker push ghcr.io/phgsbr/listaih:0.1.0
-```
-E no compose troque `build:` por `image: ghcr.io/phgsbr/listaih:0.1.0`.
+Já coberta pela **Opção C** acima — use `docker-compose.zimaos.yml` (override `build: null` + `image:`).

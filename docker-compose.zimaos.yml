@@ -1,0 +1,9 @@
+# Override para deploy no ZimaOS via imagem publicada (GHCR)
+# Uso: docker compose -f docker-compose.yml -f docker-compose.zimaos.yml up -d
+# Remove o build e usa a imagem pronta (mais rápido no ZimaOS; a UI de Stacks
+# do ZimaOS não precisa de build context).
+
+services:
+  backend:
+    build: null
+    image: ghcr.io/phgsbr/listaih:0.1.0

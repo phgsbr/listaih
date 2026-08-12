@@ -44,11 +44,13 @@ Liberar a v0.1 utilizável do Listaih: backend no container (validado local e pr
 - [x] Migrations aplicadas (6, via `prisma migrate deploy` no start)
 
 ### 1.4 Deploy no ZimaOS (usuário)
-- [ ] Repo copiado/clonado no ZimaOS (SMB ou git+token)
-- [ ] `docker compose up -d --build` rodado no ZimaOS (ou stack na UI)
+- [x] Via GitHub decidida: **imagem no GHCR** (`ghcr.io/phgsbr/listaih:0.1.0`)
+- [x] Imagem buildada e publicada (digest `sha256:cf55117...`, 11 Ago)
+- [x] `docker-compose.zimaos.yml` criado (override `build: null` + `image:`) e testado localmente (`--no-build` + health OK)
+- [x] README-ZIMAOS atualizado com a Opção C (publicar/pull + login GHCR)
+- [ ] Stack de pé no ZimaOS (`docker compose -f ... -f docker-compose.zimaos.yml up -d`)
 - [ ] Validação pela LAN: `/api/health`, `/admin/` em `http://<zima>:3000`
 - [ ] Phone: Settings → Servidor → `http://<zima>:3000` + teste de conexão OK
-- [ ] Arquitetura do ZimaOS anotada (x86/ARM — node:22-alpine cobre ambos)
 
 ### 1.5 Docs
 - [ ] AGENTS.md: remover "Docker não instalado", adicionar seção Deploy (local + ZimaOS)

@@ -1,39 +1,67 @@
 package com.listaih.wear
 
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.MutableStateFlow
-import androidx.lifecycle.viewmodel.viewModelScope
-import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.ScalingLazyListState
-import androidx.wear.compose.material.rememberScalingLazyListState
-import com.listaih.app.data.repository.ShoppingRepository
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import com.listaih.wear.navigation.WearNavHost
+import com.listaih.wear.ui.scanpopup.WearScanPopupHost
 import com.listaih.wear.ui.theme.WearTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: WearMainViewModel by hiltViewModel()
+    private val viewModel: WearMainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             WearTheme {
-                Surface {
+                val popup by viewModel.scanPopup.collectAsState()
+                LaunchedEffect(popup) {
+                    if (popup != null) {
+                        window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
+                    } else {
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
+                    }
+                }
+                Box(modifier = Modifier.fillMaxSize()) {
                     WearNavHost(
-                        navController = rememberNavController(),
+                        navController = rememberSwipeDismissableNavController(),
                         viewModel = viewModel
                     )
+                    WearScanPopupHost(viewModel = viewModel)
                 }
             }
         }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        // Com o teclado (IME) visível, as teclas são digitadas no campo de texto,
+        // não viram scan (ex: campo de preço no popup)
+        if (imeVisible()) return super.onKeyDown(keyCode, event)
+        if (viewModel.onHidKey(keyCode, event.eventTime)) return true
+        return super.onKeyDown(keyCode, event)
+    }
+
+    private fun imeVisible(): Boolean {
+        val insets = androidx.core.view.ViewCompat.getRootWindowInsets(window.decorView)
+            ?: return false
+        return insets.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime())
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == 66 || keyCode == 134) return true
+        return super.onKeyUp(keyCode, event)
     }
 }

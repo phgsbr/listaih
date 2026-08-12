@@ -56,6 +56,10 @@ android {
     }
 }
 
+hilt {
+    enableAggregatingTask = false
+}
+
 dependencies {
     // Core Android
     implementation(libs.androidx.core.ktx)
@@ -66,22 +70,19 @@ dependencies {
     implementation(libs.wear.compose.material)
     implementation(libs.wear.compose.foundation)
     implementation(libs.wear.compose.navigation)
-    implementation(libs.wear.tiles.material)
-    implementation(libs.wear.protolayout.material)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
 
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
-
-    // Room (shared from app module)
-    implementation(project(":app"))
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)

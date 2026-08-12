@@ -1,60 +1,87 @@
 package com.listaih.wear.ui.screens.complete
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.listaih.wear.ui.theme.WearTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.wear.compose.material.Button
+import com.listaih.wear.ui.screens.checkout.PaymentOptions
 
 @Composable
 fun WearCompleteScreen(
     listId: String,
     listName: String,
-    onBackClick: () -> Unit
+    checkedCount: Int,
+    total: Double,
+    paymentMethod: String,
+    onHomeClick: () -> Unit
 ) {
+    val paymentLabel = PaymentOptions.firstOrNull { it.token == paymentMethod }?.label ?: "Sem pagamento"
+
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Complete icon
-        Box(
-            modifier = Modifier
-                .size(56.dp)
-                .background(MaterialTheme.colorScheme.primary, RectangleShape)
-                .clip(RectangleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(32.dp))
-        }
-
-        Text(text = "Compra finalizada!", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Text(text = listName, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(text = "8 itens comprados", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-
-        Text(text = "Total gasto", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(text = "R$ 42,00", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
+        Icon(
+            Icons.Filled.CheckCircle,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(48.dp)
+        )
+        Text(
+            text = "Compra finalizada!",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = listName,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = "$checkedCount itens · R$ ${String.format("%.2f", total)}",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.secondary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+        Text(
+            text = paymentLabel,
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 2.dp)
+        )
 
         Button(
-            onClick = onBackClick,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, top = 12.dp),
-            colors = androidx.wear.compose.material.ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
+            onClick = onHomeClick,
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
             Text(text = "Voltar ao início", fontSize = 13.sp, fontWeight = FontWeight.Medium)

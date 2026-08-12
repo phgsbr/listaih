@@ -1,33 +1,42 @@
 package com.listaih.wear.ui.screens.home
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.listaih.wear.ui.theme.WearTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.List
-import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.ScalingLazyListState
 import androidx.wear.compose.material.rememberScalingLazyListState
-import androidx.wear.compose.material.Button
-import androidx.wear.compose.material.Vignette
 
 @Composable
 fun WearHomeScreen(
@@ -45,33 +54,19 @@ fun WearHomeScreen(
     ScalingLazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = listState,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 16.dp, bottom = 16.dp)
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 12.dp, bottom = 12.dp)
     ) {
-        // App name
         item {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Listaih", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                androidx.compose.foundation.layout.Spacer(Modifier.height(4.dp))
+                Text(text = "Listaih", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Text(text = "Suas listas", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
-        // Progress ring for first list
-        lists.firstOrNull()?.let { firstList ->
-            item {
-                WearProgressRing(
-                    progress = if (firstList.totalItems > 0) firstList.checkedItems.toFloat() / firstList.totalItems else 0f,
-                    listName = firstList.name,
-                    remainingItems = firstList.totalItems - firstList.checkedItems
-                )
-            }
-        }
-
-        // Other lists
-        lists.drop(1).forEach { list ->
+        lists.forEach { list ->
             item {
                 WearListCard(
                     list = list,
@@ -80,96 +75,41 @@ fun WearHomeScreen(
             }
         }
 
-        // Action buttons
         item {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
                     onClick = onSelectClick,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    colors = androidx.wear.compose.material.ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        contentColor = MaterialTheme.colorScheme.onSurface
                     )
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(Icons.Filled.List, contentDescription = null, modifier = Modifier.size(20.dp))
-                        androidx.compose.foundation.layout.Spacer(Modifier.width(8.dp))
-                        Text(text = "Ver todas as listas", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.List, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Ver todas as listas", fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
 
                 Button(
                     onClick = onVoiceClick,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    colors = androidx.wear.compose.material.ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(Icons.Filled.Mic, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-                        androidx.compose.foundation.layout.Spacer(Modifier.width(8.dp))
-                        Text(text = "Adicionar por voz", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Mic, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Adicionar por voz", fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun WearProgressRing(
-    progress: Float,
-    listName: String,
-    remainingItems: Int
-) {
-    val circumference = 2 * 3.14159 * 52 // radius 52
-    val strokeWidth = 8.dp
-    val offset = circumference * (1 - progress)
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier.size(120.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            androidx.compose.foundation.Canvas(modifier = Modifier.size(120.dp)) {
-                // Background circle
-                drawCircle(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    radius = 52.dp.toPx(),
-                    style = androidx.compose.ui.draw.Stroke(width = strokeWidth)
-                )
-
-                // Progress circle
-                drawArc(
-                    color = MaterialTheme.colorScheme.primary,
-                    startAngle = -90f,
-                    sweepAngle = 360f * progress,
-                    useCenter = false,
-                    radius = 52.dp.toPx(),
-                    style = androidx.compose.ui.draw.Stroke(width = strokeWidth, cap = androidx.compose.ui.graphics.StrokeCap.Round)
-                )
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = "${(progress * 100).toInt()}%", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                Text(text = listName, fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                Text(text = "$remainingItems restantes", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
@@ -177,20 +117,63 @@ fun WearProgressRing(
 
 @Composable
 fun WearListCard(list: WearListUi, onClick: () -> Unit) {
-    Chip(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        label = {
+    val progress = if (list.totalItems > 0) list.checkedItems.toFloat() / list.totalItems else 0f
+    val percent = (progress * 100).toInt()
+    val trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+    val ringColor = when {
+        progress >= 1f -> MaterialTheme.colorScheme.secondary
+        else -> MaterialTheme.colorScheme.primary
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 3.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 10.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Canvas(modifier = Modifier.size(40.dp)) {
+                    drawCircle(color = trackColor, radius = this.size.minDimension / 2)
+                    drawArc(
+                        color = ringColor,
+                        startAngle = -90f,
+                        sweepAngle = 360f * progress,
+                        useCenter = false,
+                        topLeft = Offset.Zero,
+                        size = Size(this.size.width, this.size.height),
+                        style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round)
+                    )
+                }
+                Text(
+                    text = "$percent%",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Start,
+                modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                Text(text = list.name, fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                Text(text = "${list.totalItems - list.checkedItems} de ${list.totalItems} · R$ ${String.format("%.2f", list.estimatedTotal)}", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(text = list.name, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    text = "$percent% completa",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
-    )
+    }
 }
 
 data class WearListUi(

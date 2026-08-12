@@ -106,6 +106,9 @@ cd apps/backend && npx prisma generate && npx prisma migrate deploy
 - Chip components para itens de lista
 - Vignette para edge fading
 - `minSdk 30` (Wear OS 3+)
+- **Scanner no relógio** (esqueleto Fase 9): `MainActivity.onKeyDown` captura keyevents HID (dígitos `7..16` + `66`/`134` literais) → `WearMainViewModel.onHidKey`; **com IME visível o consumo é desativado** (`MainActivity.imeVisible()` — senão digitação vira scan); popup global `WearScanPopupHost` (reconhecido: botões ícone **X** qtd / **$** preço / **Check verde** confirmar; não reconhecido: código + Fechar); **sem timer** — scan novo auto-confirma o anterior, mesmo código = +1; `setScanItemPrice`/`setScanItemQuantity` atualizam e mantêm o popup aberto; toggle "Scanner BT (HID)" em `WearSettingsScreen` (SharedPreferences `listaih_wear_settings` → `scan_enabled`); `FLAG_TURN_SCREEN_ON` ao abrir popup; itens ainda são mock (`WearMainViewModel.mockItems` com barcodes)
+- **Editors de quantidade/preço no popup**: keypad numérico embutido (sem IME) — digite só números: `1299` → R$ 12,99 (preço), `250` → 2,50 kg (qtd; kg/L centésimos, un/g/ml inteiros); formato BRL com vírgula (`formatBrl` no popup)
+- **Emulador 454x454 @ 2.0** = 227dp de altura — overlays do popup precisam caber em ~220dp (keypad 3 linhas 30dp + botões 28dp); uiautomator dump no emulador é instável (XML malformado às vezes) — validar com `-match`/`Contains` no texto bruto em vez de regex de bounds
 
 ## Credenciais de teste (local)
 - PostgreSQL: `listaih` / `listaih` / `listaih` / `localhost:5432`

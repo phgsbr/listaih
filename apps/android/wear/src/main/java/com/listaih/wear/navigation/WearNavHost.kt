@@ -1,23 +1,21 @@
 package com.listaih.wear.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import androidx.navigation.Compose.NavGraphBuilder
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navGraph
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavHostController
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
+import androidx.wear.compose.navigation.composable
 import com.listaih.wear.WearMainViewModel
-import com.listaih.wear.ui.screens.home.WearHomeScreen
-import com.listaih.wear.ui.screens.shopping.WearShoppingScreen
+import com.listaih.wear.ui.screens.checkout.WearCheckoutScreen
 import com.listaih.wear.ui.screens.complete.WearCompleteScreen
+import com.listaih.wear.ui.screens.home.WearHomeScreen
 import com.listaih.wear.ui.screens.select.WearSelectScreen
+import com.listaih.wear.ui.screens.shopping.WearShoppingScreen
 import com.listaih.wear.ui.screens.voice.WearVoiceScreen
 
 @Composable
 fun WearNavHost(
-    navController: NavController,
+    navController: NavHostController,
     viewModel: WearMainViewModel
 ) {
     SwipeDismissableNavHost(navController, startDestination = "home") {
@@ -25,7 +23,7 @@ fun WearNavHost(
             WearHomeScreen(
                 onListClick = { listId, listName ->
                     viewModel.setCurrentList(listId)
-                    navController.navigate("shopping/$listId/$listName")
+                    navController.navigate("shopping/$listId/${Uri.encode(listName)}")
                 },
                 onSelectClick = { navController.navigate("select") },
                 onVoiceClick = { navController.navigate("voice") }
@@ -39,30 +37,69 @@ fun WearNavHost(
                 androidx.navigation.navArgument("listName") { type = androidx.navigation.NavType.StringType }
             )
         ) { backStackEntry ->
-            val listId = backStackEntry.getString()!!
-            val listName = backStackEntry.getString()!!
+            val listId = backStackEntry.arguments?.getString("listId") ?: ""
+            val listName = backStackEntry.arguments?.getString("listName") ?: ""
             WearShoppingScreen(
+                viewModel = viewModel,
                 listId = listId,
                 listName = listName,
-                onItemCheck = { /* TODO: Handle check */ },
-                onComplete = { navController.navigate("complete/$listId/$listName") },
+                onCheckout = { count, total ->
+                    navController.navigate("checkout/$listId/${Uri.encode(listName)}/$count/$total")
+                },
                 onBackClick = { navController.popBackStack() }
             )
         }
 
         composable(
-            route = "complete/{listId}/{listName}",
+            route = "checkout/{listId}/{listName}/{count}/{total}",
             arguments = listOf(
                 androidx.navigation.navArgument("listId") { type = androidx.navigation.NavType.StringType },
-                androidx.navigation.navArgument("listName") { type = androidx.navigation.NavType.StringType }
+                androidx.navigation.navArgument("listName") { type = androidx.navigation.NavType.StringType },
+                androidx.navigation.navArgument("count") { type = androidx.navigation.NavType.IntType },
+                androidx.navigation.navArgument("total") { type = androidx.navigation.NavType.StringType }
             )
         ) { backStackEntry ->
-            val listId = backStackEntry.getString()!!
-            val listName = backStackEntry.getString()!!
+            val listId = backStackEntry.arguments?.getString("listId") ?: ""
+            val listName = backStackEntry.arguments?.getString("listName") ?: ""
+            val count = backStackEntry.arguments?.getInt("count") ?: 0
+            val total = backStackEntry.arguments?.getString("total")?.toDoubleOrNull() ?: 0.0
+            WearCheckoutScreen(
+                listName = listName,
+                checkedCount = count,
+                estimatedTotal = total,
+                initialPayment = "",
+                onConfirm = { method, amountStr, _ ->
+                    val safeMethod = if (method.isEmpty()) "SEM_PAGAMENTO" else method
+                    navController.navigate("complete/$listId/${Uri.encode(listName)}/$count/$amountStr/${Uri.encode(safeMethod)}")
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = "complete/{listId}/{listName}/{count}/{total}/{method}",
+            arguments = listOf(
+                androidx.navigation.navArgument("listId") { type = androidx.navigation.NavType.StringType },
+                androidx.navigation.navArgument("listName") { type = androidx.navigation.NavType.StringType },
+                androidx.navigation.navArgument("count") { type = androidx.navigation.NavType.IntType },
+                androidx.navigation.navArgument("total") { type = androidx.navigation.NavType.StringType },
+                androidx.navigation.navArgument("method") { type = androidx.navigation.NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val listId = backStackEntry.arguments?.getString("listId") ?: ""
+            val listName = backStackEntry.arguments?.getString("listName") ?: ""
+            val count = backStackEntry.arguments?.getInt("count") ?: 0
+            val total = backStackEntry.arguments?.getString("total")?.toDoubleOrNull() ?: 0.0
+            val method = backStackEntry.arguments?.getString("method") ?: ""
             WearCompleteScreen(
                 listId = listId,
                 listName = listName,
-                onBackClick = { navController.popBackStack() }
+                checkedCount = count,
+                total = total,
+                paymentMethod = method,
+                onHomeClick = {
+                    navController.popBackStack("home", inclusive = false)
+                }
             )
         }
 
@@ -70,7 +107,7 @@ fun WearNavHost(
             WearSelectScreen(
                 onListClick = { listId, listName ->
                     viewModel.setCurrentList(listId)
-                    navController.navigate("shopping/$listId/$listName")
+                    navController.navigate("shopping/$listId/${Uri.encode(listName)}")
                 },
                 onBackClick = { navController.popBackStack() }
             )

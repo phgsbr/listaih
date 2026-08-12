@@ -48,7 +48,9 @@ Liberar a v0.1 utilizável do Listaih: backend no container (validado local e pr
 - [x] Deploy simplificado: `git clone` + `docker compose up -d --build` (sem GHCR, sem tar)
 - [x] README-ZIMAOS reescrito (fluxo único, GHCR como alternativa opcional)
 - [x] `.gitignore` + `*.tar` (arquivo de imagem não vai para o repo)
-- [ ] Stack de pé no ZimaOS (`docker compose up -d --build` após clone)
+- [x] Imagem GHCR **pública** (via UI do GitHub — API bloqueia) + pull anônimo validado localmente
+- [x] `deploy/docker-compose.stacks.yml` (standalone para UI de Stacks, sem clone) — commit `9fa87fa`
+- [ ] Stack de pé no ZimaOS (`docker compose up -d --build` após clone **ou** colar o stacks.yml)
 - [ ] Validação pela LAN: `/api/health`, `/admin/` em `http://<zima>:3000`
 - [ ] Phone: Settings → Servidor → `http://<zima>:3000` + teste de conexão OK
 

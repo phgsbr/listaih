@@ -1,0 +1,61 @@
+# Listaih — stack para colar na UI de Stacks do ZimaOS
+# 1. Troque os valores de POSTGRES_PASSWORD e JWT_SECRET antes de colar!
+# 2. Imagem: GHCR pública (Opção A) OU já carregada localmente com `docker load` (Opção B)
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: listaih-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: listaih
+      POSTGRES_PASSWORD: TROQUE-A-SENHA-DO-BANCO
+      POSTGRES_DB: listaih
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U listaih"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: listaih-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: ghcr.io/phgsbr/listaih:0.1.0
+    container_name: listaih-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgresql://listaih:TROQUE-A-SENHA-DO-BANCO@postgres:5432/listaih?schema=public"
+      REDIS_URL: "redis://redis:6379"
+      JWT_SECRET: TROQUE-ESTE-SECRET-COM-openssl-rand-hex-32
+      JWT_ACCESS_EXPIRATION: 15m
+      JWT_REFRESH_EXPIRATION: 7d
+      PORT: 3000
+      CORS_ORIGIN: "*"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -20,6 +20,14 @@ async function bootstrap() {
 
   app.use(json({ limit: '10mb' }));
 
+  // Redirecionar raiz "/" para "/admin/"
+  app.use((req, res, next) => {
+    if (req.path === '/' || req.path === '') {
+      return res.redirect(302, '/admin/');
+    }
+    next();
+  });
+
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({

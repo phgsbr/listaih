@@ -40,13 +40,16 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.rememberScalingLazyListState
+import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
+import androidx.wear.compose.material.PositionIndicator
+import com.listaih.wear.R
 import com.listaih.wear.WearItemUi
 import com.listaih.wear.WearMainViewModel
 
@@ -140,7 +143,7 @@ fun WearShoppingScreen(
 
             if (boughtItems.isNotEmpty()) {
                 item {
-                    WearCategoryHeader(category = "Comprados")
+                    WearCategoryHeader(category = stringResource(R.string.wear_shopping_bought))
                 }
                 boughtItems.forEach { boughtItem ->
                     item {
@@ -155,6 +158,8 @@ fun WearShoppingScreen(
             }
         }
 
+        PositionIndicator(scalingLazyListState = listState)
+
         Button(
             onClick = { onCheckout(checkedCount, checkedTotal) },
             enabled = checkedCount > 0,
@@ -167,7 +172,7 @@ fun WearShoppingScreen(
             )
         ) {
             Text(
-                text = if (checkedCount > 0) "Finalizar · R$ ${String.format("%.2f", checkedTotal)}" else "Marcar itens para finalizar",
+                text = if (checkedCount > 0) stringResource(R.string.wear_shopping_checkout, checkedTotal) else stringResource(R.string.wear_shopping_mark_items),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
@@ -221,7 +226,7 @@ fun categoryColor(category: String): Color {
         "padaria" -> Color(0xFFFFB74D)
         "carnes", "açougue", "acougue" -> Color(0xFFFF8A80)
         "bebidas" -> scheme.secondary
-        "comprados" -> scheme.onSurfaceVariant
+        "comprados", "purchased", "comprados" -> scheme.onSurfaceVariant
         else -> scheme.secondary
     }
 }
@@ -281,7 +286,7 @@ fun WearItemRow(
             if (checked) {
                 Icon(
                     Icons.Filled.Check,
-                    contentDescription = "Marcado",
+                    contentDescription = stringResource(R.string.cd_checked),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(start = 6.dp).size(20.dp)
                 )
@@ -337,7 +342,7 @@ fun WearItemEditPopup(
             )
 
             Text(
-                text = "Quantidade (${item.unit})",
+                text = stringResource(R.string.wear_shopping_quantity, item.unit),
                 fontSize = 9.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 2.dp)
@@ -348,7 +353,7 @@ fun WearItemEditPopup(
                 modifier = Modifier.padding(top = 1.dp)
             ) {
                 StepButton(onClick = { quantity = (quantity - 0.5).coerceAtLeast(0.5) }, enabled = quantity > 0.5) {
-                    Icon(Icons.Filled.Remove, contentDescription = "Diminuir", tint = MaterialTheme.colorScheme.onPrimary)
+                    Icon(Icons.Filled.Remove, contentDescription = stringResource(R.string.cd_decrease), tint = MaterialTheme.colorScheme.onPrimary)
                 }
                 Text(
                     text = formatQty(quantity),
@@ -358,7 +363,7 @@ fun WearItemEditPopup(
                     minLines = 1
                 )
                 StepButton(onClick = { quantity = quantity + 0.5 }) {
-                    Icon(Icons.Filled.Add, contentDescription = "Aumentar", tint = MaterialTheme.colorScheme.onPrimary)
+                    Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.cd_increase), tint = MaterialTheme.colorScheme.onPrimary)
                 }
             }
 
@@ -367,8 +372,8 @@ fun WearItemEditPopup(
                 onValueChange = { new ->
                     price = new.filter { c -> c.isDigit() || c == '.' }.take(10)
                 },
-                label = { Text("Preço (R\$)", fontSize = 11.sp) },
-                placeholder = { Text("0,00") },
+                label = { Text(stringResource(R.string.wear_shopping_price_label), fontSize = 11.sp) },
+                placeholder = { Text(stringResource(R.string.wear_shopping_price_placeholder)) },
                 singleLine = true,
                 textStyle = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
                 modifier = Modifier
@@ -378,7 +383,7 @@ fun WearItemEditPopup(
             )
 
             Text(
-                text = "Total: R$ ${String.format("%.2f", total)}",
+                text = stringResource(R.string.wear_shopping_total, total),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary,
@@ -391,18 +396,18 @@ fun WearItemEditPopup(
             ) {
                 Button(
                     onClick = onDismiss,
-                    modifier = Modifier.weight(1f).height(34.dp),
+                    modifier = Modifier.weight(1f).height(44.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                         contentColor = MaterialTheme.colorScheme.onSurface
                     )
                 ) {
-                    Text(text = "Cancelar", fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                    Text(text = stringResource(R.string.btn_cancel), fontSize = 11.sp, fontWeight = FontWeight.Medium)
                 }
                 Button(
                     onClick = { onConfirm(quantity, priceValue) },
                     enabled = priceValue != null && priceValue > 0,
-                    modifier = Modifier.weight(1f).height(34.dp),
+                    modifier = Modifier.weight(1f).height(44.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
@@ -410,7 +415,7 @@ fun WearItemEditPopup(
                         disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 ) {
-                    Text(text = "Salvar", fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                    Text(text = stringResource(R.string.btn_save), fontSize = 11.sp, fontWeight = FontWeight.Medium)
                 }
             }
         }
@@ -425,7 +430,7 @@ private fun StepButton(
 ) {
     Box(
         modifier = Modifier
-            .size(32.dp)
+            .size(44.dp)
             .clip(CircleShape)
             .background(
                 if (enabled) MaterialTheme.colorScheme.primary

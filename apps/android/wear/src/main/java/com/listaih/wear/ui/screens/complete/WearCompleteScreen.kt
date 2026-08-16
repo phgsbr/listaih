@@ -16,11 +16,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.listaih.wear.R
 import com.listaih.wear.ui.screens.checkout.PaymentOptions
 
 @Composable
@@ -32,7 +34,18 @@ fun WearCompleteScreen(
     paymentMethod: String,
     onHomeClick: () -> Unit
 ) {
-    val paymentLabel = PaymentOptions.firstOrNull { it.token == paymentMethod }?.label ?: "Sem pagamento"
+    val paymentLabel = PaymentOptions.firstOrNull { it.token == paymentMethod }?.token?.let { token ->
+        when (token) {
+            "" -> stringResource(R.string.pay_no_payment)
+            "DINHEIRO" -> stringResource(R.string.pay_cash)
+            "DEBITO" -> stringResource(R.string.pay_debit)
+            "CREDITO" -> stringResource(R.string.pay_credit)
+            "PIX" -> stringResource(R.string.pay_pix)
+            "VR" -> stringResource(R.string.pay_vr)
+            "VA" -> stringResource(R.string.pay_va)
+            else -> stringResource(R.string.pay_no_payment)
+        }
+    } ?: stringResource(R.string.pay_no_payment)
 
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -46,7 +59,7 @@ fun WearCompleteScreen(
             modifier = Modifier.size(48.dp)
         )
         Text(
-            text = "Compra finalizada!",
+            text = stringResource(R.string.wear_complete_title),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -61,7 +74,7 @@ fun WearCompleteScreen(
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            text = "$checkedCount itens · R$ ${String.format("%.2f", total)}",
+            text = stringResource(R.string.wear_complete_summary, checkedCount, total),
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.secondary,
@@ -84,7 +97,7 @@ fun WearCompleteScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
-            Text(text = "Voltar ao início", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+            Text(text = stringResource(R.string.wear_complete_home), fontSize = 13.sp, fontWeight = FontWeight.Medium)
         }
     }
 }

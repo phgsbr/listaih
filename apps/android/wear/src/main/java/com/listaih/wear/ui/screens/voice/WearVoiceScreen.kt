@@ -24,10 +24,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.listaih.wear.R
 
 @Composable
 fun WearVoiceScreen(
@@ -54,7 +56,7 @@ fun WearVoiceScreen(
         }
 
         Text(
-            text = if (isListening) "Ouvindo..." else "Toque para falar",
+            text = if (isListening) stringResource(R.string.wear_voice_listening) else stringResource(R.string.wear_voice_tap_to_speak),
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -85,7 +87,7 @@ fun WearVoiceScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
-            Text(text = if (isListening) "Parar" else "Iniciar", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+            Text(text = if (isListening) stringResource(R.string.wear_voice_stop) else stringResource(R.string.wear_voice_start), fontSize = 13.sp, fontWeight = FontWeight.Medium)
         }
 
         Button(

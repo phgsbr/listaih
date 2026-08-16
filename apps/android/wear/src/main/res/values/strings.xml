@@ -1,4 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Listaih</string>
+
+    <!-- Home -->
+    <string name="wear_home_title">Listaih</string>
+    <string name="wear_home_subtitle">Suas listas</string>
+    <string name="wear_home_see_all">Ver todas as listas</string>
+    <string name="wear_home_voice">Adicionar por voz</string>
+    <string name="wear_list_percent_complete">%1$d%% completa</string>
+
+    <!-- Select -->
+    <string name="wear_select_title">Minhas Listas</string>
+    <string name="wear_select_item_count">%1$d de %2$d itens</string>
+
+    <!-- Shopping -->
+    <string name="wear_shopping_bought">Comprados</string>
+    <string name="wear_shopping_checkout">Finalizar · R$ %1$.2f</string>
+    <string name="wear_shopping_mark_items">Marcar itens para finalizar</string>
+    <string name="wear_shopping_quantity">Quantidade (%1$s)</string>
+    <string name="wear_shopping_price_label">Preço (R$)</string>
+    <string name="wear_shopping_price_placeholder">0,00</string>
+    <string name="wear_shopping_total">Total: R$ %1$.2f</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_save">Salvar</string>
+    <string name="btn_back">Voltar</string>
+    <string name="cd_checked">Marcado</string>
+    <string name="cd_decrease">Diminuir</string>
+    <string name="cd_increase">Aumentar</string>
+
+    <!-- Checkout -->
+    <string name="wear_checkout_title">Finalizar compra</string>
+    <string name="wear_checkout_summary">%1$d itens · R$ %2$.2f</string>
+    <string name="wear_checkout_payment_method">Forma de pagamento</string>
+    <string name="wear_checkout_total_label">Total (R$)</string>
+    <string name="wear_checkout_confirm">Confirmar compra</string>
+    <string name="pay_no_payment">Sem pagamento</string>
+    <string name="pay_cash">Dinheiro</string>
+    <string name="pay_debit">Débito</string>
+    <string name="pay_credit">Crédito</string>
+    <string name="pay_pix">PIX</string>
+    <string name="pay_vr">VR</string>
+    <string name="pay_va">VA</string>
+
+    <!-- Complete -->
+    <string name="wear_complete_title">Compra finalizada!</string>
+    <string name="wear_complete_summary">%1$d itens · R$ %2$.2f</string>
+    <string name="wear_complete_home">Voltar ao início</string>
+
+    <!-- Voice -->
+    <string name="wear_voice_listening">Ouvindo...</string>
+    <string name="wear_voice_tap_to_speak">Toque para falar</string>
+    <string name="wear_voice_stop">Parar</string>
+    <string name="wear_voice_start">Iniciar</string>
+
+    <!-- Scan Popup -->
+    <string name="scan_rescan_hint">escaneie de novo p/ +1</string>
+    <string name="cd_set_quantity">Definir quantidade</string>
+    <string name="cd_set_price">Definir preço</string>
+    <string name="cd_confirm">Confirmar</string>
+    <string name="scan_not_found">Código não encontrado</string>
+    <string name="scan_associate">Associar a um produto</string>
+    <string name="scan_create_new">Criar novo (no celular)</string>
+    <string name="scan_associate_barcode">Associar %1$s</string>
+    <string name="scan_choose_product">escolha o produto</string>
+    <string name="scan_register_on_phone">Cadastre no celular</string>
+    <string name="scan_register_hint">Crie o produto no app do celular — ele aparecerá no relógio.</string>
+    <string name="btn_close">Fechar</string>
+    <string name="scan_keypad_hint_price">digite só os números · 1299 = R$ 12,99</string>
+    <string name="scan_keypad_hint_qty_fractional">digite só os números · 250 = 2,50 %1$s</string>
+    <string name="scan_keypad_hint_qty_integer">digite só os números · 2 = 2 %1$s</string>
+    <string name="scan_keypad_total">Total: %1$s</string>
 </resources>

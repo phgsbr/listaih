@@ -225,7 +225,7 @@ private fun RecognizedScanPopup(
                 )
                 Button(
                     onClick = onConfirm,
-                    modifier = Modifier.weight(1f).height(36.dp),
+                    modifier = Modifier.weight(1f).height(44.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF2E7D32),
                         contentColor = Color.White
@@ -251,7 +251,7 @@ private fun androidx.compose.foundation.layout.RowScope.PopupButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier.weight(1f).height(36.dp),
+        modifier = Modifier.weight(1f).height(44.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
             contentColor = MaterialTheme.colorScheme.onSurface
@@ -260,7 +260,7 @@ private fun androidx.compose.foundation.layout.RowScope.PopupButton(
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(22.dp)
         )
     }
 }
@@ -337,7 +337,7 @@ private fun UnrecognizedScanPopup(
             )
             Button(
                 onClick = onAssociate,
-                modifier = Modifier.fillMaxWidth().padding(top = 6.dp).height(34.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 6.dp).height(44.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
@@ -347,7 +347,7 @@ private fun UnrecognizedScanPopup(
             }
             Button(
                 onClick = onCreateNew,
-                modifier = Modifier.fillMaxWidth().padding(top = 6.dp).height(34.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 6.dp).height(44.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     contentColor = MaterialTheme.colorScheme.onSurface
@@ -428,7 +428,7 @@ private fun AssociatePicker(
             }
             Button(
                 onClick = onBack,
-                modifier = Modifier.fillMaxWidth().height(30.dp),
+                modifier = Modifier.fillMaxWidth().height(44.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     contentColor = MaterialTheme.colorScheme.onSurface
@@ -490,7 +490,7 @@ private fun CreateOnPhonePopup(
             ) {
                 Button(
                     onClick = onClose,
-                    modifier = Modifier.weight(1f).height(32.dp),
+                    modifier = Modifier.weight(1f).height(44.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                         contentColor = MaterialTheme.colorScheme.onSurface
@@ -500,7 +500,7 @@ private fun CreateOnPhonePopup(
                 }
                 Button(
                     onClick = onDismiss,
-                    modifier = Modifier.weight(1f).height(32.dp),
+                    modifier = Modifier.weight(1f).height(44.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -570,7 +570,7 @@ private fun ScanKeypadEditor(
                 )
                 Text(
                     text = hint,
-                    fontSize = 8.sp,
+                    fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -603,14 +603,14 @@ private fun ScanKeypadEditor(
                                 onClick = {
                                     digits = (digits * 10 + digit.toLong()).coerceAtMost(99_999_999L)
                                 },
-                                modifier = Modifier.size(30.dp)
+                                modifier = Modifier.size(44.dp)
                             )
                         }
                     }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    KeypadKey(text = "⌫", onClick = { digits /= 10L }, modifier = Modifier.size(46.dp, 30.dp))
-                    KeypadKey(text = "C", onClick = { digits = 0L }, modifier = Modifier.size(46.dp, 30.dp))
+                    KeypadKey(text = "⌫", onClick = { digits /= 10L }, modifier = Modifier.size(64.dp, 44.dp))
+                    KeypadKey(text = "C", onClick = { digits = 0L }, modifier = Modifier.size(64.dp, 44.dp))
                 }
             }
 
@@ -620,7 +620,7 @@ private fun ScanKeypadEditor(
             ) {
                 Button(
                     onClick = onBack,
-                    modifier = Modifier.weight(1f).height(28.dp),
+                    modifier = Modifier.weight(1f).height(44.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                         contentColor = MaterialTheme.colorScheme.onSurface
@@ -631,7 +631,7 @@ private fun ScanKeypadEditor(
                 Button(
                     onClick = { onSave(value) },
                     enabled = digits > 0,
-                    modifier = Modifier.weight(1f).height(28.dp),
+                    modifier = Modifier.weight(1f).height(44.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,

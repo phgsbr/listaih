@@ -17,12 +17,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.rememberScalingLazyListState
+import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
+import androidx.wear.compose.material.PositionIndicator
+import com.listaih.wear.R
 
 @Composable
 fun WearSelectScreen(
@@ -37,29 +40,32 @@ fun WearSelectScreen(
         WearListUi("4", "Material de Construção", 5, 2, 150.00)
     ) }
 
-    ScalingLazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = listState,
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 12.dp, bottom = 12.dp)
-    ) {
-        item {
-            Text(
-                text = "Minhas Listas",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)
-            )
-        }
-
-        lists.forEach { list ->
+    Box(modifier = Modifier.fillMaxSize()) {
+        ScalingLazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            state = listState,
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 12.dp, bottom = 12.dp)
+        ) {
             item {
-                WearSelectListCard(
-                    list = list,
-                    onClick = { onListClick(list.id, list.name) }
+                Text(
+                    text = stringResource(R.string.wear_select_title),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)
                 )
             }
+
+            lists.forEach { list ->
+                item {
+                    WearSelectListCard(
+                        list = list,
+                        onClick = { onListClick(list.id, list.name) }
+                    )
+                }
+            }
         }
+        PositionIndicator(scalingLazyListState = listState)
     }
 }
 
@@ -86,7 +92,7 @@ fun WearSelectListCard(list: WearListUi, onClick: () -> Unit) {
             ) {
                 Text(text = list.name, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(
-                    text = "${list.totalItems - list.checkedItems} de ${list.totalItems} itens",
+                    text = stringResource(R.string.wear_select_item_count, list.totalItems - list.checkedItems, list.totalItems),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,

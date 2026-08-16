@@ -3,7 +3,6 @@ package com.listaih.app.ui.screens.login
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -23,13 +21,10 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -157,31 +151,13 @@ fun LoginScreen(
             )
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Text(
-                text = "Esqueci minha senha",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-        }
-
         Spacer(Modifier.size(8.dp))
 
         Button(
             onClick = {
-                if (email.isNotBlank() && password.isNotBlank()) {
-                    viewModel.login(email, password, onLoginSuccess)
-                } else {
-                    viewModel.clearError()
-                    // The ViewModel will handle the error
-                }
+                viewModel.login(email, password, onLoginSuccess)
             },
-            enabled = !uiState.isLoading,
+            enabled = !uiState.isLoading && email.isNotBlank() && password.isNotBlank(),
             shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -202,89 +178,7 @@ fun LoginScreen(
             }
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            androidx.compose.material3.HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-            Text(
-                text = "ou",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-            androidx.compose.material3.HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-        }
-
-        OutlinedButton(
-            onClick = { /* TODO: Google login */ },
-            shape = MaterialTheme.shapes.medium,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
-        ) {
-            GoogleLogoIcon()
-            Spacer(Modifier.width(12.dp))
-            Text(text = "Continuar com Google", fontSize = 15.sp, fontWeight = FontWeight.Medium)
-        }
-
-        OutlinedButton(
-            onClick = { /* TODO: Apple login */ },
-            shape = MaterialTheme.shapes.medium,
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = Color.White
-            ).copy(containerColor = Color(0xFF111111)),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
-        ) {
-            Text(text = "Continuar com Apple", fontSize = 15.sp, fontWeight = FontWeight.Medium)
-        }
-
-        Spacer(Modifier.size(8.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Não tem conta? ",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = "Cadastre-se",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-
         Spacer(Modifier.size(32.dp))
     }
 }
 
-private const val GoogleBlue = 0xFF4285F4
-
-@Composable
-private fun GoogleLogoIcon() {
-    Box(
-        modifier = Modifier.size(20.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "G",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(GoogleBlue)
-        )
-    }
-}

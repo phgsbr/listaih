@@ -29,12 +29,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.rememberScalingLazyListState
+import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
+import androidx.wear.compose.material.PositionIndicator
+import com.listaih.wear.R
 
 val PaymentOptions = listOf(
     PaymentOption("", "Sem pagamento"),
@@ -47,6 +50,21 @@ val PaymentOptions = listOf(
 )
 
 data class PaymentOption(val token: String, val label: String)
+
+@Composable
+private fun paymentLabel(token: String): String {
+    val res = when (token) {
+        "" -> R.string.pay_no_payment
+        "DINHEIRO" -> R.string.pay_cash
+        "DEBITO" -> R.string.pay_debit
+        "CREDITO" -> R.string.pay_credit
+        "PIX" -> R.string.pay_pix
+        "VR" -> R.string.pay_vr
+        "VA" -> R.string.pay_va
+        else -> R.string.pay_no_payment
+    }
+    return stringResource(res)
+}
 
 @Composable
 fun WearCheckoutScreen(
@@ -62,24 +80,25 @@ fun WearCheckoutScreen(
     var totalAmount by remember { mutableStateOf(String.format("%.2f", estimatedTotal)) }
     val total = totalAmount.toDoubleOrNull() ?: 0.0
 
-    ScalingLazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = listState,
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 8.dp, bottom = 12.dp)
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        ScalingLazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            state = listState,
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 8.dp, bottom = 12.dp)
+        ) {
         item {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Finalizar compra",
+                    text = stringResource(R.string.wear_checkout_title),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "$checkedCount itens · R$ ${String.format("%.2f", estimatedTotal)}",
+                    text = stringResource(R.string.wear_checkout_summary, checkedCount, estimatedTotal),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
@@ -90,7 +109,7 @@ fun WearCheckoutScreen(
 
         item {
             Text(
-                text = "Forma de pagamento",
+                text = stringResource(R.string.wear_checkout_payment_method),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -114,7 +133,7 @@ fun WearCheckoutScreen(
                 onValueChange = { new ->
                     totalAmount = new.filter { c -> c.isDigit() || c == '.' }
                 },
-                label = { Text("Total (R$)") },
+                label = { Text(stringResource(R.string.wear_checkout_total_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp)
             )
@@ -132,7 +151,7 @@ fun WearCheckoutScreen(
                     disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             ) {
-                Text(text = "Confirmar compra", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                Text(text = stringResource(R.string.wear_checkout_confirm), fontSize = 13.sp, fontWeight = FontWeight.Medium)
             }
         }
 
@@ -147,10 +166,12 @@ fun WearCheckoutScreen(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = null, modifier = Modifier.size(14.dp))
-                    Text(text = "Voltar", fontSize = 13.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(start = 4.dp))
+                    Text(text = stringResource(R.string.btn_back), fontSize = 13.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(start = 4.dp))
                 }
             }
         }
+    }
+        PositionIndicator(scalingLazyListState = listState)
     }
 }
 
@@ -189,7 +210,7 @@ fun PaymentRow(option: PaymentOption, selected: Boolean, onClick: () -> Unit) {
             }
         }
         Text(
-            text = option.label,
+            text = paymentLabel(option.token),
             fontSize = 14.sp,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
             color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,

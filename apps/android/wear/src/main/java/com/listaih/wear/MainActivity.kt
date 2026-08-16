@@ -12,6 +12,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.wear.compose.material.Scaffold
+import androidx.wear.compose.material.TimeText
+import androidx.wear.compose.material.Vignette
+import androidx.wear.compose.material.VignettePosition
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import com.listaih.wear.navigation.WearNavHost
 import com.listaih.wear.ui.scanpopup.WearScanPopupHost
@@ -35,20 +39,24 @@ class MainActivity : ComponentActivity() {
                         window.clearFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
                     }
                 }
-                Box(modifier = Modifier.fillMaxSize()) {
-                    WearNavHost(
-                        navController = rememberSwipeDismissableNavController(),
-                        viewModel = viewModel
-                    )
-                    WearScanPopupHost(viewModel = viewModel)
+                Scaffold(
+                    timeText = { TimeText() },
+                    vignette = { Vignette(vignettePosition = VignettePosition.TopAndBottom) }
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        val navController = rememberSwipeDismissableNavController()
+                        WearNavHost(
+                            navController = navController,
+                            viewModel = viewModel
+                        )
+                        WearScanPopupHost(viewModel = viewModel)
+                    }
                 }
             }
         }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        // Com o teclado (IME) visível, as teclas são digitadas no campo de texto,
-        // não viram scan (ex: campo de preço no popup)
         if (imeVisible()) return super.onKeyDown(keyCode, event)
         if (viewModel.onHidKey(keyCode, event.eventTime)) return true
         return super.onKeyDown(keyCode, event)
@@ -61,6 +69,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (imeVisible()) return super.onKeyUp(keyCode, event)
         if (keyCode == 66 || keyCode == 134) return true
         return super.onKeyUp(keyCode, event)
     }

@@ -45,12 +45,14 @@ Liberar a v0.1 utilizável do Listaih: backend no container (validado local e pr
 
 ### 1.4 Deploy no ZimaOS (usuário)
 - [x] Repositório tornado **público** (`github.com/phgsbr/listaih`) — clone sem token, GHCR sem login
-- [x] Deploy simplificado: `git clone` + `docker compose up -d --build` (sem GHCR, sem tar)
-- [x] README-ZIMAOS reescrito (fluxo único, GHCR como alternativa opcional)
-- [x] `.gitignore` + `*.tar` (arquivo de imagem não vai para o repo)
-- [x] Imagem GHCR **pública** (via UI do GitHub — API bloqueia) + pull anônimo validado localmente
-- [x] `deploy/docker-compose.stacks.yml` (standalone para UI de Stacks, sem clone) — commit `9fa87fa`
-- [ ] Stack de pé no ZimaOS (`docker compose up -d --build` após clone **ou** colar o stacks.yml)
+- [x] Imagem GHCR **pública** — pull anônimo validado localmente
+- [x] **All-in-one com supervisord** (`Dockerfile.allinone`, `supervisord.conf`, `init.sh`, `healthcheck.sh`) — PID 1 = supervisord, 3 processos gerenciados
+- [x] Imagem `ghcr.io/phgsbr/listaih:v0.1.0` + `latest` pushadas (digest `sha256:82de8ec...`)
+- [x] `deploy/docker-compose.stacks.yml` — 1 servico, 1 container, colar e aplicar
+- [x] `deploy/README-ZIMAOS.md` reescrito (1-click install, env table, backup, TLS opcional)
+- [x] Validado localmente: start, health (db+redis up), admin 200, setup, login, **restart com volume** (persistente)
+- [x] Healthcheck Docker (pg_isready + redis-cli + wget /api/health) — status `healthy`
+- [ ] Stack de pé no ZimaOS (colar stacks.yml na UI de Stacks)
 - [ ] Validação pela LAN: `/api/health`, `/admin/` em `http://<zima>:3000`
 - [ ] Phone: Settings → Servidor → `http://<zima>:3000` + teste de conexão OK
 
@@ -99,7 +101,7 @@ Liberar a v0.1 utilizável do Listaih: backend no container (validado local e pr
 
 - [ ] Críticos/médios dos testes corrigidos e validados
 - [ ] `progress.md`, `HANDOFF-android.md`, AGENTS.md finalizados
-- [ ] Tag `v0.1` no git (repo público — tag sem release de assets)
+- [ ] Tag `v0.1.0` no git (repo público — tag sem release de assets)
 - [ ] RELEASE-PLAN.md 100% concluído
 
 ---

@@ -1,80 +1,168 @@
-# Deploy Listaih no ZimaOS (home lab)
+# Listaih — Deploy Self-Hosted
 
-Backend (API + Admin WebUI), PostgreSQL e Redis rodando como stack Docker Compose no ZimaOS.
+Listaih rodando como **imagem all-in-one**: backend (NestJS) + PostgreSQL + Redis em um único container, gerenciados por supervisord.
 
-## Pré-requisitos
-- ZimaOS com Docker Compose disponível (via terminal/SSH ou UI de Stacks)
-- Porta **3000** liberada na rede local (alterável em `.env` com `BACKEND_PORT`)
+## Instalação (1 container, 1 clique)
 
-## Passo a passo
+### Opção A — UI de Stacks (ZimaOS, Portainer, etc.)
 
-### 1. Clonar o repositório (público — sem token)
-```bash
-git clone https://github.com/phgsbr/listaih.git listaih
-cd listaih
+Cole este YAML na sua UI de Stacks:
+
+```yaml
+services:
+  listaih:
+    image: ghcr.io/phgsbr/listaih:v0.1.0
+    container_name: listaih
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: SUA-SENHA-FORTE
+      JWT_SECRET: SEU-JWT-SECRET-FORTE
+    volumes:
+      - listaih_data:/var/lib/postgresql/data
+    ports:
+      - "3000:3000"
+
+volumes:
+  listaih_data:
 ```
 
-### 2. Configurar o ambiente
+Troque `POSTGRES_PASSWORD` e `JWT_SECRET` por valores fortes antes de aplicar.
+
+### Opção B — Docker Compose (linha de comando)
+
 ```bash
-cp .env.example .env
-# edite .env: POSTGRES_PASSWORD e JWT_SECRET (gere com: openssl rand -hex 32)
+# Criar docker-compose.yml (use o template acima)
+# Editar senhas
+docker compose up -d
 ```
 
-### 3. Subir a stack
+### Opção C — docker run (simples)
+
 ```bash
-docker compose up -d --build
+docker run -d \
+  --name listaih \
+  -p 3000:3000 \
+  -e POSTGRES_PASSWORD=SUAGTnsenha \
+  -e JWT_SECRET=seuJWTsecret \
+  -v listaih_data:/var/lib/postgresql/data \
+  --restart unless-stopped \
+  ghcr.io/phgsbr/listaih:v0.1.0
 ```
 
-A primeira execução builda as imagens (Node 22 + Admin Vite) e pode levar alguns minutos.
-As migrations do Prisma (6) são aplicadas automaticamente antes do backend iniciar.
+## Primeiro acesso
 
-### 4. Verificar
-```bash
-docker compose ps                 # todos healthy
-curl http://localhost:3000/api/health
-curl http://localhost:3000/api/external/health
-# WebUI: http://<IP-DO-ZIMA>:3000/admin/
-```
+1. Abra `http://<IP-DO-SERVIDOR>:3000/admin/`
+2. Crie o admin (nome, email, senha, nome da casa)
 
-### 5. Primeiro acesso (setup)
-Acesse `http://<IP-DO-ZIMA>:3000/admin/` e crie o admin (nome, email, senha, casa)
-— ou via API:
+Ou via API:
 ```bash
-curl -X POST http://<IP-DO-ZIMA>:3000/api/setup \
+curl -X POST http://<IP>:3000/api/setup \
   -H "Content-Type: application/json" \
   -d '{"email":"voce@exemplo.com","name":"Seu Nome","password":"senha-forte","householdName":"Minha Casa"}'
 ```
 
-### 6. Apps Android
-- **Phone:** Configurações → Servidor → `http://<IP-DO-ZIMA>:3000` → Testar conexão
-- **Wear OS:** (fase futura — hoje usa dados mock)
+## Verificar saúde
 
-### 7. Atualizar depois
 ```bash
-git pull
-docker compose up -d --build
+curl http://<IP>:3000/api/health
+# Esperado: {"status":"ok","services":{"database":"up","redis":"up"}}
 ```
 
-## Observações
-- **Sem TLS nesta versão:** o tráfego é HTTP dentro da LAN. Para expor com HTTPS,
-  edite o `Caddyfile` com seu domínio (exemplo comentado) e libere as portas 80/443.
-- **Persistência:** dados ficam nos volumes `postgres_data` e `redis_data`;
-  `docker compose down` NÃO apaga dados; `docker compose down -v` apaga.
-- **Logs:** `docker compose logs -f backend`
-- **Backup do banco:**
-  ```bash
-  docker exec listaih-postgres pg_dump -U listaih listaih > backup.sql
-  ```
+O container tem healthcheck embutido — o Docker mostra `healthy` quando os 3 serviços (postgres, redis, backend) respondem.
 
-## Alternativa: imagem publicada (GHCR, sem build no ZimaOS)
-Se o ZimaOS não tiver terminal/SSH ou se preferir só a imagem pronta:
+## Atualizar (sem rebuild)
+
 ```bash
-# uma vez, na máquina com Docker (publicação)
-docker build -f apps/backend/Dockerfile -t ghcr.io/phgsbr/listaih:0.1.0 .
-docker push ghcr.io/phgsbr/listaih:0.1.0
+docker compose pull
+docker compose up -d
+# Ou: docker pull ghcr.io/phgsbr/listaih:latest && docker restart listaih
 ```
-No ZimaOS:
+
+As migrations do Prisma rodam automaticamente no start do container.
+
+## Variáveis de ambiente
+
+| Variável | Default | Descrição |
+|----------|---------|-----------|
+| `POSTGRES_PASSWORD` | `listaih` | Senha do banco interno |
+| `JWT_SECRET` | `change-me-in-production` | Chave de assinatura dos tokens JWT |
+| `POSTGRES_USER` | `listaih` | Usuário do banco (raramente mudado) |
+| `POSTGRES_DB` | `listaih` | Nome do banco (raramente mudado) |
+| `JWT_ACCESS_EXPIRATION` | `15m` | Validade do access token |
+| `JWT_REFRESH_EXPIRATION` | `7d` | Validade do refresh token |
+| `PORT` | `3000` | Porta do backend (interna) |
+| `CORS_ORIGIN` | `*` | Origem permitida para CORS |
+
+## Persistência
+
+- Volume: `/var/lib/postgresql/data` → dados do PostgreSQL
+- `docker compose down` NÃO apaga dados
+- `docker compose down -v` apaga tudo (reset completo)
+
+## Backup
+
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.zimaos.yml up -d
+docker exec listaih pg_dump -U listaih listaih > backup.sql
 ```
-O override (`docker-compose.zimaos.yml`) troca `build:` pela `image:` do GHCR.
+
+## Restore
+
+```bash
+docker exec -i listaih psql -U listaih listaih < backup.sql
+```
+
+## Logs
+
+```bash
+docker logs listaih
+docker exec listaih cat /var/log/backend.log
+docker exec listaih cat /var/log/postgres.log
+docker exec listaih cat /var/log/redis.log
+```
+
+## Apps Android
+
+- **Phone:** Configurações → Servidor → `http://<IP>:3000` → Testar conexão
+- **Wear OS:** usa dados mock na v0.1.0
+
+## TLS / HTTPS (opcional)
+
+Para HTTPS, adicione um reverse proxy (Caddy, Traefik, Nginx) na frente:
+
+```yaml
+services:
+  listaih:
+    # ... (config acima)
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - listaih
+```
+
+`Caddyfile`:
+```
+listaih.seu-dominio.com {
+    reverse_proxy listaih:3000
+}
+```
+
+## Tags disponíveis no GHCR
+
+| Tag | Descrição |
+|-----|-----------|
+| `v0.1.0` | Versão fixa |
+| `latest` | Último release estável |
+| `all-in-one` | Alias para `v0.1.0` (legado) |
+
+## Requisitos
+
+- Docker 20+ (ou Docker Compose v2)
+- 512 MB de RAM mínimo
+- ~200 MB de disco (imagem + dados)
+- Porta 3000 liberada na rede local

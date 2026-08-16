@@ -1,8 +1,8 @@
-# Listaih — imagem all-in-one (backend + PostgreSQL + Redis num só container)
-# Colar na UI de Stacks do ZimaOS e aplicar. Não precisa de mais nada.
+# Listaih — imagem all-in-one (backend + PostgreSQL + Redis via supervisord)
+# Colar na UI de Stacks do ZimaOS e aplicar. 1 container, 1 servico, nada mais.
 services:
   listaih:
-    image: ghcr.io/phgsbr/listaih:all-in-one
+    image: ghcr.io/phgsbr/listaih:v0.1.0
     container_name: listaih
     restart: unless-stopped
     environment:

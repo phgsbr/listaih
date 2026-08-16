@@ -27,7 +27,7 @@ COPY apps/backend/src ./src
 
 RUN npx nest build
 
-# Stage 3 — All-in-one production: backend + PostgreSQL + Redis
+# Stage 3 — All-in-one production: backend + PostgreSQL + Redis via supervisord
 FROM node:22-alpine AS production
 
 WORKDIR /app
@@ -35,7 +35,11 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV ADMIN_DIST_PATH=/app/admin/dist
 
-RUN apk add --no-cache openssl libc6-compat postgresql16 postgresql16-client redis
+RUN apk add --no-cache \
+    openssl libc6-compat \
+    postgresql16 postgresql16-client \
+    redis \
+    supervisor
 
 COPY apps/backend/package.json apps/backend/package-lock.json* ./
 RUN npm ci --omit=dev
@@ -51,8 +55,12 @@ COPY apps/backend/prisma ./prisma
 # Admin WebUI (servida pelo backend em /admin)
 COPY --from=admin-builder /app/dist ./admin/dist
 
-COPY apps/backend/entrypoint.allinone.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Scripts de inicializacao e healthcheck
+COPY apps/backend/init.sh /init.sh
+COPY apps/backend/healthcheck.sh /healthcheck.sh
+COPY apps/backend/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+RUN chmod +x /init.sh /healthcheck.sh
 
 ENV POSTGRES_USER=listaih
 ENV POSTGRES_DB=listaih
@@ -66,4 +74,8 @@ ENV CORS_ORIGIN=*
 EXPOSE 3000
 VOLUME ["/var/lib/postgresql/data"]
 
-ENTRYPOINT ["/entrypoint.sh"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD /healthcheck.sh
+
+# Entrypoint: roda init.sh (bootstrap do banco + migrations) e depois supervisord
+ENTRYPOINT ["/bin/sh", "-c", "/init.sh && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"]

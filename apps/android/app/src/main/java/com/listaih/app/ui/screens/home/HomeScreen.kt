@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -53,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -80,20 +82,26 @@ fun HomeScreen(
     onListClick: (String, String) -> Unit,
     onAddListClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    onHistoryClick: () -> Unit
+    onHistoryClick: () -> Unit,
+    isLoading: Boolean = false
 ) {
+    val filterAll = stringResource(R.string.home_filter_all)
+    val filterActive = stringResource(R.string.home_filter_active)
+    val filterArchived = stringResource(R.string.home_filter_archived)
+    val filterTemplates = stringResource(R.string.home_filter_templates)
+
     var selectedTab by remember { mutableStateOf(0) }
-    var selectedFilter by remember { mutableStateOf("Todas") }
+    var selectedFilter by remember { mutableStateOf(filterAll) }
     var query by remember { mutableStateOf("") }
     var searching by remember { mutableStateOf(false) }
-    val filters = listOf("Todas", "Ativas", "Arquivadas", "Modelos")
+    val filters = listOf(filterAll, filterActive, filterArchived, filterTemplates)
 
     val baseLists = when {
         selectedTab == 1 -> lists.filter { it.archived }
         else -> when (selectedFilter) {
-            "Ativas" -> lists.filter { !it.archived && !it.isModel }
-            "Arquivadas" -> lists.filter { it.archived }
-            "Modelos" -> lists.filter { it.isModel }
+            filterActive -> lists.filter { !it.archived && !it.isModel }
+            filterArchived -> lists.filter { it.archived }
+            filterTemplates -> lists.filter { it.isModel }
             else -> lists
         }
     }
@@ -112,12 +120,12 @@ fun HomeScreen(
                         OutlinedTextField(
                             value = query,
                             onValueChange = { query = it },
-                            placeholder = { Text("Buscar listas...", fontSize = 15.sp) },
+                            placeholder = { Text(stringResource(R.string.home_search_placeholder), fontSize = 15.sp) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth()
                         )
                     } else {
-                        Text(text = "Listaih", fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                        Text(text = stringResource(R.string.home_title), fontSize = 20.sp, fontWeight = FontWeight.Medium)
                     }
                 },
                 actions = {
@@ -127,7 +135,7 @@ fun HomeScreen(
                     }) {
                         Icon(
                             imageVector = if (searching) Icons.Filled.Clear else Icons.Filled.Search,
-                            contentDescription = if (searching) "Close search" else "Search"
+                            contentDescription = if (searching) stringResource(R.string.home_search_close_cd) else stringResource(R.string.home_search_cd)
                         )
                     }
                 },
@@ -142,7 +150,7 @@ fun HomeScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add list")
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.home_add_list_cd))
             }
         },
         bottomBar = {
@@ -151,19 +159,19 @@ fun HomeScreen(
             ) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Filled.Home, contentDescription = null) },
-                    label = { Text("Home") },
+                    label = { Text(stringResource(R.string.home_tab_home)) },
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Filled.History, contentDescription = null) },
-                    label = { Text("Histórico") },
+                    label = { Text(stringResource(R.string.home_tab_history)) },
                     selected = selectedTab == 1,
                     onClick = { onHistoryClick() }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
-                    label = { Text("Config") },
+                    label = { Text(stringResource(R.string.home_tab_settings)) },
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2; onSettingsClick() }
                 )
@@ -189,18 +197,43 @@ fun HomeScreen(
                 }
             }
 
-            if (visibleLists.isEmpty()) {
+            if (isLoading && visibleLists.isEmpty()) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp),
+                        .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = if (selectedTab == 1) "Nenhuma lista arquivada ainda" else "Nenhuma lista encontrada",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    CircularProgressIndicator()
+                }
+            } else if (visibleLists.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Home,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Text(
+                            text = if (selectedTab == 1) stringResource(R.string.home_empty_archived) else stringResource(R.string.home_empty_active),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        if (selectedTab == 0) {
+                            Text(
+                                text = stringResource(R.string.home_empty_tip),
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                        }
+                    }
                 }
             } else {
                 LazyColumn(
@@ -293,7 +326,7 @@ fun ListCard(list: ShoppingListUi, onClick: () -> Unit) {
                     if (done) {
                         Icon(
                             imageVector = Icons.Filled.Check,
-                            contentDescription = "Concluída",
+                            contentDescription = stringResource(R.string.home_card_done_cd),
                             tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(16.dp)
                         )
@@ -332,9 +365,9 @@ fun ListCard(list: ShoppingListUi, onClick: () -> Unit) {
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = if (done) {
-                        "Todos os itens comprados · R$ ${String.format("%.2f", list.estimatedTotal)}"
+                        stringResource(R.string.home_card_all_purchased, String.format("%.2f", list.estimatedTotal))
                     } else {
-                        "Restam ${list.totalItems - list.checkedItems} itens · R$ ${String.format("%.2f", list.estimatedTotal)}"
+                        stringResource(R.string.home_card_remaining, list.totalItems - list.checkedItems, String.format("%.2f", list.estimatedTotal))
                     },
                     fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -342,9 +375,9 @@ fun ListCard(list: ShoppingListUi, onClick: () -> Unit) {
                 Spacer(Modifier.weight(1f))
                 Text(
                     text = when (list.listType) {
-                        "RECORRENTE" -> "Recorrente"
-                        "MODELO" -> "Modelo"
-                        else -> "Pontual"
+                        "RECORRENTE" -> stringResource(R.string.common_list_type_recurring)
+                        "MODELO" -> stringResource(R.string.common_list_type_template)
+                        else -> stringResource(R.string.common_list_type_one_time)
                     },
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,
@@ -364,7 +397,7 @@ fun ListCard(list: ShoppingListUi, onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (list.hasOnlineMembers) "Vários membros online" else "Só você",
+                    text = if (list.hasOnlineMembers) stringResource(R.string.common_online_members) else stringResource(R.string.common_only_you),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(end = 8.dp)

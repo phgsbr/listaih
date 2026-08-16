@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -125,6 +126,8 @@ fun ShoppingModeScreen(
         showScanner = false
     }
 
+    val checkoutSuccessText = stringResource(R.string.shopping_checkout_success)
+
     val currentHandleBarcode by androidx.compose.runtime.rememberUpdatedState(::handleBarcode)
 
     DisposableEffect(btScanner) {
@@ -138,7 +141,7 @@ fun ShoppingModeScreen(
     LaunchedEffect(key1 = uiState.checkoutSuccess) {
         if (uiState.checkoutSuccess) {
             scope.launch {
-                val result = snackbarHostState.showSnackbar("Compra finalizada com sucesso!")
+                val result = snackbarHostState.showSnackbar(checkoutSuccessText)
                 if (result == SnackbarResult.ActionPerformed) {
                     onCheckoutComplete()
                 }
@@ -164,7 +167,7 @@ fun ShoppingModeScreen(
                     Column {
                         Text(text = listName, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                         Text(
-                            text = "${uiState.checkedCount}/${uiState.totalCount} itens",
+                            text = "${uiState.checkedCount}/${uiState.totalCount} ${stringResource(R.string.shopping_checkout_items_count, uiState.checkedCount).split(" ").lastOrNull() ?: ""}",
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -178,7 +181,7 @@ fun ShoppingModeScreen(
                             onBackClick()
                         }
                     }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.shopping_back_cd))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -193,7 +196,7 @@ fun ShoppingModeScreen(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
-                    Icon(Icons.Filled.Payment, contentDescription = "Checkout")
+                    Icon(Icons.Filled.Payment, contentDescription = stringResource(R.string.shopping_checkout_cd))
                 }
             }
         },
@@ -258,18 +261,18 @@ fun ShoppingModeScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         Icons.Filled.QrCodeScanner,
-                                        contentDescription = "Scanner",
+                                        contentDescription = stringResource(R.string.shopping_scanner_cd),
                                         tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(Modifier.width(4.dp))
-                                    Text("Escanear", fontSize = 13.sp)
+                                    Text(stringResource(R.string.shopping_scan_button), fontSize = 13.sp)
                                 }
                             }
                             TextButton(onClick = { viewModel.uncheckAll() }) {
                                 Icon(
                                     Icons.Filled.Delete,
-                                    contentDescription = "Clear",
+                                    contentDescription = stringResource(R.string.shopping_clear_cd),
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
@@ -458,23 +461,31 @@ fun CheckoutDialog(
     var grocySync by remember { mutableStateOf(uiState.syncingToGrocy) }
     var paymentDropdownExpanded by remember { mutableStateOf(false) }
 
+    val paymentNoneText = stringResource(R.string.common_payment_none)
+    val paymentCashText = stringResource(R.string.common_payment_cash)
+    val paymentDebitText = stringResource(R.string.common_payment_debit)
+    val paymentCreditText = stringResource(R.string.common_payment_credit)
+    val paymentPixText = stringResource(R.string.common_payment_pix)
+    val paymentVrText = stringResource(R.string.common_payment_vr)
+    val paymentVaText = stringResource(R.string.common_payment_va)
+
     val paymentOptions = listOf(
-        Triple("", "Sem pagamento", 0),
-        Triple("DINHEIRO", "Dinheiro", R.drawable.payment_dinheiro),
-        Triple("DEBITO", "Débito", R.drawable.payment_debito),
-        Triple("CREDITO", "Crédito", R.drawable.payment_credito),
-        Triple("PIX", "PIX", R.drawable.payment_pix),
-        Triple("VR", "VR", R.drawable.payment_vr),
-        Triple("VA", "VA", R.drawable.payment_va)
+        Triple("", paymentNoneText, 0),
+        Triple("DINHEIRO", paymentCashText, R.drawable.payment_dinheiro),
+        Triple("DEBITO", paymentDebitText, R.drawable.payment_debito),
+        Triple("CREDITO", paymentCreditText, R.drawable.payment_credito),
+        Triple("PIX", paymentPixText, R.drawable.payment_pix),
+        Triple("VR", paymentVrText, R.drawable.payment_vr),
+        Triple("VA", paymentVaText, R.drawable.payment_va)
     )
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Finalizar compra") },
+        title = { Text(stringResource(R.string.shopping_checkout_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    text = "${uiState.checkedCount} itens marcados",
+                    text = stringResource(R.string.shopping_checkout_items_count, uiState.checkedCount),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -483,10 +494,10 @@ fun CheckoutDialog(
                     onExpandedChange = { paymentDropdownExpanded = it }
                 ) {
                     OutlinedTextField(
-                        value = paymentOptions.find { it.first == paymentMethod }?.second ?: "Sem pagamento",
+                        value = paymentOptions.find { it.first == paymentMethod }?.second ?: paymentNoneText,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Forma de pagamento") },
+                        label = { Text(stringResource(R.string.shopping_checkout_payment_label)) },
                         leadingIcon = {
                             val selected = paymentOptions.find { it.first == paymentMethod }
                             if (selected != null && selected.third != 0) {
@@ -536,20 +547,20 @@ fun CheckoutDialog(
                 OutlinedTextField(
                     value = totalAmount,
                     onValueChange = { totalAmount = it },
-                    label = { Text("Total (R$)") },
+                    label = { Text(stringResource(R.string.shopping_checkout_total_label)) },
                     singleLine = true
                 )
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    label = { Text("Observações") },
+                    label = { Text(stringResource(R.string.shopping_checkout_notes_label)) },
                     maxLines = 3
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Sincronizar com Grocy", fontSize = 14.sp)
+                    Text(stringResource(R.string.shopping_checkout_grocy_sync), fontSize = 14.sp)
                     androidx.compose.material3.Switch(
                         checked = grocySync,
                         onCheckedChange = { grocySync = it }
@@ -571,13 +582,13 @@ fun CheckoutDialog(
                 if (uiState.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(16.dp))
                 } else {
-                    Text("Confirmar")
+                    Text(stringResource(R.string.shopping_checkout_confirm))
                 }
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+                Text(stringResource(R.string.common_cancel))
             }
         }
     )

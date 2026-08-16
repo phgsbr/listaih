@@ -28,6 +28,7 @@ fun AppNavHost(
 ) {
     val isLoggedIn = viewModel.isLoggedIn.collectAsState().value
     val shoppingLists = viewModel.shoppingLists.collectAsState(initial = emptyList()).value
+    val isLoading = viewModel.isLoading.collectAsState().value
 
     NavHost(
         navController = navController,
@@ -67,7 +68,8 @@ fun AppNavHost(
                     },
                     onAddListClick = { navController.navigate("add_list") },
                     onSettingsClick = { navController.navigate("settings") },
-                    onHistoryClick = { navController.navigate("purchases") }
+                    onHistoryClick = { navController.navigate("purchases") },
+                    isLoading = isLoading
                 )
             }
 

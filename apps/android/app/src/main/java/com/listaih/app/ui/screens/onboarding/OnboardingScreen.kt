@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.listaih.app.R
 
@@ -78,7 +79,7 @@ fun OnboardingScreen(
                 Box(contentAlignment = Alignment.Center) {
                     androidx.compose.foundation.Image(
                         painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_launcher_foreground),
-                        contentDescription = "Listaih logo",
+                        contentDescription = stringResource(R.string.onboarding_logo_cd),
                         modifier = Modifier.size(72.dp)
                     )
                 }
@@ -87,7 +88,7 @@ fun OnboardingScreen(
             Spacer(Modifier.size(32.dp))
 
             Text(
-                text = "Listaih",
+                text = stringResource(R.string.onboarding_title),
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -96,7 +97,7 @@ fun OnboardingScreen(
             Spacer(Modifier.size(8.dp))
 
             Text(
-                text = "Sua lista de compras colaborativa e inteligente",
+                text = stringResource(R.string.onboarding_subtitle),
                 fontSize = 16.sp,
                 lineHeight = 24.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -107,18 +108,18 @@ fun OnboardingScreen(
 
             FeatureRow(
                 icon = Icons.Filled.Groups,
-                title = "Listas colaborativas",
-                subtitle = "Crie listas e compartilhe com sua família em tempo real"
+                title = stringResource(R.string.onboarding_feature_1_title),
+                subtitle = stringResource(R.string.onboarding_feature_1_desc)
             )
             FeatureRow(
                 icon = Icons.Filled.QrCodeScanner,
-                title = "Modo compras",
-                subtitle = "Marque itens no mercado com escaneamento de código de barras"
+                title = stringResource(R.string.onboarding_feature_2_title),
+                subtitle = stringResource(R.string.onboarding_feature_2_desc)
             )
             FeatureRow(
                 icon = Icons.Filled.VerifiedUser,
-                title = "Controle total",
-                subtitle = "Self-hosted, sua casa, seus dados, sua privacidade"
+                title = stringResource(R.string.onboarding_feature_3_title),
+                subtitle = stringResource(R.string.onboarding_feature_3_desc)
             )
 
             Spacer(Modifier.size(40.dp))
@@ -141,7 +142,7 @@ fun OnboardingScreen(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text(text = "Entrar ou criar conta", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(text = stringResource(R.string.onboarding_get_started), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
@@ -159,13 +160,13 @@ fun OnboardingScreen(
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(Modifier.width(10.dp))
-                Text(text = "Conectar ao servidor", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                Text(text = stringResource(R.string.onboarding_connect_server), fontSize = 15.sp, fontWeight = FontWeight.Medium)
             }
 
             Spacer(Modifier.size(12.dp))
 
             Text(
-                text = "Servidor: ${uiState.serverUrl}",
+                text = stringResource(R.string.onboarding_server_label, uiState.serverUrl),
                 fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
@@ -186,6 +187,9 @@ fun OnboardingScreen(
     }
 
     if (showServerDialog) {
+        val connectionOk = stringResource(R.string.common_connection_ok)
+        val connectionFailed = stringResource(R.string.common_connection_failed)
+
         var url by remember { mutableStateOf(uiState.serverUrl) }
         var testMessage by remember { mutableStateOf<String?>(null) }
         var testSuccess by remember { mutableStateOf<Boolean?>(null) }
@@ -193,20 +197,20 @@ fun OnboardingScreen(
 
         AlertDialog(
             onDismissRequest = { showServerDialog = false },
-            title = { Text("Conectar ao servidor") },
+            title = { Text(stringResource(R.string.onboarding_dialog_title)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(
-                        text = "Endereço do servidor Listaih (ex: http://192.168.0.10:3000). A mudança vale imediatamente.",
+                        text = stringResource(R.string.onboarding_dialog_message),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     OutlinedTextField(
                         value = url,
                         onValueChange = { url = it; testMessage = null },
-                        label = { Text("URL") },
+                        label = { Text(stringResource(R.string.onboarding_dialog_url_label)) },
                         singleLine = true,
-                        placeholder = { Text("http://127.0.0.1:3000") }
+                        placeholder = { Text(stringResource(R.string.onboarding_dialog_url_placeholder)) }
                     )
                     testMessage?.let {
                         Text(
@@ -226,7 +230,7 @@ fun OnboardingScreen(
                             showServerDialog = false
                         }
                     ) {
-                        Text("Salvar")
+                        Text(stringResource(R.string.common_save))
                     }
                     TextButton(
                         enabled = !testing,
@@ -236,21 +240,21 @@ fun OnboardingScreen(
                             viewModel.testConnection(url.trim()) { ok ->
                                 testing = false
                                 testSuccess = ok
-                                testMessage = if (ok) "Conexão OK" else "Falha na conexão (verifique a URL)"
+                                testMessage = if (ok) connectionOk else connectionFailed
                             }
                         }
                     ) {
                         if (testing) {
                             CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
                         } else {
-                            Text("Testar conexão")
+                            Text(stringResource(R.string.common_test_connection))
                         }
                     }
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showServerDialog = false }) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )

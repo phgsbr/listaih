@@ -1,60 +1,39 @@
-<resources>
+﻿<resources>
+    <!-- App -->
     <string name="app_name">Listaih</string>
-    <string name="onboarding_title">Listaih</string>
-    <string name="onboarding_subtitle">Sua Lista de compras colaborativa e inteligente</string>
-    <string name="onboarding_feature_1">Listas colaborativas</string>
-    <string name="onboarding_feature_1_desc">Crie listas e compartilhe com sua família em tempo real</string>
-    <string name="onboarding_get_started">Começar</string>
-    <string name="login_title">Entrar</string>
-    <string name="login_subtitle">Sua Lista de compras inteligente</string>
-    <string name="login_email_hint">Email</string>
-    <string name="login_password_hint">Senha</string>
-    <string name="login_forgot_password">Esqueci minha senha</string>
-    <string name="login_button">Entrar</string>
-    <string name="login_google">Continuar com Google</string>
-    <string name="login_apple">Continuar com Apple</string>
-    <string name="login_signup">Não tem conta? Cadastre-se</string>
-    <string name="home_title">Listaih</string>
-    <string name="filter_all">Todas</string>
-    <string name="filter_active">Ativas</string>
-    <string name="filter_archived">Arquivadas</string>
-    <string name="filter_templates">Modelos</string>
-    <string name="detail_items">Itens</string>
-    <string name="detail_purchased">Comprados</string>
-    <string name="detail_add_item">Adicionar item</string>
-    <string name="settings_title">Configurações</string>
-    <string name="settings_profile">Perfil</string>
-    <string name="settings_change_password">Alterar senha</string>
-    <string name="settings_household">Minha Casa</string>
-    <string name="settings_invite_code">Código de convite</string>
-    <string name="settings_language">Idioma</string>
-    <string name="settings_currency">Moeda</string>
-    <string name="settings_dark_theme">Tema escuro</string>
-    <string name="settings_notifications">Notificações push</string>
-    <string name="settings_haptic">Feedback tátil</string>
-    <string name="settings_offline">Modo offline</string>
-    <string name="settings_export">Exportar dados</string>
-    <string name="settings_version">Versão</string>
-    <string name="settings_licenses">Licenças open source</string>
-    <string name="settings_logout">Sair da conta</string>
-    <string name="settings_clear_archived">Limpar listas arquivadas</string>
-    <string name="settings_reset_integrations">Resetar integrações</string>
-    <string name="settings_reset_system">Resetar sistema</string>
-    <string name="add_item_title">Adicionar Item</string>
-    <string name="add_item_name">Nome do produto</string>
-    <string name="add_item_quantity">Quantidade</string>
-    <string name="add_item_price">Preço estimado</string>
-    <string name="add_item_unit">Unidade</string>
-    <string name="add_item_category">Categoria</string>
-    <string name="add_item_notes">Notas (opcional)</string>
-    <string name="add_item_button">Adicionar</string>
+
+    <!-- Common -->
+    <string name="common_save">Salvar</string>
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_ok">OK</string>
+    <string name="common_back">Voltar</string>
+    <string name="common_connection_ok">ConexÃ£o OK</string>
+    <string name="common_connection_failed">Falha na conexÃ£o (verifique a URL)</string>
+    <string name="common_test_connection">Testar conexÃ£o</string>
+    <string name="common_loading">Carregando...</string>
+    <string name="common_list_type_recurring">Recorrente</string>
+    <string name="common_list_type_template">Modelo</string>
+    <string name="common_list_type_one_time">Pontual</string>
+    <string name="common_online_members">VÃ¡rios membros online</string>
+    <string name="common_only_you">SÃ³ vocÃª</string>
+    <string name="common_payment_none">Sem pagamento</string>
+    <string name="common_payment_cash">Dinheiro</string>
+    <string name="common_payment_debit">DÃ©bito</string>
+    <string name="common_payment_credit">CrÃ©dito</string>
+    <string name="common_payment_pix">PIX</string>
+    <string name="common_payment_vr">VR</string>
+    <string name="common_payment_va">VA</string>
+
+    <!-- Units -->
     <string name="unit_un">un</string>
     <string name="unit_kg">kg</string>
     <string name="unit_g">g</string>
     <string name="unit_l">L</string>
     <string name="unit_ml">ml</string>
+
+    <!-- Categories -->
     <string name="cat_hortifruti">Hortifruti</string>
-    <string name="cat_laticinios">Laticínios</string>
+    <string name="cat_laticinios">LaticÃ­nios</string>
     <string name="cat_padaria">Padaria</string>
     <string name="cat_carnes">Carnes</string>
     <string name="cat_peixaria">Peixaria</string>
@@ -64,4 +43,256 @@
     <string name="cat_enlatados">Enlatados</string>
     <string name="cat_mercearia">Mercearia</string>
     <string name="cat_congelados">Congelados</string>
+    <string name="cat_sem_categoria">Sem Categoria</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_logo_cd">Logo do Listaih</string>
+    <string name="onboarding_title">Listaih</string>
+    <string name="onboarding_subtitle">Sua lista de compras colaborativa e inteligente</string>
+    <string name="onboarding_feature_1_title">Listas colaborativas</string>
+    <string name="onboarding_feature_1_desc">Crie listas e compartilhe com sua famÃ­lia em tempo real</string>
+    <string name="onboarding_feature_2_title">Modo compras</string>
+    <string name="onboarding_feature_2_desc">Marque itens no mercado com escaneamento de cÃ³digo de barras</string>
+    <string name="onboarding_feature_3_title">Controle total</string>
+    <string name="onboarding_feature_3_desc">Self-hosted, sua casa, seus dados, sua privacidade</string>
+    <string name="onboarding_get_started">Entrar ou criar conta</string>
+    <string name="onboarding_connect_server">Conectar ao servidor</string>
+    <string name="onboarding_server_label">Servidor: %1$s</string>
+    <string name="onboarding_dialog_title">Conectar ao servidor</string>
+    <string name="onboarding_dialog_message">EndereÃ§o do servidor Listaih (ex: http://192.168.0.10:3000). A mudanÃ§a vale imediatamente.</string>
+    <string name="onboarding_dialog_url_label">URL</string>
+    <string name="onboarding_dialog_url_placeholder">http://127.0.0.1:3000</string>
+
+    <!-- Setup -->
+    <string name="setup_logo_cd">Logo do Listaih</string>
+    <string name="setup_title">Configurar Listaih</string>
+    <string name="setup_subtitle">Primeira execuÃ§Ã£o â€” crie o administrador do seu servidor</string>
+    <string name="setup_name_label">Seu nome</string>
+    <string name="setup_email_label">Email</string>
+    <string name="setup_password_label">Senha</string>
+    <string name="setup_household_label">Nome da casa</string>
+    <string name="setup_create_button">Criar conta e comeÃ§ar</string>
+
+    <!-- Login -->
+    <string name="login_logo_cd">Logo do Listaih</string>
+    <string name="login_title">Entrar</string>
+    <string name="login_subtitle">Sua lista de compras inteligente</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Senha</string>
+    <string name="login_show_password">Mostrar senha</string>
+    <string name="login_hide_password">Ocultar senha</string>
+    <string name="login_button">Entrar</string>
+
+    <!-- Home -->
+    <string name="home_title">Listaih</string>
+    <string name="home_filter_all">Todas</string>
+    <string name="home_filter_active">Ativas</string>
+    <string name="home_filter_archived">Arquivadas</string>
+    <string name="home_filter_templates">Modelos</string>
+    <string name="home_search_placeholder">Buscar listas...</string>
+    <string name="home_search_cd">Buscar</string>
+    <string name="home_search_close_cd">Fechar busca</string>
+    <string name="home_add_list_cd">Adicionar lista</string>
+    <string name="home_tab_home">InÃ­cio</string>
+    <string name="home_tab_history">HistÃ³rico</string>
+    <string name="home_tab_settings">Config</string>
+    <string name="home_empty_archived">Nenhuma lista arquivada ainda</string>
+    <string name="home_empty_active">Nenhuma lista encontrada</string>
+    <string name="home_empty_tip">Toque em + para criar uma lista</string>
+    <string name="home_card_done_cd">ConcluÃ­da</string>
+    <string name="home_card_all_purchased">Todos os itens comprados Â· R$ %1$s</string>
+    <string name="home_card_remaining">Restam %1$d itens Â· R$ %2$s</string>
+
+    <!-- List Detail -->
+    <string name="detail_back_cd">Voltar</string>
+    <string name="detail_scan_cd">Escanear</string>
+    <string name="detail_checkout_cd">Checkout</string>
+    <string name="detail_more_cd">Mais opÃ§Ãµes</string>
+    <string name="detail_add_item_cd">Adicionar item</string>
+    <string name="detail_menu_rename">Renomear lista</string>
+    <string name="detail_menu_check_all">Marcar tudo como comprado</string>
+    <string name="detail_menu_uncheck_all">Desmarcar todos</string>
+    <string name="detail_menu_delete_checked">Excluir itens comprados</string>
+    <string name="detail_header_items_count">Itens (%1$d)</string>
+    <string name="detail_header_purchased_count">Comprados: %1$d âœ“</string>
+    <string name="detail_empty_title">Lista vazia</string>
+    <string name="detail_empty_subtitle">Toque em + para adicionar itens</string>
+    <string name="detail_category_purchased">Comprados</string>
+    <string name="detail_total_estimated">Total estimado</string>
+    <string name="detail_total_spent">Total gasto</string>
+    <string name="detail_rename_dialog_title">Renomear lista</string>
+    <string name="detail_rename_dialog_label">Nome da lista</string>
+    <string name="detail_edit_dialog_title">Editar item</string>
+    <string name="detail_edit_name_label">Nome</string>
+    <string name="detail_edit_quantity_label">Quantidade</string>
+    <string name="detail_edit_price_label">PreÃ§o estimado (R$)</string>
+    <string name="detail_edit_category_label">Categoria</string>
+    <string name="detail_edit_delete">Excluir</string>
+    <string name="detail_checked_by">âœ“ por %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_title">ConfiguraÃ§Ãµes</string>
+    <string name="settings_back_cd">Voltar</string>
+    <string name="settings_section_profile">Perfil</string>
+    <string name="settings_profile_name_placeholder">Seu nome</string>
+    <string name="settings_profile_email_loading">carregando...</string>
+    <string name="settings_change_password">Alterar senha</string>
+    <string name="settings_section_appearance">AparÃªncia</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_dark">Escuro</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_section_server">Servidor</string>
+    <string name="settings_server_address">EndereÃ§o do servidor</string>
+    <string name="settings_section_localization">Localização  Moeda</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_language_ptbr">PortuguÃªs (Brasil)</string>
+    <string name="settings_language_enus">English (US)</string>
+    <string name="settings_language_eses">Español (España)</string>
+    <string name="settings_currency">Moeda</string>
+    <string name="settings_currency_brl">Real Brasileiro (BRL)</string>
+    <string name="settings_currency_usd">DÃ³lar Americano (USD)</string>
+    <string name="settings_currency_eur">Euro (EUR)</string>
+    <string name="settings_section_notifications">NotificaÃ§Ãµes</string>
+    <string name="settings_push_notifications">NotificaÃ§Ãµes push</string>
+    <string name="settings_haptic_feedback">Feedback tÃ¡til</string>
+    <string name="settings_section_offline">Offline</string>
+    <string name="settings_offline_mode">Modo offline</string>
+    <string name="settings_offline_subtitle">Sincronizar quando conectar</string>
+    <string name="settings_section_wear">Wear OS</string>
+    <string name="settings_wear_scan_detail">Detalhar scan no relÃ³gio</string>
+    <string name="settings_wear_scan_subtitle">Usar o Wear OS para detalhar o scan</string>
+    <string name="settings_section_about">Sobre</string>
+    <string name="settings_version">VersÃ£o</string>
+    <string name="settings_version_value">1.0.0</string>
+    <string name="settings_privacy">Privacidade  segurança</string>
+    <string name="settings_logout_button">Sair da conta</string>
+    <string name="settings_server_dialog_title">Servidor</string>
+    <string name="settings_server_dialog_message">EndereÃ§o do servidor Listaih (ex: http://192.168.0.10:3000). A mudanÃ§a vale imediatamente.</string>
+    <string name="settings_server_dialog_url_label">URL</string>
+    <string name="settings_server_dialog_url_placeholder">http://127.0.0.1:3000</string>
+    <string name="settings_password_dialog_title">Alterar senha</string>
+    <string name="settings_password_current_label">Senha atual</string>
+    <string name="settings_password_new_label">Nova senha</string>
+    <string name="settings_password_confirm_label">Confirmar nova senha</string>
+    <string name="settings_password_error_all_fields">Preencha todos os campos</string>
+    <string name="settings_password_error_min_length">A nova senha precisa ter ao menos 6 caracteres</string>
+    <string name="settings_password_error_mismatch">As senhas nÃ£o coincidem</string>
+    <string name="settings_about_title">Listaih</string>
+    <string name="settings_about_version">VersÃ£o 1.0.0</string>
+    <string name="settings_about_description">Listas de compras colaborativas para sua casa.</string>
+    <string name="settings_privacy_title">Privacidade  segurança</string>
+    <string name="settings_privacy_text">Seus dados sÃ£o armazenados localmente no seu servidor. Nenhuma informaÃ§Ã£o Ã© compartilhada com terceiros.</string>
+    <string name="settings_logout_title">Sair da conta?</string>
+    <string name="settings_logout_message">VocÃª precisarÃ¡ entrar novamente para acessar suas listas.</string>
+    <string name="settings_logout_confirm">Sair</string>
+
+    <!-- Settings messages (ViewModel) -->
+    <string name="settings_profile_load_error">NÃ£o foi possÃ­vel carregar o perfil: %1$s</string>
+    <string name="settings_password_success">Senha alterada com sucesso</string>
+    <string name="settings_password_error">Erro ao alterar a senha: %1$s</string>
+    <string name="settings_server_updated">Servidor atualizado. A prÃ³xima conexÃ£o usarÃ¡ a nova URL.</string>
+
+    <!-- Purchases -->
+    <string name="purchases_title">Compras</string>
+    <string name="purchases_back_cd">Voltar</string>
+    <string name="purchases_summary_total_spent">Total gasto</string>
+    <string name="purchases_summary_purchases_count">Compras</string>
+    <string name="purchases_summary_items_count">Itens</string>
+    <string name="purchases_empty_title">Nenhuma compra registrada ainda</string>
+    <string name="purchases_row_default_name">Compra</string>
+    <string name="purchases_row_grocy_synced">Grocy âœ“</string>
+    <string name="purchases_detail_back">Voltar para compras</string>
+    <string name="purchases_detail_title">Detalhe da compra</string>
+    <string name="purchases_detail_list_label">Lista</string>
+    <string name="purchases_detail_date_label">Data</string>
+    <string name="purchases_detail_total_label">Total</string>
+    <string name="purchases_detail_payment_label">Pagamento</string>
+    <string name="purchases_detail_items_label">Itens</string>
+    <string name="purchases_detail_grocy_label">Grocy</string>
+    <string name="purchases_detail_grocy_synced">Sincronizado</string>
+    <string name="purchases_detail_grocy_not_synced">NÃ£o sincronizado</string>
+    <string name="purchases_detail_receipt_label">Receipto</string>
+    <string name="purchases_detail_notes_title">ObservaÃ§Ãµes</string>
+    <string name="purchases_detail_items_title">Itens (%1$d)</string>
+    <string name="purchases_detail_total">Total</string>
+    <string name="purchases_detail_edit_button">Editar compra</string>
+    <string name="purchases_edit_dialog_title">Editar compra</string>
+    <string name="purchases_edit_payment_label">Forma de pagamento</string>
+    <string name="purchases_edit_total_label">Total (R$)</string>
+    <string name="purchases_edit_notes_label">ObservaÃ§Ãµes</string>
+
+    <!-- Add List -->
+    <string name="addlist_title">Nova lista</string>
+    <string name="addlist_back_cd">Voltar</string>
+    <string name="addlist_name_hint">DÃª um nome Ã  sua nova lista</string>
+    <string name="addlist_name_label">Nome da lista</string>
+    <string name="addlist_name_placeholder">Ex: Supermercado do mÃªs</string>
+    <string name="addlist_type_label">Tipo de lista</string>
+    <string name="addlist_type_one_time">Pontual</string>
+    <string name="addlist_type_one_time_desc">Uma Ãºnica compra. Arquiva automaticamente no checkout.</string>
+    <string name="addlist_type_recurring">Recorrente</string>
+    <string name="addlist_type_recurring_desc">Compra que se repete. Zera o status no checkout.</string>
+    <string name="addlist_icon_label">Ãcone</string>
+    <string name="addlist_icon_shopping">Compras</string>
+    <string name="addlist_icon_party">Festas</string>
+    <string name="addlist_icon_pharmacy">FarmÃ¡cia</string>
+    <string name="addlist_create_button">Criar lista</string>
+
+    <!-- Shopping Mode -->
+    <string name="shopping_checkout_success">Compra finalizada com sucesso!</string>
+    <string name="shopping_back_cd">Voltar</string>
+    <string name="shopping_checkout_cd">Checkout</string>
+    <string name="shopping_scanner_cd">Scanner</string>
+    <string name="shopping_scan_button">Escanear</string>
+    <string name="shopping_clear_cd">Limpar</string>
+    <string name="shopping_checkout_title">Finalizar compra</string>
+    <string name="shopping_checkout_items_count">%1$d itens marcados</string>
+    <string name="shopping_checkout_payment_label">Forma de pagamento</string>
+    <string name="shopping_checkout_total_label">Total (R$)</string>
+    <string name="shopping_checkout_notes_label">ObservaÃ§Ãµes</string>
+    <string name="shopping_checkout_grocy_sync">Sincronizar com Grocy</string>
+    <string name="shopping_checkout_confirm">Confirmar</string>
+
+    <!-- Barcode Scanner -->
+    <string name="scanner_title">Escanear cÃ³digo</string>
+    <string name="scanner_back_cd">Voltar</string>
+    <string name="scanner_permission_title">PermissÃ£o de cÃ¢mera necessÃ¡ria</string>
+    <string name="scanner_permission_message">Para escanear cÃ³digos de barras, o Listaih precisa acessar sua cÃ¢mera.</string>
+    <string name="scanner_permission_button">Conceder permissÃ£o</string>
+    <string name="scanner_instruction">Aponte a cÃ¢mera para o cÃ³digo de barras</string>
+
+    <!-- Scan Popup -->
+    <string name="scanpopup_recognized_dismiss_cd">Fechar</string>
+    <string name="scanpopup_recognized_confirm">Confirmar</string>
+    <string name="scanpopup_unrecognized_title">CÃ³digo nÃ£o reconhecido</string>
+    <string name="scanpopup_unrecognized_message">Este cÃ³digo nÃ£o estÃ¡ na lista. O que fazer?</string>
+    <string name="scanpopup_unrecognized_associate">Associar Ã  lista</string>
+    <string name="scanpopup_unrecognized_new">Cadastrar novo</string>
+    <string name="scanpopup_unrecognized_generic">GenÃ©rico</string>
+    <string name="scanpopup_unrecognized_dismiss">Fechar</string>
+    <string name="scanpopup_associate_title">Associar a um item da lista</string>
+    <string name="scanpopup_associate_empty">Nenhum item na lista.</string>
+    <string name="scanpopup_associate_no_category">Sem categoria</string>
+    <string name="scanpopup_associate_dismiss">Fechar</string>
+    <string name="scanpopup_new_title">Cadastrar novo produto</string>
+    <string name="scanpopup_new_name_label">Nome do produto</string>
+    <string name="scanpopup_new_barcode">CÃ³digo: %1$s</string>
+
+    <!-- Add Item -->
+    <string name="additem_title">Adicionar Item</string>
+    <string name="additem_name_label">Nome do produto</string>
+    <string name="additem_name_clear_cd">Limpar</string>
+    <string name="additem_quantity_label">Quantidade</string>
+    <string name="additem_price_label">PreÃ§o estimado</string>
+    <string name="additem_unit_label">Unidade</string>
+    <string name="additem_category_label">Categoria</string>
+    <string name="additem_notes_label">Notas (opcional)</string>
+    <string name="additem_notes_placeholder">Ex: pegar maduro</string>
+    <string name="additem_button">Adicionar</string>
 </resources>
+
+
+
+
+

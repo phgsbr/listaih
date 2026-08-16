@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -50,6 +51,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import com.listaih.app.R
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -81,10 +83,10 @@ fun BarcodeScannerScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Escanear código", fontSize = 18.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold) },
+                title = { Text(text = stringResource(R.string.scanner_title), fontSize = 18.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.scanner_back_cd))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -114,13 +116,13 @@ fun BarcodeScannerScreen(
                             modifier = Modifier.size(64.dp)
                         )
                         Text(
-                            text = "Permissão de câmera necessária",
+                            text = stringResource(R.string.scanner_permission_title),
                             fontSize = 16.sp,
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(top = 16.dp)
                         )
                         Text(
-                            text = "Para escanear códigos de barras, o Listaih precisa acessar sua câmera.",
+                            text = stringResource(R.string.scanner_permission_message),
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 8.dp)

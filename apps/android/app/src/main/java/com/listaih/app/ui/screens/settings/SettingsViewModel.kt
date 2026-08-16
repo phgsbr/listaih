@@ -79,12 +79,14 @@ class SettingsViewModel @Inject constructor(
 
     fun loadProfile() {
         viewModelScope.launch {
+            _loading.value = true
             repository.getProfile().onSuccess { profile: UserResponse ->
                 _userName.value = profile.name
                 _userEmail.value = profile.email
             }.onFailure { e ->
                 _message.value = "Não foi possível carregar o perfil: ${e.message}"
             }
+            _loading.value = false
         }
     }
 

@@ -46,6 +46,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -75,9 +76,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.listaih.app.R
 import com.listaih.app.data.scanner.ScreenWake
 import com.listaih.app.ui.screens.additem.ShowAddItemBottomSheet
 import com.listaih.app.ui.scanpopup.AssociableItem
@@ -170,26 +173,26 @@ fun ListDetailScreen(
                 title = { Text(text = title, fontSize = 20.sp, fontWeight = FontWeight.Medium) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.detail_back_cd))
                     }
                 },
                 actions = {
                     IconButton(onClick = { showScanner = true }) {
-                        Icon(Icons.Filled.QrCodeScanner, contentDescription = "Escanear")
+                        Icon(Icons.Filled.QrCodeScanner, contentDescription = stringResource(R.string.detail_scan_cd))
                     }
                     IconButton(onClick = onShoppingModeClick) {
-                        Icon(Icons.Filled.ShoppingCart, contentDescription = "Checkout")
+                        Icon(Icons.Filled.ShoppingCart, contentDescription = stringResource(R.string.detail_checkout_cd))
                     }
                     Box {
                         IconButton(onClick = { moreMenuExpanded = true }) {
-                            Icon(Icons.Filled.MoreVert, contentDescription = "More")
+                            Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.detail_more_cd))
                         }
                         DropdownMenu(
                             expanded = moreMenuExpanded,
                             onDismissRequest = { moreMenuExpanded = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Renomear lista") },
+                                text = { Text(stringResource(R.string.detail_menu_rename)) },
                                 leadingIcon = { Icon(Icons.Filled.EditNote, contentDescription = null) },
                                 onClick = {
                                     renameText = title
@@ -198,7 +201,7 @@ fun ListDetailScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Marcar tudo como comprado") },
+                                text = { Text(stringResource(R.string.detail_menu_check_all)) },
                                 leadingIcon = { Icon(Icons.Filled.Check, contentDescription = null) },
                                 onClick = {
                                     viewModel.checkAll()
@@ -206,7 +209,7 @@ fun ListDetailScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Desmarcar todos") },
+                                text = { Text(stringResource(R.string.detail_menu_uncheck_all)) },
                                 leadingIcon = { Icon(Icons.Filled.ContentCopy, contentDescription = null) },
                                 onClick = {
                                     viewModel.uncheckAll()
@@ -214,7 +217,7 @@ fun ListDetailScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Excluir itens comprados") },
+                                text = { Text(stringResource(R.string.detail_menu_delete_checked)) },
                                 leadingIcon = { Icon(Icons.Filled.Delete, contentDescription = null) },
                                 onClick = {
                                     viewModel.deleteChecked()
@@ -235,7 +238,7 @@ fun ListDetailScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add item")
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.detail_add_item_cd))
             }
         }
     ) { innerPadding ->
@@ -289,103 +292,146 @@ fun ListDetailScreen(
                 onSuggestName = { barcode -> viewModel.suggestScannedName(barcode) }
             )
 
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                shape = MaterialTheme.shapes.medium,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
+            if (items.isNotEmpty()) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.detail_header_items_count, items.size),
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                             Text(
-                                text = "Itens (${items.size})",
+                                text = stringResource(R.string.detail_header_purchased_count, checkedCount),
                                 fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        Text(
-                            text = "Comprados: $checkedCount ✓",
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Spacer(Modifier.height(10.dp))
-                    androidx.compose.material3.LinearProgressIndicator(
-                        progress = { progress },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(CircleShape),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                }
-            }
-
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(bottom = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                val openItems = items.filter { !it.checked }
-                val boughtItems = items.filter { it.checked }
-
-                openItems.groupBy { it.category }.forEach { (category, categoryItems) ->
-                    item(key = "header_$category") {
-                        CategoryHeader(category = category, icon = getCategoryIcon(category))
-                    }
-                    items(categoryItems) { item ->
-                        ListItemRow(
-                            item = item,
-                            onCheckClick = { toggleCheck(item.id) },
-                            onClick = { editingItem = item }
-                        )
-                    }
-                }
-
-                if (boughtItems.isNotEmpty()) {
-                    item(key = "header_comprados") {
-                        CategoryHeader(category = "Comprados", icon = Icons.Filled.Check)
-                    }
-                    items(boughtItems) { item ->
-                        ListItemRow(
-                            item = item,
-                            onCheckClick = { toggleCheck(item.id) },
-                            onClick = { editingItem = item }
+                        Spacer(Modifier.height(10.dp))
+                        androidx.compose.material3.LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .clip(CircleShape),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant
                         )
                     }
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 96.dp, bottom = 16.dp)
-            ) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.large,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
+            if (uiState.isLoading && items.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else if (items.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        TotalRow(label = "Total estimado", value = "R$ ${String.format("%.2f", items.sumOf { it.estimatedPrice ?: 0.0 })}", bold = false)
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        TotalRow(label = "Total gasto", value = "R$ ${String.format("%.2f", items.filter { it.checked }.sumOf { it.actualPrice ?: 0.0 })}", bold = true, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        Icon(
+                            Icons.Filled.ShoppingBasket,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.detail_empty_title),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = stringResource(R.string.detail_empty_subtitle),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.outline
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(bottom = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    val openItems = items.filter { !it.checked }
+                    val boughtItems = items.filter { it.checked }
+
+                    openItems.groupBy { it.category }.forEach { (category, categoryItems) ->
+                        item(key = "header_$category") {
+                            CategoryHeader(category = category, icon = getCategoryIcon(category))
+                        }
+                        items(categoryItems) { item ->
+                            ListItemRow(
+                                item = item,
+                                onCheckClick = { toggleCheck(item.id) },
+                                onClick = { editingItem = item }
+                            )
+                        }
+                    }
+
+                    if (boughtItems.isNotEmpty()) {
+                        item(key = "header_comprados") {
+                            CategoryHeader(category = stringResource(R.string.detail_category_purchased), icon = Icons.Filled.Check)
+                        }
+                        items(boughtItems) { item ->
+                            ListItemRow(
+                                item = item,
+                                onCheckClick = { toggleCheck(item.id) },
+                                onClick = { editingItem = item }
+                            )
+                        }
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 96.dp, bottom = 16.dp)
+                ) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.large,
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            TotalRow(label = stringResource(R.string.detail_total_estimated), value = "R$ ${String.format("%.2f", items.sumOf { it.estimatedPrice ?: 0.0 })}", bold = false)
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            TotalRow(label = stringResource(R.string.detail_total_spent), value = "R$ ${String.format("%.2f", items.filter { it.checked }.sumOf { it.actualPrice ?: 0.0 })}", bold = true, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        }
                     }
                 }
             }
@@ -426,7 +472,7 @@ fun ListDetailScreen(
     if (showRename) {
         AlertDialog(
             onDismissRequest = { showRename = false },
-            title = { Text("Renomear lista") },
+            title = { Text(stringResource(R.string.detail_rename_dialog_title)) },
             text = {
                 OutlinedTextField(
                     value = renameText,

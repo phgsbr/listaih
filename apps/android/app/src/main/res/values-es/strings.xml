@@ -1,0 +1,293 @@
+<resources>
+    <!-- App -->
+    <string name="app_name">Listaih</string>
+
+    <!-- Common -->
+    <string name="common_save">Guardar</string>
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_ok">OK</string>
+    <string name="common_back">Volver</string>
+    <string name="common_connection_ok">Conexión OK</string>
+    <string name="common_connection_failed">Error de conexión (verifique la URL)</string>
+    <string name="common_test_connection">Probar conexión</string>
+    <string name="common_loading">Cargando...</string>
+    <string name="common_list_type_recurring">Recurrente</string>
+    <string name="common_list_type_template">Plantilla</string>
+    <string name="common_list_type_one_time">Única</string>
+    <string name="common_online_members">Varios miembros en línea</string>
+    <string name="common_only_you">Solo tú</string>
+    <string name="common_payment_none">Sin pago</string>
+    <string name="common_payment_cash">Efectivo</string>
+    <string name="common_payment_debit">Débito</string>
+    <string name="common_payment_credit">Crédito</string>
+    <string name="common_payment_pix">PIX</string>
+    <string name="common_payment_vr">VR</string>
+    <string name="common_payment_va">VA</string>
+
+    <!-- Units -->
+    <string name="unit_un">ud</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_g">g</string>
+    <string name="unit_l">L</string>
+    <string name="unit_ml">ml</string>
+
+    <!-- Categories -->
+    <string name="cat_hortifruti">Frutas y verduras</string>
+    <string name="cat_laticinios">Lácteos</string>
+    <string name="cat_padaria">Panadería</string>
+    <string name="cat_carnes">Carnes</string>
+    <string name="cat_peixaria">Pescadería</string>
+    <string name="cat_bebidas">Bebidas</string>
+    <string name="cat_limpeza">Limpieza</string>
+    <string name="cat_doces">Dulces</string>
+    <string name="cat_enlatados">Conservas</string>
+    <string name="cat_mercearia">Abarrotes</string>
+    <string name="cat_congelados">Congelados</string>
+    <string name="cat_sem_categoria">Sin categoría</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_logo_cd">Logo de Listaih</string>
+    <string name="onboarding_title">Listaih</string>
+    <string name="onboarding_subtitle">Tu lista de compras colaborativa e inteligente</string>
+    <string name="onboarding_feature_1_title">Listas colaborativas</string>
+    <string name="onboarding_feature_1_desc">Crea listas y compártelas con tu familia en tiempo real</string>
+    <string name="onboarding_feature_2_title">Modo compras</string>
+    <string name="onboarding_feature_2_desc">Marca artículos en la tienda con escaneo de código de barras</string>
+    <string name="onboarding_feature_3_title">Control total</string>
+    <string name="onboarding_feature_3_desc">Self-hosted, tu casa, tus datos, tu privacidad</string>
+    <string name="onboarding_get_started">Iniciar sesión o crear cuenta</string>
+    <string name="onboarding_connect_server">Conectar al servidor</string>
+    <string name="onboarding_server_label">Servidor: %1$s</string>
+    <string name="onboarding_dialog_title">Conectar al servidor</string>
+    <string name="onboarding_dialog_message">Dirección del servidor Listaih (ej: http://192.168.0.10:3000). Los cambios surten efecto inmediatamente.</string>
+    <string name="onboarding_dialog_url_label">URL</string>
+    <string name="onboarding_dialog_url_placeholder">http://127.0.0.1:3000</string>
+
+    <!-- Setup -->
+    <string name="setup_logo_cd">Logo de Listaih</string>
+    <string name="setup_title">Configurar Listaih</string>
+    <string name="setup_subtitle">Primera ejecución — crea el administrador de tu servidor</string>
+    <string name="setup_name_label">Tu nombre</string>
+    <string name="setup_email_label">Email</string>
+    <string name="setup_password_label">Contraseña</string>
+    <string name="setup_household_label">Nombre de la casa</string>
+    <string name="setup_create_button">Crear cuenta y empezar</string>
+
+    <!-- Login -->
+    <string name="login_logo_cd">Logo de Listaih</string>
+    <string name="login_title">Iniciar sesión</string>
+    <string name="login_subtitle">Tu lista de compras inteligente</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Contraseña</string>
+    <string name="login_show_password">Mostrar contraseña</string>
+    <string name="login_hide_password">Ocultar contraseña</string>
+    <string name="login_button">Iniciar sesión</string>
+
+    <!-- Home -->
+    <string name="home_title">Listaih</string>
+    <string name="home_filter_all">Todas</string>
+    <string name="home_filter_active">Activas</string>
+    <string name="home_filter_archived">Archivadas</string>
+    <string name="home_filter_templates">Plantillas</string>
+    <string name="home_search_placeholder">Buscar listas...</string>
+    <string name="home_search_cd">Buscar</string>
+    <string name="home_search_close_cd">Cerrar búsqueda</string>
+    <string name="home_add_list_cd">Añadir lista</string>
+    <string name="home_tab_home">Inicio</string>
+    <string name="home_tab_history">Historial</string>
+    <string name="home_tab_settings">Config</string>
+    <string name="home_empty_archived">No hay listas archivadas todavía</string>
+    <string name="home_empty_active">No se encontraron listas</string>
+    <string name="home_empty_tip">Toca + para crear una lista</string>
+    <string name="home_card_done_cd">Completada</string>
+    <string name="home_card_all_purchased">Todos los artículos comprados · $%1$s</string>
+    <string name="home_card_remaining">Quedan %1$d artículos · $%2$s</string>
+
+    <!-- List Detail -->
+    <string name="detail_back_cd">Volver</string>
+    <string name="detail_scan_cd">Escanear</string>
+    <string name="detail_checkout_cd">Checkout</string>
+    <string name="detail_more_cd">Más opciones</string>
+    <string name="detail_add_item_cd">Añadir artículo</string>
+    <string name="detail_menu_rename">Renombrar lista</string>
+    <string name="detail_menu_check_all">Marcar todo como comprado</string>
+    <string name="detail_menu_uncheck_all">Desmarcar todo</string>
+    <string name="detail_menu_delete_checked">Eliminar artículos comprados</string>
+    <string name="detail_header_items_count">Artículos (%1$d)</string>
+    <string name="detail_header_purchased_count">Comprados: %1$d ✓</string>
+    <string name="detail_empty_title">Lista vacía</string>
+    <string name="detail_empty_subtitle">Toca + para añadir artículos</string>
+    <string name="detail_category_purchased">Comprados</string>
+    <string name="detail_total_estimated">Total estimado</string>
+    <string name="detail_total_spent">Total gastado</string>
+    <string name="detail_rename_dialog_title">Renombrar lista</string>
+    <string name="detail_rename_dialog_label">Nombre de la lista</string>
+    <string name="detail_edit_dialog_title">Editar artículo</string>
+    <string name="detail_edit_name_label">Nombre</string>
+    <string name="detail_edit_quantity_label">Cantidad</string>
+    <string name="detail_edit_price_label">Precio estimado ($)</string>
+    <string name="detail_edit_category_label">Categoría</string>
+    <string name="detail_edit_delete">Eliminar</string>
+    <string name="detail_checked_by">✓ por %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Configuración</string>
+    <string name="settings_back_cd">Volver</string>
+    <string name="settings_section_profile">Perfil</string>
+    <string name="settings_profile_name_placeholder">Tu nombre</string>
+    <string name="settings_profile_email_loading">cargando...</string>
+    <string name="settings_change_password">Cambiar contraseña</string>
+    <string name="settings_section_appearance">Apariencia</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_section_server">Servidor</string>
+    <string name="settings_server_address">Dirección del servidor</string>
+    <string name="settings_section_localization">Ubicación y moneda</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_language_ptbr">Portugués (Brasil)</string>
+    <string name="settings_language_enus">English (US)</string>
+    <string name="settings_language_eses">Español (España)</string>
+    <string name="settings_currency">Moneda</string>
+    <string name="settings_currency_brl">Real brasileño (BRL)</string>
+    <string name="settings_currency_usd">Dólar estadounidense (USD)</string>
+    <string name="settings_currency_eur">Euro (EUR)</string>
+    <string name="settings_section_notifications">Notificaciones</string>
+    <string name="settings_push_notifications">Notificaciones push</string>
+    <string name="settings_haptic_feedback">Respuesta táctil</string>
+    <string name="settings_section_offline">Sin conexión</string>
+    <string name="settings_offline_mode">Modo sin conexión</string>
+    <string name="settings_offline_subtitle">Sincronizar al reconectar</string>
+    <string name="settings_section_wear">Wear OS</string>
+    <string name="settings_wear_scan_detail">Detalle de escaneo en reloj</string>
+    <string name="settings_wear_scan_subtitle">Usar Wear OS para detallar el escaneo</string>
+    <string name="settings_section_about">Acerca de</string>
+    <string name="settings_version">Versión</string>
+    <string name="settings_version_value">1.0.0</string>
+    <string name="settings_privacy">Privacidad y seguridad</string>
+    <string name="settings_logout_button">Cerrar sesión</string>
+    <string name="settings_server_dialog_title">Servidor</string>
+    <string name="settings_server_dialog_message">Dirección del servidor Listaih (ej: http://192.168.0.10:3000). Los cambios surten efecto inmediatamente.</string>
+    <string name="settings_server_dialog_url_label">URL</string>
+    <string name="settings_server_dialog_url_placeholder">http://127.0.0.1:3000</string>
+    <string name="settings_password_dialog_title">Cambiar contraseña</string>
+    <string name="settings_password_current_label">Contraseña actual</string>
+    <string name="settings_password_new_label">Nueva contraseña</string>
+    <string name="settings_password_confirm_label">Confirmar nueva contraseña</string>
+    <string name="settings_password_error_all_fields">Completa todos los campos</string>
+    <string name="settings_password_error_min_length">La nueva contraseña debe tener al menos 6 caracteres</string>
+    <string name="settings_password_error_mismatch">Las contraseñas no coinciden</string>
+    <string name="settings_about_title">Listaih</string>
+    <string name="settings_about_version">Versión 1.0.0</string>
+    <string name="settings_about_description">Listas de compras colaborativas para tu casa.</string>
+    <string name="settings_privacy_title">Privacidad y seguridad</string>
+    <string name="settings_privacy_text">Tus datos se almacenan localmente en tu servidor. No se compite información con terceros.</string>
+    <string name="settings_logout_title">¿Cerrar sesión?</string>
+    <string name="settings_logout_message">Tendrás que iniciar sesión de nuevo para acceder a tus listas.</string>
+    <string name="settings_logout_confirm">Cerrar sesión</string>
+
+    <!-- Settings messages (ViewModel) -->
+    <string name="settings_profile_load_error">No se pudo cargar el perfil: %1$s</string>
+    <string name="settings_password_success">Contraseña cambiada con éxito</string>
+    <string name="settings_password_error">Error al cambiar la contraseña: %1$s</string>
+    <string name="settings_server_updated">Servidor actualizado. La próxima conexión usará la nueva URL.</string>
+
+    <!-- Purchases -->
+    <string name="purchases_title">Compras</string>
+    <string name="purchases_back_cd">Volver</string>
+    <string name="purchases_summary_total_spent">Total gastado</string>
+    <string name="purchases_summary_purchases_count">Compras</string>
+    <string name="purchases_summary_items_count">Artículos</string>
+    <string name="purchases_empty_title">Aún no hay compras registradas</string>
+    <string name="purchases_row_default_name">Compra</string>
+    <string name="purchases_row_grocy_synced">Grocy ✓</string>
+    <string name="purchases_detail_back">Volver a compras</string>
+    <string name="purchases_detail_title">Detalle de compra</string>
+    <string name="purchases_detail_list_label">Lista</string>
+    <string name="purchases_detail_date_label">Fecha</string>
+    <string name="purchases_detail_total_label">Total</string>
+    <string name="purchases_detail_payment_label">Pago</string>
+    <string name="purchases_detail_items_label">Artículos</string>
+    <string name="purchases_detail_grocy_label">Grocy</string>
+    <string name="purchases_detail_grocy_synced">Sincronizado</string>
+    <string name="purchases_detail_grocy_not_synced">No sincronizado</string>
+    <string name="purchases_detail_receipt_label">Recibo</string>
+    <string name="purchases_detail_notes_title">Observaciones</string>
+    <string name="purchases_detail_items_title">Artículos (%1$d)</string>
+    <string name="purchases_detail_total">Total</string>
+    <string name="purchases_detail_edit_button">Editar compra</string>
+    <string name="purchases_edit_dialog_title">Editar compra</string>
+    <string name="purchases_edit_payment_label">Forma de pago</string>
+    <string name="purchases_edit_total_label">Total ($)</string>
+    <string name="purchases_edit_notes_label">Observaciones</string>
+
+    <!-- Add List -->
+    <string name="addlist_title">Nueva lista</string>
+    <string name="addlist_back_cd">Volver</string>
+    <string name="addlist_name_hint">Nombrá tu nueva lista</string>
+    <string name="addlist_name_label">Nombre de la lista</string>
+    <string name="addlist_name_placeholder">Ej: Supermercado del mes</string>
+    <string name="addlist_type_label">Tipo de lista</string>
+    <string name="addlist_type_one_time">Única</string>
+    <string name="addlist_type_one_time_desc">Compra única. Se archiva automáticamente al checkout.</string>
+    <string name="addlist_type_recurring">Recurrente</string>
+    <string name="addlist_type_recurring_desc">Compra que se repite. Se reinicia al checkout.</string>
+    <string name="addlist_icon_label">Icono</string>
+    <string name="addlist_icon_shopping">Compras</string>
+    <string name="addlist_icon_party">Fiestas</string>
+    <string name="addlist_icon_pharmacy">Farmacia</string>
+    <string name="addlist_create_button">Crear lista</string>
+
+    <!-- Shopping Mode -->
+    <string name="shopping_checkout_success">¡Compra finalizada con éxito!</string>
+    <string name="shopping_back_cd">Volver</string>
+    <string name="shopping_checkout_cd">Checkout</string>
+    <string name="shopping_scanner_cd">Escáner</string>
+    <string name="shopping_scan_button">Escanear</string>
+    <string name="shopping_clear_cd">Limpiar</string>
+    <string name="shopping_checkout_title">Finalizar compra</string>
+    <string name="shopping_checkout_items_count">%1$d artículos marcados</string>
+    <string name="shopping_checkout_payment_label">Forma de pago</string>
+    <string name="shopping_checkout_total_label">Total ($)</string>
+    <string name="shopping_checkout_notes_label">Observaciones</string>
+    <string name="shopping_checkout_grocy_sync">Sincronizar con Grocy</string>
+    <string name="shopping_checkout_confirm">Confirmar</string>
+
+    <!-- Barcode Scanner -->
+    <string name="scanner_title">Escanear código</string>
+    <string name="scanner_back_cd">Volver</string>
+    <string name="scanner_permission_title">Se requiere permiso de cámara</string>
+    <string name="scanner_permission_message">Para escanear códigos de barras, Listaih necesita acceso a tu cámara.</string>
+    <string name="scanner_permission_button">Conceder permiso</string>
+    <string name="scanner_instruction">Apunta la cámara al código de barras</string>
+
+    <!-- Scan Popup -->
+    <string name="scanpopup_recognized_dismiss_cd">Cerrar</string>
+    <string name="scanpopup_recognized_confirm">Confirmar</string>
+    <string name="scanpopup_unrecognized_title">Código no reconocido</string>
+    <string name="scanpopup_unrecognized_message">Este código no está en la lista. ¿Qué hacer?</string>
+    <string name="scanpopup_unrecognized_associate">Asociar a la lista</string>
+    <string name="scanpopup_unrecognized_new">Crear nuevo</string>
+    <string name="scanpopup_unrecognized_generic">Genérico</string>
+    <string name="scanpopup_unrecognized_dismiss">Cerrar</string>
+    <string name="scanpopup_associate_title">Asociar a un artículo de la lista</string>
+    <string name="scanpopup_associate_empty">No hay artículos en la lista.</string>
+    <string name="scanpopup_associate_no_category">Sin categoría</string>
+    <string name="scanpopup_associate_dismiss">Cerrar</string>
+    <string name="scanpopup_new_title">Crear nuevo producto</string>
+    <string name="scanpopup_new_name_label">Nombre del producto</string>
+    <string name="scanpopup_new_barcode">Código: %1$s</string>
+
+    <!-- Add Item -->
+    <string name="additem_title">Añadir artículo</string>
+    <string name="additem_name_label">Nombre del producto</string>
+    <string name="additem_name_clear_cd">Limpiar</string>
+    <string name="additem_quantity_label">Cantidad</string>
+    <string name="additem_price_label">Precio estimado</string>
+    <string name="additem_unit_label">Unidad</string>
+    <string name="additem_category_label">Categoría</string>
+    <string name="additem_notes_label">Notas (opcional)</string>
+    <string name="additem_notes_placeholder">Ej: elegir maduro</string>
+    <string name="additem_button">Añadir</string>
+</resources>

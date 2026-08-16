@@ -42,6 +42,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.listaih.app.R
 
@@ -75,7 +76,7 @@ fun LoginScreen(
             Box(contentAlignment = Alignment.Center) {
                 androidx.compose.foundation.Image(
                     painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_launcher_foreground),
-                    contentDescription = "Listaih logo",
+                    contentDescription = stringResource(R.string.login_logo_cd),
                     modifier = Modifier.size(44.dp)
                 )
             }
@@ -84,14 +85,14 @@ fun LoginScreen(
         Spacer(Modifier.size(8.dp))
 
         Text(
-            text = "Entrar",
+            text = stringResource(R.string.login_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
 
         Text(
-            text = "Sua lista de compras inteligente",
+            text = stringResource(R.string.login_subtitle),
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -101,7 +102,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.login_email_label)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.MailOutline,
@@ -119,7 +120,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Senha") },
+            label = { Text(stringResource(R.string.login_password_label)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.Lock,
@@ -131,7 +132,7 @@ fun LoginScreen(
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                        contentDescription = if (passwordVisible) "Ocultar senha" else "Mostrar senha"
+                    contentDescription = if (passwordVisible) stringResource(R.string.login_hide_password) else stringResource(R.string.login_show_password)
                     )
                 }
             },
@@ -174,7 +175,7 @@ fun LoginScreen(
                     strokeWidth = 2.dp
                 )
             } else {
-                Text(text = "Entrar", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(text = stringResource(R.string.login_button), fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
         }
 

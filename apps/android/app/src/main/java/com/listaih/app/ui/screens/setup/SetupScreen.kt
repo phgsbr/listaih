@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.listaih.app.R
 
@@ -75,7 +76,7 @@ fun SetupScreen(
             Box(contentAlignment = Alignment.Center) {
                 androidx.compose.foundation.Image(
                     painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_launcher_foreground),
-                    contentDescription = "Listaih logo",
+                    contentDescription = stringResource(R.string.setup_logo_cd),
                     modifier = Modifier.size(44.dp)
                 )
             }
@@ -84,14 +85,14 @@ fun SetupScreen(
         Spacer(Modifier.size(8.dp))
 
         Text(
-            text = "Configurar Listaih",
+            text = stringResource(R.string.setup_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
 
         Text(
-            text = "Primeira execução — crie o administrador do seu servidor",
+            text = stringResource(R.string.setup_subtitle),
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -102,7 +103,7 @@ fun SetupScreen(
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Seu nome") },
+            label = { Text(stringResource(R.string.setup_name_label)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.Person,
@@ -119,7 +120,7 @@ fun SetupScreen(
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.setup_email_label)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.MailOutline,
@@ -137,7 +138,7 @@ fun SetupScreen(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Senha") },
+            label = { Text(stringResource(R.string.setup_password_label)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.Lock,
@@ -156,7 +157,7 @@ fun SetupScreen(
         OutlinedTextField(
             value = householdName,
             onValueChange = { householdName = it },
-            label = { Text("Nome da casa") },
+            label = { Text(stringResource(R.string.setup_household_label)) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.Home,
@@ -204,7 +205,7 @@ fun SetupScreen(
                     strokeWidth = 2.dp
                 )
             } else {
-                Text(text = "Criar conta e começar", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(text = stringResource(R.string.setup_create_button), fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
         }
 

@@ -26,6 +26,9 @@ class MainViewModel @Inject constructor(
     private val _currentHouseholdId = MutableStateFlow<String?>(null)
     val currentHouseholdId = _currentHouseholdId.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
     // Observe lists from Room database (offline-first) converted to UI model
     @OptIn(ExperimentalCoroutinesApi::class)
     val shoppingLists = _currentHouseholdId.flatMapLatest { householdId ->
@@ -47,8 +50,9 @@ class MainViewModel @Inject constructor(
             if (token != null && householdId != null && householdId.isNotBlank()) {
                 _isLoggedIn.value = true
                 _currentHouseholdId.value = householdId
-                // Sync lists in background
+                _isLoading.value = true
                 repository.syncLists(householdId)
+                _isLoading.value = false
             }
         }
     }
@@ -56,9 +60,10 @@ class MainViewModel @Inject constructor(
     fun onLoginSuccess(householdId: String) {
         _isLoggedIn.value = true
         _currentHouseholdId.value = householdId
-        // Sync lists from backend
+        _isLoading.value = true
         viewModelScope.launch {
             repository.syncLists(householdId)
+            _isLoading.value = false
         }
     }
 

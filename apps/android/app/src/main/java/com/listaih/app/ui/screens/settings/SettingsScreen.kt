@@ -2,6 +2,8 @@
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
+import com.listaih.app.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -107,10 +109,10 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "ConfiguraÃ§Ãµes", fontSize = 20.sp, fontWeight = FontWeight.Medium) },
+                title = { Text(text = stringResource(R.string.settings_title), fontSize = 20.sp, fontWeight = FontWeight.Medium) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.settings_back_cd))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -127,70 +129,70 @@ fun SettingsScreen(
                 .padding(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            SettingsSection(title = "Perfil") {
+            SettingsSection(title = stringResource(R.string.settings_section_profile)) {
                 SettingsItem(
                     icon = Icons.Filled.Person,
-                    title = userName.ifBlank { "Seu nome" },
-                    subtitle = userEmail.ifBlank { "carregando..." }
+                    title = if (loading && userName.isBlank()) stringResource(R.string.common_loading) else userName.ifBlank { stringResource(R.string.settings_profile_name_placeholder) },
+                    subtitle = if (loading && userEmail.isBlank()) null else userEmail.ifBlank { stringResource(R.string.settings_profile_email_loading) }
                 )
                 SettingsItem(
                     icon = Icons.Filled.Password,
-                    title = "Alterar senha",
+                    title = stringResource(R.string.settings_change_password),
                     onClick = { showPasswordDialog = true }
                 )
             }
 
-            SettingsSection(title = "AparÃªncia") {
+            SettingsSection(title = stringResource(R.string.settings_section_appearance)) {
                 SettingsItem(
                     icon = Icons.Filled.Palette,
-                    title = "Tema",
+                    title = stringResource(R.string.settings_theme),
                     subtitle = when (theme) {
-                        "dark" -> "Escuro"
-                        "light" -> "Claro"
-                        else -> "Sistema"
+                        "dark" -> stringResource(R.string.settings_theme_dark)
+                        "light" -> stringResource(R.string.settings_theme_light)
+                        else -> stringResource(R.string.settings_theme_system)
                     },
                     onClick = { showThemeDialog = true }
                 )
             }
 
-            SettingsSection(title = "Servidor") {
+            SettingsSection(title = stringResource(R.string.settings_section_server)) {
                 SettingsItem(
                     icon = Icons.Filled.Dns,
-                    title = "EndereÃ§o do servidor",
+                    title = stringResource(R.string.settings_server_address),
                     subtitle = baseUrl,
                     onClick = { showServerDialog = true }
                 )
             }
 
-            SettingsSection(title = "LocalizaÃ§Ã£o & Moeda") {
+            SettingsSection(title = stringResource(R.string.settings_section_localization)) {
                 SettingsItem(
                     icon = Icons.Filled.Language,
-                    title = "Idioma",
+                    title = stringResource(R.string.settings_language),
                     subtitle = when (language) {
-                        "pt-BR" -> "PortuguÃªs (Brasil)"
-                        "en-US" -> "English (US)"
-                        "es-ES" -> "EspaÃ±ol (EspaÃ±a)"
+                        "pt-BR" -> stringResource(R.string.settings_language_ptbr)
+                        "en-US" -> stringResource(R.string.settings_language_enus)
+                        "es-ES" -> stringResource(R.string.settings_language_eses)
                         else -> language
                     },
                     onClick = { showLanguageDialog = true }
                 )
                 SettingsItem(
                     icon = Icons.Filled.AttachMoney,
-                    title = "Moeda",
+                    title = stringResource(R.string.settings_currency),
                     subtitle = when (currency) {
-                        "BRL" -> "Real Brasileiro (BRL)"
-                        "USD" -> "DÃ³lar Americano (USD)"
-                        "EUR" -> "Euro (EUR)"
+                        "BRL" -> stringResource(R.string.settings_currency_brl)
+                        "USD" -> stringResource(R.string.settings_currency_usd)
+                        "EUR" -> stringResource(R.string.settings_currency_eur)
                         else -> currency
                     },
                     onClick = { showCurrencyDialog = true }
                 )
             }
 
-            SettingsSection(title = "NotificaÃ§Ãµes") {
+            SettingsSection(title = stringResource(R.string.settings_section_notifications)) {
                 SettingsItem(
                     icon = Icons.Filled.Notifications,
-                    title = "NotificaÃ§Ãµes push",
+                    title = stringResource(R.string.settings_push_notifications),
                     trailing = {
                         Switch(
                             checked = notificationsEnabled,
@@ -204,7 +206,7 @@ fun SettingsScreen(
                 )
                 SettingsItem(
                     icon = Icons.Filled.Tune,
-                    title = "Feedback tÃ¡til",
+                    title = stringResource(R.string.settings_haptic_feedback),
                     trailing = {
                         Switch(
                             checked = hapticFeedback,
@@ -218,11 +220,11 @@ fun SettingsScreen(
                 )
             }
 
-            SettingsSection(title = "Offline") {
+            SettingsSection(title = stringResource(R.string.settings_section_offline)) {
                 SettingsItem(
                     icon = Icons.Filled.CloudOff,
-                    title = "Modo offline",
-                    subtitle = "Sincronizar quando conectar",
+                    title = stringResource(R.string.settings_offline_mode),
+                    subtitle = stringResource(R.string.settings_offline_subtitle),
                     trailing = {
                         Switch(
                             checked = offlineMode,
@@ -239,8 +241,8 @@ fun SettingsScreen(
             SettingsSection(title = "Wear OS") {
                 SettingsItem(
                     icon = Icons.Filled.Watch,
-                    title = "Detalhar scan no relÃ³gio",
-                    subtitle = "Usar o Wear OS para detalhar o scan",
+                    title = stringResource(R.string.settings_wear_scan_detail),
+                    subtitle = stringResource(R.string.settings_wear_scan_subtitle),
                     trailing = {
                         Switch(
                             checked = wearScanDetail,
@@ -254,16 +256,16 @@ fun SettingsScreen(
                 )
             }
 
-            SettingsSection(title = "Sobre") {
+            SettingsSection(title = stringResource(R.string.settings_section_about)) {
                 SettingsItem(
                     icon = Icons.Filled.Info,
-                    title = "VersÃ£o",
-                    subtitle = "1.0.0",
+                    title = stringResource(R.string.settings_version),
+                    subtitle = stringResource(R.string.settings_version_value),
                     onClick = { showAboutDialog = true }
                 )
                 SettingsItem(
                     icon = Icons.Filled.Security,
-                    title = "Privacidade & seguranÃ§a",
+                    title = stringResource(R.string.settings_privacy),
                     onClick = { showPrivacyDialog = true }
                 )
             }
@@ -289,7 +291,7 @@ fun SettingsScreen(
                     )
                     Spacer(Modifier.width(12.dp))
                     Text(
-                        text = "Sair da conta",
+                        text = stringResource(R.string.settings_logout_button),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onErrorContainer
@@ -300,18 +302,25 @@ fun SettingsScreen(
     }
 
     if (showThemeDialog) {
+        val themeTitle = stringResource(R.string.settings_theme)
+        val themeSystem = stringResource(R.string.settings_theme_system)
+        val themeDark = stringResource(R.string.settings_theme_dark)
+        val themeLight = stringResource(R.string.settings_theme_light)
         ChoiceDialog(
-            title = "Tema",
+            title = themeTitle,
             options = listOf(
-                "system" to "Sistema",
-                "dark" to "Escuro",
-                "light" to "Claro"
+                "system" to themeSystem,
+                "dark" to themeDark,
+                "light" to themeLight
             ),
             selected = theme,
             onDismiss = { showThemeDialog = false },
             onSelect = { viewModel.setTheme(it); showThemeDialog = false }
         )
     }
+
+    val connectionOkText = stringResource(R.string.common_connection_ok)
+    val connectionFailedText = stringResource(R.string.common_connection_failed)
 
     if (showServerDialog) {
         var url by remember { mutableStateOf(baseUrl) }
@@ -321,20 +330,20 @@ fun SettingsScreen(
 
         AlertDialog(
             onDismissRequest = { showServerDialog = false },
-            title = { Text("Servidor") },
+            title = { Text(stringResource(R.string.settings_section_server)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(
-                        text = "EndereÃ§o do servidor Listaih (ex: http://192.168.0.10:3000). A mudanÃ§a vale imediatamente.",
+                        text = stringResource(R.string.settings_server_dialog_message),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     OutlinedTextField(
                         value = url,
                         onValueChange = { url = it; testMessage = null },
-                        label = { Text("URL") },
+                        label = { Text(stringResource(R.string.settings_server_dialog_url_label)) },
                         singleLine = true,
-                        placeholder = { Text("http://127.0.0.1:3000") }
+                        placeholder = { Text(stringResource(R.string.settings_server_dialog_url_placeholder)) }
                     )
                     testMessage?.let {
                         Text(
@@ -353,13 +362,13 @@ fun SettingsScreen(
                         showServerDialog = false
                     }
                 ) {
-                    Text("Salvar")
+                    Text(stringResource(R.string.common_save))
                 }
             },
             dismissButton = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = { showServerDialog = false }) {
-                        Text("Cancelar")
+                        Text(stringResource(R.string.common_cancel))
                     }
                     TextButton(
                         enabled = !testing && !loading,
@@ -369,14 +378,14 @@ fun SettingsScreen(
                             viewModel.testConnection(url.trim()) { ok ->
                                 testing = false
                                 testSuccess = ok
-                                testMessage = if (ok) "ConexÃ£o OK" else "Falha na conexÃ£o (verifique a URL)"
+                                testMessage = if (ok) connectionOkText else connectionFailedText
                             }
                         }
                     ) {
                         if (testing) {
                             CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
                         } else {
-                            Text("Testar conexÃ£o")
+                            Text(stringResource(R.string.common_test_connection))
                         }
                     }
                 }
@@ -385,9 +394,13 @@ fun SettingsScreen(
     }
 
     if (showLanguageDialog) {
+        val langTitle = stringResource(R.string.settings_language)
+        val langPtBr = stringResource(R.string.settings_language_ptbr)
+        val langEnUs = stringResource(R.string.settings_language_enus)
+        val langEsEs = stringResource(R.string.settings_language_eses)
         ChoiceDialog(
-            title = "Idioma",
-            options = listOf("pt-BR" to "PortuguÃªs (Brasil)", "en-US" to "English (US)", "es-ES" to "EspaÃ±ol (EspaÃ±a)"),
+            title = langTitle,
+            options = listOf("pt-BR" to langPtBr, "en-US" to langEnUs, "es-ES" to langEsEs),
             selected = language,
             onDismiss = { showLanguageDialog = false },
             onSelect = { viewModel.setLanguage(it); showLanguageDialog = false }
@@ -395,9 +408,13 @@ fun SettingsScreen(
     }
 
     if (showCurrencyDialog) {
+        val currencyTitle = stringResource(R.string.settings_currency)
+        val currencyBrl = stringResource(R.string.settings_currency_brl)
+        val currencyUsd = stringResource(R.string.settings_currency_usd)
+        val currencyEur = stringResource(R.string.settings_currency_eur)
         ChoiceDialog(
-            title = "Moeda",
-            options = listOf("BRL" to "Real Brasileiro (BRL)", "USD" to "DÃ³lar Americano (USD)", "EUR" to "Euro (EUR)"),
+            title = currencyTitle,
+            options = listOf("BRL" to currencyBrl, "USD" to currencyUsd, "EUR" to currencyEur),
             selected = currency,
             onDismiss = { showCurrencyDialog = false },
             onSelect = { viewModel.setCurrency(it); showCurrencyDialog = false }
@@ -410,27 +427,31 @@ fun SettingsScreen(
         var confirmPassword by remember { mutableStateOf("") }
         var validationError by remember { mutableStateOf<String?>(null) }
 
+        val errorAllFields = stringResource(R.string.settings_password_error_all_fields)
+        val errorMinLength = stringResource(R.string.settings_password_error_min_length)
+        val errorMismatch = stringResource(R.string.settings_password_error_mismatch)
+
         AlertDialog(
             onDismissRequest = { showPasswordDialog = false },
-            title = { Text("Alterar senha") },
+            title = { Text(stringResource(R.string.settings_password_dialog_title)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     OutlinedTextField(
                         value = currentPassword,
                         onValueChange = { currentPassword = it; validationError = null },
-                        label = { Text("Senha atual") },
+                        label = { Text(stringResource(R.string.settings_password_current_label)) },
                         singleLine = true
                     )
                     OutlinedTextField(
                         value = newPassword,
                         onValueChange = { newPassword = it; validationError = null },
-                        label = { Text("Nova senha") },
+                        label = { Text(stringResource(R.string.settings_password_new_label)) },
                         singleLine = true
                     )
                     OutlinedTextField(
                         value = confirmPassword,
                         onValueChange = { confirmPassword = it; validationError = null },
-                        label = { Text("Confirmar nova senha") },
+                        label = { Text(stringResource(R.string.settings_password_confirm_label)) },
                         singleLine = true
                     )
                     validationError?.let {
@@ -448,13 +469,13 @@ fun SettingsScreen(
                     onClick = {
                         when {
                             currentPassword.isBlank() || newPassword.isBlank() -> {
-                                validationError = "Preencha todos os campos"
+                                validationError = errorAllFields
                             }
                             newPassword.length < 6 -> {
-                                validationError = "A nova senha precisa ter ao menos 6 caracteres"
+                                validationError = errorMinLength
                             }
                             newPassword != confirmPassword -> {
-                                validationError = "As senhas nÃ£o coincidem"
+                                validationError = errorMismatch
                             }
                             else -> {
                                 showPasswordDialog = false
@@ -463,12 +484,12 @@ fun SettingsScreen(
                         }
                     }
                 ) {
-                    Text("Salvar")
+                    Text(stringResource(R.string.common_save))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showPasswordDialog = false }) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )
@@ -477,12 +498,12 @@ fun SettingsScreen(
     if (showAboutDialog) {
         AlertDialog(
             onDismissRequest = { showAboutDialog = false },
-            title = { Text("Listaih") },
+            title = { Text(stringResource(R.string.settings_about_title)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("VersÃ£o 1.0.0")
+                    Text(stringResource(R.string.settings_about_version))
                     Text(
-                        "Listas de compras colaborativas para sua casa.",
+                        stringResource(R.string.settings_about_description),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -490,7 +511,7 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showAboutDialog = false }) {
-                    Text("OK")
+                    Text(stringResource(R.string.common_ok))
                 }
             }
         )
@@ -499,17 +520,17 @@ fun SettingsScreen(
     if (showPrivacyDialog) {
         AlertDialog(
             onDismissRequest = { showPrivacyDialog = false },
-            title = { Text("Privacidade & seguranÃ§a") },
+            title = { Text(stringResource(R.string.settings_privacy_title)) },
             text = {
                 Text(
-                    "Seus dados sÃ£o armazenados localmente no seu servidor. Nenhuma informaÃ§Ã£o Ã© compartilhada com terceiros.",
+                    stringResource(R.string.settings_privacy_text),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
             confirmButton = {
                 TextButton(onClick = { showPrivacyDialog = false }) {
-                    Text("OK")
+                    Text(stringResource(R.string.common_ok))
                 }
             }
         )
@@ -518,16 +539,16 @@ fun SettingsScreen(
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Sair da conta?") },
-            text = { Text("VocÃª precisarÃ¡ entrar novamente para acessar suas listas.") },
+            title = { Text(stringResource(R.string.settings_logout_title)) },
+            text = { Text(stringResource(R.string.settings_logout_message)) },
             confirmButton = {
                 TextButton(onClick = { showLogoutDialog = false; onLogout() }) {
-                    Text("Sair", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.settings_logout_confirm), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showLogoutDialog = false }) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )
@@ -658,7 +679,7 @@ fun ChoiceDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("OK")
+                Text(stringResource(R.string.common_ok))
             }
         }
     )

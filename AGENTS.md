@@ -8,7 +8,7 @@ Backend é o produto central (NestJS). Admin WebUI em React. Android, Wear OS, A
 - **Fase 1 (Core Backend):** ✅ Concluído
 - **Fase 2 (WebSocket Sync):** ✅ Concluído
 - **Fase 3 (Admin WebUI + i18n + External API):** ✅ Concluído
-- **Fase 4 (Android):** 🚧 Em desenvolvimento — Fases 1–6 do ANDROID-PLAN concluídas e validadas no device; próximas: 10 (Home real + filtros), 7 (Settings leve), 8 (Onboarding), 9 (Wear OS)
+- **Fase 4 (Android):** 🚧 Em desenvolvimento — Fase 2 UX Review concluída; Fases 1–6 do ANDROID-PLAN concluídas e validadas no device; próximas: 10 (Home real + filtros), 7 (Settings leve), 8 (Onboarding), 9 (Wear OS)
 - **Fase 5 (Grocy):** ⬜ Pendente
 - **Fase 6 (Home Assistant):** ⬜ Pendente
 - **Fase 7 (Alexa):** ⬜ Pendente
@@ -106,9 +106,25 @@ cd apps/backend && npx prisma generate && npx prisma migrate deploy
 - Chip components para itens de lista
 - Vignette para edge fading
 - `minSdk 30` (Wear OS 3+)
+- **i18n Wear**: `values/strings.xml` (pt-BR), `values-en/strings.xml`, `values-es/strings.xml` — ~73 strings extraídas de 8 telas Wear; `stringResource(R.string.xxx)` em todos os composables
+- **Touch targets Wear**: todos os botões e teclas do popup e shopping ≥ 44dp
 - **Scanner no relógio** (esqueleto Fase 9): `MainActivity.onKeyDown` captura keyevents HID (dígitos `7..16` + `66`/`134` literais) → `WearMainViewModel.onHidKey`; **com IME visível o consumo é desativado** (`MainActivity.imeVisible()` — senão digitação vira scan); popup global `WearScanPopupHost` (reconhecido: botões ícone **X** qtd / **$** preço / **Check verde** confirmar; não reconhecido: código + Fechar); **sem timer** — scan novo auto-confirma o anterior, mesmo código = +1; `setScanItemPrice`/`setScanItemQuantity` atualizam e mantêm o popup aberto; toggle "Scanner BT (HID)" em `WearSettingsScreen` (SharedPreferences `listaih_wear_settings` → `scan_enabled`); `FLAG_TURN_SCREEN_ON` ao abrir popup; itens ainda são mock (`WearMainViewModel.mockItems` com barcodes)
 - **Editors de quantidade/preço no popup**: keypad numérico embutido (sem IME) — digite só números: `1299` → R$ 12,99 (preço), `250` → 2,50 kg (qtd; kg/L centésimos, un/g/ml inteiros); formato BRL com vírgula (`formatBrl` no popup)
 - **Emulador 454x454 @ 2.0** = 227dp de altura — overlays do popup precisam caber em ~220dp (keypad 3 linhas 30dp + botões 28dp); uiautomator dump no emulador é instável (XML malformado às vezes) — validar com `-match`/`Contains` no texto bruto em vez de regex de bounds
+
+### i18n Phone
+- `app/src/main/res/values/strings.xml` (pt-BR default) — ~220+ strings
+- `app/src/main/res/values-en/strings.xml` (English)
+- `app/src/main/res/values-es/strings.xml` (Spanish)
+- `stringResource(R.string.xxx)` em todos os composables; `context.getString()` em ViewModels via `@ApplicationContext`
+- Naming: `onboarding_xxx`, `setup_xxx`, `login_xxx`, `home_xxx`, `detail_xxx`, `settings_xxx`, `purchases_xxx`, `addlist_xxx`, `shopping_xxx`, `scanner_xxx`, `scanpopup_xxx`, `additem_xxx`, `common_xxx`, `cat_xxx`, `unit_xxx`
+- **Mojibake corrigido**: SettingsScreen tinha `Ã§` → `ç`, `Ã£` → `ã`, `Ã¡` → `á`, etc. (encoding Windows-1252 lido como UTF-8)
+
+### Empty/Loading States (Phone)
+- **ListDetailScreen**: loading (`CircularProgressIndicator`) quando `isLoading && items.isEmpty()`; empty state com ícone `ShoppingBasket` + "Lista vazia" + "Toque em + para adicionar itens"; progress card oculto quando vazio
+- **HomeScreen**: loading quando `isLoading && visibleLists.isEmpty()`; empty state com ícone `Home` + mensagem + tip "Toque em + para criar uma lista"; `isLoading` do `MainViewModel` via `_isLoading` flow (true durante `syncLists`, false ao terminar)
+- **PurchasesScreen**: já tinha loading + empty state (icon `ReceiptLong` + "Nenhuma compra registrada ainda")
+- **SettingsScreen**: campo de perfil mostra "Carregando..." quando `loading && userName.isBlank()`
 
 ## Credenciais de teste (local)
 - PostgreSQL: `listaih` / `listaih` / `listaih` / `localhost:5432`

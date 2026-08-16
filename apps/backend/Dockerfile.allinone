@@ -1,0 +1,69 @@
+# Stage 1 — Admin WebUI build
+FROM node:22-alpine AS admin-builder
+
+WORKDIR /app
+
+COPY apps/admin/package.json apps/admin/package-lock.json ./
+RUN npm ci
+
+COPY apps/admin ./
+RUN npm run build
+
+# Stage 2 — Backend build
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+RUN apk add --no-cache openssl libc6-compat
+
+COPY apps/backend/package.json apps/backend/package-lock.json* ./
+RUN npm ci
+
+COPY apps/backend/prisma ./prisma
+RUN npx prisma generate
+
+COPY apps/backend/tsconfig.json apps/backend/nest-cli.json ./
+COPY apps/backend/src ./src
+
+RUN npx nest build
+
+# Stage 3 — All-in-one production: backend + PostgreSQL + Redis
+FROM node:22-alpine AS production
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV ADMIN_DIST_PATH=/app/admin/dist
+
+RUN apk add --no-cache openssl libc6-compat postgresql16 postgresql16-client redis
+
+COPY apps/backend/package.json apps/backend/package-lock.json* ./
+RUN npm ci --omit=dev
+
+# Prisma runtime (engines + client + CLI para `migrate deploy`)
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+
+COPY --from=builder /app/dist ./dist
+COPY apps/backend/prisma ./prisma
+
+# Admin WebUI (servida pelo backend em /admin)
+COPY --from=admin-builder /app/dist ./admin/dist
+
+COPY apps/backend/entrypoint.allinone.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENV POSTGRES_USER=listaih
+ENV POSTGRES_DB=listaih
+ENV POSTGRES_PASSWORD=listaih
+ENV JWT_SECRET=change-me-in-production
+ENV JWT_ACCESS_EXPIRATION=15m
+ENV JWT_REFRESH_EXPIRATION=7d
+ENV PORT=3000
+ENV CORS_ORIGIN=*
+
+EXPOSE 3000
+VOLUME ["/var/lib/postgresql/data"]
+
+ENTRYPOINT ["/entrypoint.sh"]
